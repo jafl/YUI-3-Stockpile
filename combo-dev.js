@@ -1,0 +1,171 @@
+#!/usr/bin/env node
+
+/* Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+ *
+ * The copyrights embodied in the content of this file are licensed by
+ * Yahoo! Inc. under the BSD (revised) open source license.
+ */
+
+var YUI = require('yui3').YUI;
+YUI({
+	gallery: 'gallery-2012.01.11-21-03'
+}).use('json', 'gallery-funcprog', function(Y)
+{
+
+var fs      = require('fs'),
+	path    = require('path'),
+	url     = require('url'),
+	http    = require('http'),
+	express = require('express');
+
+// options
+
+var argv = require('optimist')
+	.usage('usage: $0')
+	.option('config',
+	{
+		demand:   true,
+		describe: 'Path to configuration file'
+	})
+	.option('port',
+	{
+		describe: 'Port to listen on'
+	})
+	.option('debug',
+	{
+		boolean:  true,
+		describe: 'Turn on debugging (causes leaks)'
+	})
+	.argv;
+
+var config  = Y.JSON.parse(fs.readFileSync(argv.config));
+config.port = argv.port || config.port;
+
+var debug = argv.debug || config.debug;
+if (debug)
+{
+	require('long-stack-traces');
+}
+
+var app = express.createServer();
+
+function moduleName(s)
+{
+	var m = /([^\/]+?)(-(min|debug))?\.js$/.exec(s);
+	return (m && m.length && m[1]);
+}
+
+app.get('/combo', function(req, res)
+{
+	var query = url.parse(req.url).query;
+	if (!query)
+	{
+		res.end();
+		return;
+	}
+
+	res.setHeader('Content-Type', /\.css/.test(query) ? 'text/css' : 'text/javascript');
+	res.setHeader('Cache-Control', 'no-cache');
+	res.setHeader('Expires', 'Wed, 31 Dec 1969 16:00:00 GMT');
+
+	var module = Y.partition(query.split('&'), function(m)
+	{
+		var name = moduleName(m);
+		return (name && config.modules[ name ]);
+	});
+
+	var module_list = module.rejects.join('&');
+
+	var file_list = Y.reduce(module.matches, [], function(list, m)
+	{
+		Y.each(config.modules[ moduleName(m) ], function(f)
+		{
+			list.push(path.resolve(config.root || '', f));
+		});
+		return list;
+	});
+
+	var file_index  = 0,
+		files_done  = true,
+		relay_done  = true;
+
+	if (module_list)
+	{
+		relay_done     = false;
+		var relay_url  = config.combo + module_list,
+			relay_data = [];
+
+		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
+
+		http.get(url.parse(relay_url), function (r)
+		{
+			r.on('data', function(data)
+			{
+				relay_data.push(data);
+			});
+
+			r.on('end', function()
+			{
+				res.write(relay_data.join(''), 'utf-8');
+
+				relay_done = true;
+				checkFinished();
+			});
+		})
+		.on('error', function(err)
+		{
+			Y.log(err.message + ' from ' + relay_url, 'warn', 'combo-dev');
+			relay_done = true;
+			checkFinished();
+		});
+	}
+
+	if (file_list.length > 0)
+	{
+		Y.log('files: ' + file_list, 'debug', 'combo-dev');
+
+		files_done = false;
+		sendFile(file_list[0]);
+	}
+
+	checkFinished();
+
+	function sendFile(f)
+	{
+		fs.readFile(f, 'utf-8', function(err, data)
+		{
+			if (err)
+			{
+				Y.log(err.message, 'warn', 'combo-dev');
+			}
+			else
+			{
+				res.write(data, 'utf-8');
+			}
+
+			file_index++;
+			if (file_index >= file_list.length)
+			{
+				files_done = true;
+				checkFinished();
+			}
+			else
+			{
+				sendFile(file_list[file_index]);
+			}
+		});
+	}
+
+	function checkFinished()
+	{
+		if (files_done && relay_done)
+		{
+			res.end();
+		}
+	}
+});
+
+Y.log('listening on port ' + config.port, 'debug', 'combo-dev');
+app.listen(config.port);
+
+});
