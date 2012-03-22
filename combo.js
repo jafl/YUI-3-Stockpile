@@ -6,7 +6,7 @@
  * Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-var YUI = require('yui3').YUI;
+var YUI = require('yui').YUI;
 
 YUI.add('gallery-linkedlist', function(Y) {
 
@@ -1142,17 +1142,7 @@ Y.Iterable =
 }, '@VERSION@' ,{optional:['gallery-funcprog']});
 
 YUI({
-/*
-	gallery: 'gallery-2012.01.11-21-03',
-	modules:
-	[
-		{
-			fullpath: '/Users/lindalj/open-source/yui3-stockpile/yui/gallery-iterable-extras.js',
-			name: 'gallery-iterable-extras',
-			type: 'js'
-		}
-	]
-*/
+	gallery: 'gallery-2012.01.11-21-03'
 }).use('json', 'gallery-mru-cache', 'datatype-date', function(Y)
 {
 

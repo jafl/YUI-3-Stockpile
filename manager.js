@@ -6,7 +6,7 @@
  * Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-var YUI = require('yui3').YUI;
+var YUI = require('yui').YUI;
 YUI().use('json', function(Y)
 {
 

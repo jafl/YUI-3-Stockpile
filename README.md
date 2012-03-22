@@ -63,7 +63,7 @@ Installation
 Install nodejs and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui3 express ejs optimist gzip long-stack-traces
+    npm install yui express ejs optimist gzip long-stack-traces
 
 Usage
 -----
