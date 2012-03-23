@@ -1286,6 +1286,12 @@ app.get('/combo', function(req, res)
 		res.end();
 		return;
 	}
+	else if (query.indexOf('..') >= 0)
+	{
+		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
+		res.end();
+		return;
+	}
 
 	var module_list = query.split('&'), module_index = 0;
 

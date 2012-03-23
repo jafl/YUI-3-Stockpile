@@ -3,6 +3,51 @@ individual modules or for groups of modules.  (The name "stockpile" was
 chosen because it's a synonym of gallery, but without the glamorous
 connotation.)
 
+Installation
+------------
+
+Install nodejs and then install these packages:
+
+    cd YUI-3-Stockpile
+    npm install yui express ejs optimist gzip long-stack-traces
+
+Usage
+-----
+
+Start the combo handler:
+
+    cd YUI-3-Stockpile
+    node combo.js [--config path_to_config_file]
+                  [--path path_to_repository] [--port port]
+                  [--cache [size_MB] [--cache-log path_to_dump_logs]
+                   [--cache-log-interval log_dump_interval_hours]]
+                  [--debug]
+
+The default config files are:
+
+    combo server:  /usr/share/yui3-stockpile/combo.json
+    admin UI:      /usr/share/yui3-stockpile/manager.json
+
+Command line arguments override the values in the config files.
+
+The default paths are:
+
+    combo server repository: /var/yui3-stockpile
+    combo server cache log:  /var/log/yui3-stockpile
+
+Code Organization
+-----------------
+
+    combo.js        Combo handler
+    combo-dev.js    Combo handler for development mode
+    manager.js      Admin UI
+    client          Client modules
+    server          Server modules
+    views           Client web pages
+
+Repository
+----------
+
 Versioning individual modules requires this directory structure:
 
     {namespace}/
@@ -57,47 +102,27 @@ the number of requests made by YUI Loader.
 The disadvantage of using a bundle is that all the modules must be
 published simultaneously, inside the {bundle-name}/{version}/ directory.
 
-Installation
-------------
+Deployment
+----------
 
-Install nodejs and then install these packages:
+We recommend publishing only your minified code to your public deployment
+of YUI 3 Stockpile, so you can keep your commented code private.
+
+Development Mode
+----------------
+
+To enable rapid iteration during development, configure an instance of
+combo-dev.js to load your raw source files for the modules you are
+currently working on.  All other modules will be requested from the
+fallback combo handler, usually an instance of combo.js.
+
+combo-dev.js requires a config file, because you typically run a separate
+instance for each project that you are working on:
 
     cd YUI-3-Stockpile
-    npm install yui express ejs optimist gzip long-stack-traces
-
-Usage
------
-
-Start the combo handler:
-
-    cd YUI-3-Stockpile
-    node combo.js [--config path_to_config_file]
-                  [--path path_to_repository] [--port port]
-                  [--cache [size_MB] [--cache-log path_to_dump_logs]
-                   [--cache-log-interval log_dump_interval_hours]]
-                  [--debug]
-
-The default config files are:
-
-    combo server:  /usr/share/yui3-stockpile/combo.json
-    admin UI:      /usr/share/yui3-stockpile/manager.json
+    node combo-dev.js --config path_to_config_file [--port port] [--debug]
 
 Command line arguments override the values in the config files.
-
-The default paths are:
-
-    combo server repository: /var/yui3-stockpile
-    combo server cache log:  /var/log/yui3-stockpile
-
-Code Organization
------------------
-
-    combo.js        Combo handler
-    combo-dev.js    Combo handler for development mode
-    manager.js      Admin UI
-    client          Client modules
-    server          Server modules
-    views           Client web pages
 
 Caching
 -------
@@ -122,26 +147,10 @@ plotted on a graph of log(response size) vs % of total hits.  Keys with
 high percentages indicate thrashing.  The response size helps determine how
 much the cache should be expanded.
 
-Dependencies
-------------
+Dependency Optimization
+-----------------------
 
 When a bundle is uploaded, the "requires" configuration for each module is
 updated to include transitive dependencies within the bundle.  This ensures
 that YUI Loader will only have to make two requests to get all the required
 modules within the bundle.
-
-Development Mode
-----------------
-
-To enable rapid iteration during development, configure an instance of
-combo-dev.js to load your raw source files for the modules you are
-currently working on.  All other modules will be requested from the
-fallback combo handler, usually an instance of combo.js.
-
-combo-dev.js requires a config file, because you typically run a separate
-instance for each project that you are working on:
-
-    cd YUI-3-Stockpile
-    node combo-dev.js --config path_to_config_file [--port port] [--debug]
-
-Command line arguments override the values in the config files.
