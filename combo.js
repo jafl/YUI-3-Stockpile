@@ -1146,10 +1146,11 @@ YUI({
 }).use('json', 'gallery-mru-cache', 'datatype-date', function(Y)
 {
 
-var fs       = require('fs'),
-	url      = require('url'),
-	compress = require('gzip'),
-	express  = require('express');
+var fs          = require('fs'),
+	url         = require('url'),
+	querystring = require('querystring'),
+	compress    = require('gzip'),
+	express     = require('express');
 
 // options
 
@@ -1280,13 +1281,13 @@ var debug_re = /-debug\.js$/;
 
 app.get('/combo', function(req, res)
 {
-	var query = url.parse(req.url).query;
+	var query = querystring.unescape(url.parse(req.url).query);
 	if (!query)
 	{
 		res.end();
 		return;
 	}
-	else if (query.indexOf('..') >= 0)
+	else if (/[\0\s;]|\.\./.test(query))
 	{
 		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
 		res.end();
