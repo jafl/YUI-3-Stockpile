@@ -8,13 +8,14 @@
 
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.01.11-21-03'
+	gallery: 'gallery-2012.03.23-18-00'
 }).use('json', 'gallery-funcprog', function(Y)
 {
 
 var fs      = require('fs'),
 	path    = require('path'),
 	url     = require('url'),
+	util    = require('util'),
 	http    = require('http'),
 	express = require('express'),
 
@@ -67,10 +68,18 @@ app.get('/combo', function(req, res)
 	}
 
 	var query_info = content_type.analyze(query);
-	if (!query_info || query_info.binary)
+	if (!query_info)
 	{
 		Y.log('unsupported request type: ' + query, 'debug', 'combo');
 		res.end();
+		return;
+	}
+	else if (query_info.binary)
+	{
+		http.get(url.parse(config.combo + query), function (r)
+		{
+			util.pump(r, res);
+		});
 		return;
 	}
 
