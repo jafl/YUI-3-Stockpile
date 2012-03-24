@@ -173,6 +173,7 @@ app.get('/combo', function(req, res)
 	}
 	else if (query_info.binary)
 	{
+		headers(res);
 		util.pump(fs.createReadStream(argv.path + '/' + query), res);
 		return;
 	}
@@ -278,7 +279,7 @@ app.get('/combo', function(req, res)
 		}
 	}
 
-	function send(req, res, data)
+	function headers(res)
 	{
 		res.setHeader('Content-Type', query_info.type);
 		res.setHeader('Cache-Control', 'max-age=315360000');
@@ -287,6 +288,11 @@ app.get('/combo', function(req, res)
 			{
 				format: '%a, %d %b %Y %H:%M:%S GMT'
 			}));
+	}
+
+	function send(req, res, data)
+	{
+		headers(res);
 
 		var accept_encoding = req.headers['accept-encoding'];
 		var send_compressed = (accept_encoding && accept_encoding.indexOf('gzip') >= 0);
