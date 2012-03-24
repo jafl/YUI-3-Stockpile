@@ -15,9 +15,12 @@ YUI({
 var fs          = require('fs'),
 	path        = require('path'),
 	url         = require('url'),
+	util        = require('util'),
 	querystring = require('querystring'),
 	compress    = require('gzip'),
-	express     = require('express');
+	express     = require('express'),
+
+	content_type = require('./server/content-type.js');
 
 // options
 
@@ -161,6 +164,19 @@ app.get('/combo', function(req, res)
 		return;
 	}
 
+	var query_info = content_type.analyze(query);
+	if (!query_info)
+	{
+		Y.log('unknown request type: ' + query, 'debug', 'combo');
+		res.end();
+		return;
+	}
+	else if (query_info.binary)
+	{
+		util.pump(fs.createReadStream(argv.path + '/' + query), res);
+		return;
+	}
+
 	var module_list = query.split('&'), module_index = 0;
 
 	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
@@ -264,7 +280,7 @@ app.get('/combo', function(req, res)
 
 	function send(req, res, data)
 	{
-		res.setHeader('Content-Type', /\.css/.test(query) ? 'text/css' : 'text/javascript');
+		res.setHeader('Content-Type', query_info.type);
 		res.setHeader('Cache-Control', 'max-age=315360000');
 		res.setHeader('Expires',
 			Y.DataType.Date.format(new Date(new Date().getTime() + 10*365*24*3600000),

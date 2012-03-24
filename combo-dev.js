@@ -16,7 +16,9 @@ var fs      = require('fs'),
 	path    = require('path'),
 	url     = require('url'),
 	http    = require('http'),
-	express = require('express');
+	express = require('express'),
+
+	content_type = require('./server/content-type.js');
 
 // options
 
@@ -64,7 +66,15 @@ app.get('/combo', function(req, res)
 		return;
 	}
 
-	res.setHeader('Content-Type', /\.css/.test(query) ? 'text/css' : 'text/javascript');
+	var query_info = content_type.analyze(query);
+	if (!query_info || query_info.binary)
+	{
+		Y.log('unsupported request type: ' + query, 'debug', 'combo');
+		res.end();
+		return;
+	}
+
+	res.setHeader('Content-Type', query_info.type);
 	res.setHeader('Cache-Control', 'no-cache');
 	res.setHeader('Expires', 'Wed, 31 Dec 1969 16:00:00 GMT');
 
