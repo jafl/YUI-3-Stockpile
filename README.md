@@ -17,7 +17,7 @@ Usage
 Start the combo handler:
 
     cd YUI-3-Stockpile
-    node combo.js [--config path_to_config_file]
+    node combo.js [--config path_to_json_config_file]
                   [--path path_to_repository] [--port port]
                   [--cache [size_MB] [--cache-log path_to_dump_logs]
                    [--cache-log-interval log_dump_interval_hours]]
@@ -28,7 +28,9 @@ The default config files are:
     combo server:  /usr/share/yui3-stockpile/combo.json
     admin UI:      /usr/share/yui3-stockpile/manager.json
 
-Command line arguments override the values in the config files.
+The config files are JSON.  The keys are the names of the command line
+parameters.  Command line arguments override the values in the config
+files.
 
 The default paths are:
 
@@ -120,9 +122,35 @@ combo-dev.js requires a config file, because you typically run a separate
 instance for each project that you are working on:
 
     cd YUI-3-Stockpile
-    node combo-dev.js --config path_to_config_file [--port port] [--debug]
+    node combo-dev.js --config path_to_json_config_file
+                      [--port port] [--debug]
 
 Command line arguments override the values in the config files.
+
+A typical config file looks like this:
+
+    {
+    	"port":8667,
+
+    	"combo":"http://my-nightly-build-combo-server:8666/combo?",
+
+    	"root":"/Users/johndoe/yui3-stockpile/dev",
+    	"modules":
+    	{
+    		"sp-test-blah.js":
+    		[
+    			"sp-test-blah/sp-test-blah-debug.js"
+    		],
+    		"sp-test-foo.css":
+    		[
+    			"sp-test-foo/ace/sp-test-foo.css"
+    		]
+    	}
+    }
+
+Requests for the JavaScript for module sp-test-blah or the CSS for module
+sp-test-foo will return the local files.  All other requests will be routed
+to the combo handler.
 
 Caching
 -------
