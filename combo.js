@@ -151,13 +151,15 @@ var debug_re = /-debug\.js$/;
 
 app.get('/combo', function(req, res)
 {
-	var query = querystring.unescape(url.parse(req.url).query);
+	var query = url.parse(req.url).query;
 	if (!query)
 	{
 		res.end();
 		return;
 	}
-	else if (/[\0\s;]|\.\./.test(query))
+
+	query = querystring.unescape(query);
+	if (/[\0\s;]|\.\./.test(query))
 	{
 		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
 		res.end();

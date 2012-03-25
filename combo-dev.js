@@ -9,7 +9,7 @@
 var YUI = require('yui').YUI;
 YUI({
 	gallery: 'gallery-2012.03.23-18-00'
-}).use('json', 'gallery-funcprog', function(Y)
+}).use('json', 'gallery-funcprog', 'oop', function(Y)
 {
 
 var fs      = require('fs'),
@@ -54,8 +54,8 @@ var app = express.createServer();
 
 function moduleName(s)
 {
-	var m = /([^\/]+?)(-(min|debug))?\.js$/.exec(s);
-	return (m && m.length && m[1]);
+	var m = /([^\/]+?)(?:-(?:min|debug))?(\.(?:js|css))$/.exec(s);
+	return (m && m.length && (m[1]+m[2]));
 }
 
 app.get('/combo', function(req, res)
