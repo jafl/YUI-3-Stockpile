@@ -1,7 +1,11 @@
 YUI 3 combo handler built on NodeJS that supports versioning, either for
-individual modules or for groups of modules.  (The name "stockpile" was
-chosen because it's a synonym of gallery, but without the glamorous
-connotation.)
+individual modules or for bundles of modules.  The major advance over other
+combo handlers is that you can upload new versions any time, but this will
+not break existing appliations, because the old versions will still be
+available.
+
+The name "stockpile" was chosen because it's a synonym of gallery, but
+without the glamorous connotation.
 
 Installation
 ------------
@@ -130,22 +134,22 @@ Command line arguments override the values in the config files.
 A typical config file looks like this:
 
     {
-    	"port":8667,
+        "port":8667,
 
-    	"combo":"http://my-nightly-build-combo-server:8666/combo?",
+        "combo":"http://my-nightly-build-combo-server:8666/combo?",
 
-    	"root":"/Users/johndoe/yui3-stockpile/dev",
-    	"modules":
-    	{
-    		"sp-test-blah.js":
-    		[
-    			"sp-test-blah/sp-test-blah-debug.js"
-    		],
-    		"sp-test-foo.css":
-    		[
-    			"sp-test-foo/ace/sp-test-foo.css"
-    		]
-    	}
+        "root":"/Users/johndoe/yui3-stockpile/dev",
+        "modules":
+        {
+            "sp-test-blah.js":
+            [
+                "sp-test-blah/sp-test-blah-debug.js"
+            ],
+            "sp-test-foo.css":
+            [
+                "sp-test-foo/skin/sam/sp-test-foo.css"
+            ]
+        }
     }
 
 Requests for the JavaScript for module sp-test-blah or the CSS for module
