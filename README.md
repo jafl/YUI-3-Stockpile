@@ -1,8 +1,8 @@
 YUI 3 combo handler built on NodeJS that supports versioning, either for
 individual modules or for bundles of modules.  The major advance over other
-combo handlers is that you can upload new versions any time, but this will
-not break existing appliations, because the old versions will still be
-available.
+combo handlers is that you can upload new versions of individual modules or
+bundles at any time, but this will not break existing appliations, because
+the old versions will still be available.
 
 The name "stockpile" was chosen because it's a synonym of gallery, but
 without the glamorous connotation.
