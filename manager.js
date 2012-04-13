@@ -59,6 +59,16 @@ if (debug)
 var app = express.createServer();
 app.use(express.static(__dirname + '/client'));
 
+app.get('/browse', function(req, res)
+{
+	var query = url.parse(req.url).query;
+	if (!query)
+	{
+		res.end();
+		return;
+	}
+});
+
 Y.log('listening on port ' + argv.port, 'debug', 'combo');
 app.listen(argv.port);
 

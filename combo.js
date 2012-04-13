@@ -284,9 +284,9 @@ app.get('/combo', function(req, res)
 	function headers(res)
 	{
 		res.setHeader('Content-Type', query_info.type);
-		res.setHeader('Cache-Control', 'max-age=315360000');
+		res.setHeader('Cache-Control', 'public,max-age=31536000');
 		res.setHeader('Expires',
-			Y.DataType.Date.format(new Date(new Date().getTime() + 10*365*24*3600000),
+			Y.DataType.Date.format(new Date(new Date().getTime() + 365*24*3600000),
 			{
 				format: '%a, %d %b %Y %H:%M:%S GMT'
 			}));

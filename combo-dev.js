@@ -76,6 +76,17 @@ app.get('/combo', function(req, res)
 	}
 	else if (query_info.binary)
 	{
+		var file = path.basename(query);
+		if (file && config.image[ file ])
+		{
+			file = path.resolve(config.root || '', config.image[ file ])
+			if (path.existsSync(file))
+			{
+				util.pump(fs.createReadStream(file), res);
+				return;
+			}
+		}
+
 		http.get(url.parse(config.combo + query), function (r)
 		{
 			util.pump(r, res);
@@ -90,18 +101,14 @@ app.get('/combo', function(req, res)
 	var module = Y.partition(query.split('&'), function(m)
 	{
 		var name = moduleName(m);
-		return (name && config.modules[ name ]);
+		return (name && config.code[ name ]);
 	});
 
 	var module_list = module.rejects.join('&');
 
-	var file_list = Y.reduce(module.matches, [], function(list, m)
+	var file_list = Y.map(module.matches, function(m)
 	{
-		Y.each(config.modules[ moduleName(m) ], function(f)
-		{
-			list.push(path.resolve(config.root || '', f));
-		});
-		return list;
+		return path.resolve(config.root || '', config.code[ moduleName(m) ]);
 	});
 
 	var file_index  = 0,

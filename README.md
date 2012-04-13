@@ -118,9 +118,9 @@ Development Mode
 ----------------
 
 To enable rapid iteration during development, configure an instance of
-combo-dev.js to load your raw source files for the modules you are
-currently working on.  All other modules will be requested from the
-fallback combo handler, usually an instance of combo.js.
+combo-dev.js to load your local files for the modules you are currently
+working on.  All other modules will be requested from the fallback combo
+handler, usually an instance of combo.js.
 
 combo-dev.js requires a config file, because you typically run a separate
 instance for each project that you are working on:
@@ -139,22 +139,20 @@ A typical config file looks like this:
         "combo":"http://my-nightly-build-combo-server:8666/combo?",
 
         "root":"/Users/johndoe/yui3-stockpile/dev",
-        "modules":
+        "code":
         {
-            "sp-test-blah.js":
-            [
-                "sp-test-blah/sp-test-blah-debug.js"
-            ],
-            "sp-test-foo.css":
-            [
-                "sp-test-foo/skin/sam/sp-test-foo.css"
-            ]
+            "sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
+            "sp-test-foo.css": "sp-test-foo/skin/sam/sp-test-foo.css"
+        },
+        "image":
+        {
+            "warn.png": "sp-test-foo/sam/warn.png"
         }
     }
 
 Requests for the JavaScript for module sp-test-blah or the CSS for module
-sp-test-foo will return the local files.  All other requests will be routed
-to the combo handler.
+sp-test-foo or an image named warn.png will return the local files.  All
+other requests will be routed to the combo handler.
 
 Caching
 -------
