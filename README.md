@@ -58,6 +58,9 @@ Code Organization
     server          Server modules
     views           Client web pages
 
+    This application includes portions of syntaxhighlighter-3.0.83, under
+    the MIT license.
+
 Repository
 ----------
 
