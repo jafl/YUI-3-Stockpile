@@ -9,29 +9,33 @@
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssfonts/fonts-min.css" />
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssbase/base-min.css" />
 
+	<script type="text/javascript" src="/syntax/shCore.js"></script>
+	<script type="text/javascript" src="/syntax/shBrushJScript.js"></script>
+	<script type="text/javascript" src="/syntax/shBrushCSS.js"></script>
+	 
+	<link rel="stylesheet" type="text/css" href="/syntax/shCore.css" />
+	<link rel="stylesheet" type="text/css" href="/syntax/shThemeDefault.css" />
+
 	<style type="text/css">
-	body { margin:10px; }
-
-	.code { float:right; }
-	.code pre { border:1px solid black; padding:5px; background-color:#EEEEEE; }
-	.code pre .list-item:after { content:"," }
-	.code pre .list-item:last-child:after { content:"" }
-
-	.file-tree ul { margin:0; }
-	.file-tree li {  list-style-type:none; padding-left:17px; padding-top:5px; }
-	.file-tree li.directory { background:url("/img/directory.png") left 5px no-repeat; }
-	.file-tree li.file { background:url("/img/file.png") left 5px no-repeat; }
+	body { margin:0; }
+	p.cmd { padding:5px 0 5px 10px; background-color:#EEEEEE; }
 	</style>
 
 	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
 	<meta http-equiv="X-UI-Compatible" content="IE=edge,chrome=1" />
 </head>
 
-<body class="yui3-skin-sam">
+<body>
 
-<h1>{{title}}</h1>
+<p class="cmd"><a href="{{raw}}">Plain</a></p>
 
-{{{body}}}
+<pre class="brush:{{type}}">
+{{content}}
+</pre>
+
+<script type="text/javascript">
+SyntaxHighlighter.all();
+</script>
 
 </body>
 </html>

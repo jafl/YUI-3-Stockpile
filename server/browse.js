@@ -6,6 +6,7 @@ YUI({
 "use strict";
 
 var mod_fs   = require('fs'),
+	mod_path = require('path'),
 	mod_url  = require('url'),
 	mod_util = require('util'),
 	mod_hbs  = require('handlebars'),
@@ -580,9 +581,19 @@ function showFile(res, argv, query)
 			{
 				browseError(res, argv, query, err);
 			}
-			else
+			else if (query.raw == 'true')
 			{
 				res.send(data, { 'Content-Type': 'text/plain' });
+			}
+			else
+			{
+				res.render('browse-file.hbs',
+				{
+					type:    mod_path.extname(query.file).substr(1),
+					content: data,
+					raw:     '/browse?raw=true&file=' + query.file,
+					layout:  false
+				});
 			}
 		});
 	}
