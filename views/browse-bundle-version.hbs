@@ -1,0 +1,24 @@
+<div class="code">
+<p>To use this version of {{bundle}}, configure a Loader group as follows:</p>
+{{{code}}}
+</div>
+
+<h2>{{bundle}} {{vers}}</h2>
+
+<p>Uploaded by {{author}}</p>
+
+<p>Notes:  {{notes}}</p>
+
+<p>{{desc}}</p>
+
+<h2>Modules</h2>
+
+{{#if modules}}
+	<ul>
+	{{#modules}}
+		<li><a href="/browse?b={{../bundle}}&amp;v={{../vers}}&amp;m={{.}}">{{.}}</a></li>
+	{{/modules}}
+	</ul>
+{{else}}
+	<p>None</p>
+{{/if}}

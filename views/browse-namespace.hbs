@@ -1,0 +1,56 @@
+<div class="code">
+<p>To use the latest versions of modules from the {{ns}} namespace,<br>configure a Loader group as follows:</p>
+<pre>
+var moduleVersion =
+{
+<span class="list">{{#modules}}    <span class="list-item">'sp-{{../ns}}-{{name}}': '{{vers}}'</span>
+{{/modules}}</span>};
+
+function insertVersion(m)
+{
+    var s  = /^sp-([^-]+)-([^\/]+)/.exec(m.path);
+    if (s && s.length)
+    {
+        m.path = m.path.replace(s[0],
+                    s[1] + '/' + s[2] + '/' + moduleVersion[s[0]]);
+    }
+}
+
+window.YUI_config =
+{
+    groups:
+    {
+        stockpile:
+        {
+            ext:       true,
+            combine:   true,
+            comboBase: 'http://my-stockpile-host/combo?',
+            root:      '',
+            patterns:
+            {
+                'sp-':      { configFn: insertVersion },
+                'lang/sp-': { configFn: insertVersion },
+                'spcss-':   { configFn: insertVersion, type: 'css' }
+            }
+        }
+    }
+}
+</pre>
+</div>
+
+<h2>{{ns}}</h2>
+
+<p>{{desc}}</p>
+
+<table>
+<tr>
+    <th>Module</th><th>Latest Version</th><th>Release Date</th>
+</tr>
+{{#modules}}
+    <tr>
+        <td><a href="/browse?ns={{../ns}}&amp;m={{name}}">{{name}}</a></td>
+        <td>{{vers}}</td>
+        <td>{{date}}</td>
+    </tr>
+{{/modules}}
+</table>

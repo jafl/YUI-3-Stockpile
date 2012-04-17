@@ -1,0 +1,26 @@
+<div class="code">
+<p>To use this version of {{name}}:</p>
+<pre>
+window.YUI_config = { ... }
+
+YUI().use('{{name}}', function(Y) { ... });
+</pre>
+</div>
+
+<h2>{{name}} {{vers}}</h2>
+
+<p>Uploaded by {{author}}</p>
+
+<p>Notes:  {{notes}}</p>
+
+<p>{{desc}}</p>
+
+<h3>Files</h3>
+
+{{#if file_tree}}
+<div class="file-tree">
+{{{file_tree}}}
+</div>
+{{else}}
+<p>None</p>
+{{/if}}

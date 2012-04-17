@@ -13,7 +13,7 @@ Installation
 Install nodejs and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui express ejs optimist gzip long-stack-traces
+    npm install yui express hbs formidable optimist gzip long-stack-traces
 
 Usage
 -----
@@ -25,6 +25,13 @@ Start the combo handler:
                   [--path path_to_repository] [--port port]
                   [--cache [size_MB] [--cache-log path_to_dump_logs]
                    [--cache-log-interval log_dump_interval_hours]]
+                  [--debug]
+
+Start the admin UI:
+
+    node manager.js [--config path_to_json_config_file]
+                  [--path path_to_repository] [--port port]
+                  [--title title_to_display]
                   [--debug]
 
 The default config files are:

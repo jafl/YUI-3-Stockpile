@@ -12,12 +12,12 @@ YUI({
 }).use('json', 'gallery-funcprog', 'oop', function(Y)
 {
 
-var fs      = require('fs'),
-	path    = require('path'),
-	url     = require('url'),
-	util    = require('util'),
-	http    = require('http'),
-	express = require('express'),
+var mod_fs      = require('fs'),
+	mod_path    = require('path'),
+	mod_url     = require('url'),
+	mod_util    = require('util'),
+	mod_http    = require('http'),
+	mod_express = require('express'),
 
 	content_type = require('./server/content-type.js');
 
@@ -41,7 +41,7 @@ var argv = require('optimist')
 	})
 	.argv;
 
-var config  = Y.JSON.parse(fs.readFileSync(argv.config));
+var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config));
 config.port = argv.port || config.port;
 
 var debug = argv.debug || config.debug;
@@ -50,7 +50,7 @@ if (debug)
 	require('long-stack-traces');
 }
 
-var app = express.createServer();
+var app = mod_express.createServer();
 
 function moduleName(s)
 {
@@ -60,7 +60,7 @@ function moduleName(s)
 
 app.get('/combo', function(req, res)
 {
-	var query = url.parse(req.url).query;
+	var query = mod_url.parse(req.url).query;
 	if (!query)
 	{
 		res.end();
@@ -76,20 +76,20 @@ app.get('/combo', function(req, res)
 	}
 	else if (query_info.binary)
 	{
-		var file = path.basename(query);
+		var file = mod_path.basename(query);
 		if (file && config.image[ file ])
 		{
-			file = path.resolve(config.root || '', config.image[ file ])
-			if (path.existsSync(file))
+			file = mod_path.resolve(config.root || '', config.image[ file ])
+			if (mod_path.existsSync(file))
 			{
-				util.pump(fs.createReadStream(file), res);
+				mod_util.pump(mod_fs.createReadStream(file), res);
 				return;
 			}
 		}
 
-		http.get(url.parse(config.combo + query), function (r)
+		mod_http.get(mod_url.parse(config.combo + query), function (r)
 		{
-			util.pump(r, res);
+			mod_util.pump(r, res);
 		});
 		return;
 	}
@@ -108,7 +108,7 @@ app.get('/combo', function(req, res)
 
 	var file_list = Y.map(module.matches, function(m)
 	{
-		return path.resolve(config.root || '', config.code[ moduleName(m) ]);
+		return mod_path.resolve(config.root || '', config.code[ moduleName(m) ]);
 	});
 
 	var file_index  = 0,
@@ -123,7 +123,7 @@ app.get('/combo', function(req, res)
 
 		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
 
-		http.get(url.parse(relay_url), function (r)
+		mod_http.get(mod_url.parse(relay_url), function (r)
 		{
 			r.on('data', function(data)
 			{
@@ -158,7 +158,7 @@ app.get('/combo', function(req, res)
 
 	function sendFile(f)
 	{
-		fs.readFile(f, 'utf-8', function(err, data)
+		mod_fs.readFile(f, 'utf-8', function(err, data)
 		{
 			if (err)
 			{

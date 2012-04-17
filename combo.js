@@ -12,13 +12,13 @@ YUI({
 }).use('json', 'gallery-mru-cache', 'datatype-date', function(Y)
 {
 
-var fs          = require('fs'),
-	path        = require('path'),
-	url         = require('url'),
-	util        = require('util'),
-	querystring = require('querystring'),
-	compress    = require('gzip'),
-	express     = require('express'),
+var mod_fs          = require('fs'),
+	mod_path        = require('path'),
+	mod_url         = require('url'),
+	mod_util        = require('util'),
+	mod_querystring = require('querystring'),
+	mod_compress    = require('gzip'),
+	mod_express     = require('express'),
 
 	content_type = require('./server/content-type.js');
 
@@ -36,7 +36,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(fs.readFileSync(argv.config));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config));
 }
 catch (e)
 {
@@ -118,7 +118,7 @@ if (argv.cache)
 		{
 			scheduleCacheLogDump();
 
-			fs.writeFile(
+			mod_fs.writeFile(
 				cache_log_dump_prefix +
 					Y.DataType.Date.format(next, { format: cache_log_dump_format }),
 				Y.JSON.stringify(response_cache.dumpStats(), null, 2));
@@ -145,20 +145,20 @@ if (argv.cache)
 	var cache_key_pending = {};
 }
 
-var app = express.createServer();
+var app = mod_express.createServer();
 
 var debug_re = /-debug\.js$/;
 
 app.get('/combo', function(req, res)
 {
-	var query = url.parse(req.url).query;
+	var query = mod_url.parse(req.url).query;
 	if (!query)
 	{
 		res.end();
 		return;
 	}
 
-	query = querystring.unescape(query);
+	query = mod_querystring.unescape(query);
 	if (/[\0\s;]|\.\./.test(query))
 	{
 		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
@@ -176,7 +176,7 @@ app.get('/combo', function(req, res)
 	else if (query_info.binary)
 	{
 		headers(res);
-		util.pump(fs.createReadStream(argv.path + '/' + query), res);
+		mod_util.pump(mod_fs.createReadStream(argv.path + '/' + query), res);	// security: don't use path.resolve
 		return;
 	}
 
@@ -213,14 +213,16 @@ app.get('/combo', function(req, res)
 
 	function loadFile(f)
 	{
-		if (!path.extname(path.basename(f)))	// require a file suffix, so we ignore notes
+		if (!mod_path.extname(mod_path.basename(f)))	// require a file suffix, so we ignore notes
 		{
 			module_index++;
 			checkFinished();
 			return;
 		}
 
-		fs.readFile(argv.path + '/' + f, 'utf-8', function(err, data)
+		// security: don't use mod_path.resolve
+
+		mod_fs.readFile(argv.path + '/' + f, 'utf-8', function(err, data)
 		{
 			if (err && debug_re.test(f))
 			{
@@ -253,7 +255,7 @@ app.get('/combo', function(req, res)
 		if (module_index >= module_list.length)
 		{
 			response_data = response_data.join('');
-			compress(response_data, function(err, result)
+			mod_compress(response_data, function(err, result)
 			{
 				var cache_data =
 				{

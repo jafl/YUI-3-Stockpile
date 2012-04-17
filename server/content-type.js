@@ -1,6 +1,7 @@
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.03.23-18-00'
+	useSync: true,
+	gallery: 'gallery-2012.04.10-14-57'
 }).use('gallery-funcprog', function(Y)
 {
 // All the requested items must have the same type, so we take the first

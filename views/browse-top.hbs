@@ -1,0 +1,31 @@
+{{#if ns}}
+	<h2>Namespaces of related modules</h2>
+
+	<table>
+	<tr>
+		<th>Name</th><th>Description</th>
+	</tr>
+	{{#ns}}
+		<tr>
+			<td><a href="/browse?ns={{name}}">{{name}}</a></td>
+			<td>{{desc}}</td>
+		</tr>
+	{{/ns}}
+	</table>
+{{/if}}
+
+{{#if bundle}}
+	<h2>Bundles of modules released together</h2>
+
+	<table>
+	<tr>
+		<th>Name</th><th>Description</th>
+	</tr>
+	{{#bundle}}
+		<tr>
+			<td><a href="/browse?b={{name}}">{{name}}</a></td>
+			<td>{{desc}}</td>
+		</tr>
+	{{/bundle}}
+	</table>
+{{/if}}

@@ -1,0 +1,20 @@
+<div class="code">
+<p>To use the latest version of {{bundle}}, configure a Loader group as follows:</p>
+{{{code}}}
+</div>
+
+<h2>{{bundle}}</h2>
+
+<p>{{desc}}</p>
+
+<table>
+<tr>
+	<th>Version</th><th>Release Date</th>
+</tr>
+{{#versions}}
+	<tr>
+		<td><a href="/browse?b={{../bundle}}&amp;v={{name}}">{{name}}</a></td>
+		<td>{{date}}</td>
+	</tr>
+{{/versions}}
+</table>
