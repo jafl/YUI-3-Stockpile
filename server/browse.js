@@ -589,6 +589,7 @@ function showFile(res, argv, query)
 			{
 				res.render('browse-file.hbs',
 				{
+					title:   argv.title,
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,
 					raw:     '/browse?raw=true&file=' + query.file,
