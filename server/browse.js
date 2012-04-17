@@ -162,8 +162,8 @@ function browseError(res, argv, query, err)
 	res.render('browse-error.hbs',
 	{
 		title:    argv.title,
-		err:      err.message,
-		layout:   query.layout
+		err:      err.message.replace(argv.path, '').replace(/'\/+/, '\''),
+		layout:   true
 	});
 }
 
@@ -576,7 +576,14 @@ function showFile(res, argv, query)
 	{
 		mod_fs.readFile(file, 'utf-8', function(err, data)
 		{
-			res.send((err && err.message) || data, { 'Content-Type': 'text/plain' });
+			if (err)
+			{
+				browseError(res, argv, query, err);
+			}
+			else
+			{
+				res.send(data, { 'Content-Type': 'text/plain' });
+			}
 		});
 	}
 }
