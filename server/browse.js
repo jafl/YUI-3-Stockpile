@@ -2,12 +2,13 @@ var YUI = require('yui').YUI;
 YUI({
 	useSync: true,
 	gallery: 'gallery-2012.04.10-14-57'
-}).use('gallery-funcprog', 'datatype-date', 'querystring-parse', 'json', 'escape', function(Y) {
+}).use('gallery-funcprog', 'datatype-date', 'json', 'escape', function(Y) {
 "use strict";
 
 var mod_fs   = require('fs'),
 	mod_path = require('path'),
 	mod_url  = require('url'),
+	mod_qs   = require('querystring'),
 	mod_util = require('util'),
 	mod_hbs  = require('handlebars'),
 
@@ -129,17 +130,18 @@ function buildDirectoryTree(root, path, callback)
 	});
 }
 
-function renderDirectoryTree(nodes)
+function renderDirectoryTree(nodes, back)
 {
 	function renderNode(markup, node)
 	{
 		var name =
 			node.error    ? node.error :
 			node.children ? node.name :
-			Y.Lang.sub('<a href="/browse?file={path}/{name}">{name}</a>',
+			Y.Lang.sub('<a href="/browse?file={path}/{name}&amp;back={back}">{name}</a>',
 			{
 				path: node.path,
-				name: node.name
+				name: node.name,
+				back: mod_qs.escape(back)
 			});
 
 		return markup + Y.Lang.sub('<li class="{c}">{name}{children}</li>',
@@ -158,11 +160,20 @@ function renderDirectoryTree(nodes)
 	return markup;
 }
 
-function browseError(res, argv, query, err)
+function backQuery(query, exclude)
+{
+	return mod_qs.stringify(Y.clone(query, true, function(value, key)
+	{
+		return (key != exclude && key != 'layout');
+	}));
+}
+
+function browseError(res, argv, back, err)
 {
 	res.render('browse-error.hbs',
 	{
 		title:    argv.title,
+		back:     back,
 		err:      err.message.replace(argv.path, '').replace(/'\/+/, '\''),
 		layout:   true
 	});
@@ -190,7 +201,7 @@ function browseRoot(res, argv)
 	{
 		if (err)
 		{
-			browseError(res, argv, query, err);
+			browseError(res, argv, '', err);
 			return;
 		}
 
@@ -230,6 +241,7 @@ function browseNamespace(res, argv, query)
 			res.render('browse-namespace.hbs',
 			{
 				title:   argv.title,
+				back:    ' ',
 				ns:      query.ns,
 				desc:    desc.long,
 				modules: modules,
@@ -242,7 +254,7 @@ function browseNamespace(res, argv, query)
 	{
 		if (err)
 		{
-			browseError(res, argv, query, err);
+			browseError(res, argv, ' ', err);
 			return;
 		}
 
@@ -304,6 +316,7 @@ function browseModule(res, argv, query)
 		res.render('browse-module.hbs',
 		{
 			title:    argv.title,
+			back:     backQuery(query, 'm'),
 			ns:       query.ns,
 			name:     query.m,
 			desc:     desc.long,
@@ -317,7 +330,7 @@ function browseModule(res, argv, query)
 	{
 		if (err)
 		{
-			browseError(res, argv, query, err);
+			browseError(res, argv, backQuery(query, 'm'), err);
 			return;
 		}
 
@@ -355,6 +368,7 @@ function browseModuleVersion(res, argv, query)
 			res.render('browse-module-version.hbs',
 			{
 				title:     argv.title,
+				back:      backQuery(query, 'v'),
 				ns:        query.ns,
 				name:      query.m,
 				vers:      query.v,
@@ -386,7 +400,7 @@ function browseModuleVersion(res, argv, query)
 	job_count++;
 	buildDirectoryTree(argv.path, partial, function(children)
 	{
-		file_tree = renderDirectoryTree(children);
+		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
 		job_count--;
 		checkFinished();
 	});
@@ -410,6 +424,7 @@ function browseBundle(res, argv, query)
 		res.render('browse-bundle.hbs',
 		{
 			title:    argv.title,
+			back:     ' ',
 			bundle:   query.b,
 			desc:     desc.long,
 			versions: versions,
@@ -422,7 +437,7 @@ function browseBundle(res, argv, query)
 	{
 		if (err)
 		{
-			browseError(res, argv, query, err);
+			browseError(res, argv, ' ', err);
 			return;
 		}
 
@@ -467,6 +482,7 @@ function browseBundleVersion(res, argv, query)
 			res.render('browse-bundle-version.hbs',
 			{
 				title:   argv.title,
+				back:    backQuery(query, 'v'),
 				bundle:  query.b,
 				desc:    desc.long,
 				vers:    query.v,
@@ -483,7 +499,7 @@ function browseBundleVersion(res, argv, query)
 	{
 		if (err)
 		{
-			browseError(res, argv, query, err);
+			browseError(res, argv, backQuery(query, 'v'), err);
 			return;
 		}
 
@@ -526,6 +542,7 @@ function browseBundleModule(res, argv, query)
 			res.render('browse-bundle-module.hbs',
 			{
 				title:     argv.title,
+				back:      backQuery(query, 'm'),
 				name:      query.m,
 				vers:      query.v,
 				desc:      desc.long,
@@ -556,7 +573,7 @@ function browseBundleModule(res, argv, query)
 	job_count++;
 	buildDirectoryTree(argv.path, partial, function(children)
 	{
-		file_tree = renderDirectoryTree(children);
+		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
 		job_count--;
 		checkFinished();
 	});
@@ -579,7 +596,7 @@ function showFile(res, argv, query)
 		{
 			if (err)
 			{
-				browseError(res, argv, query, err);
+				browseError(res, argv, mod_qs.unescape(query.back), err);
 			}
 			else if (query.raw == 'true')
 			{
@@ -590,6 +607,7 @@ function showFile(res, argv, query)
 				res.render('browse-file.hbs',
 				{
 					title:   argv.title,
+					back:    mod_qs.unescape(query.back),
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,
 					raw:     '/browse?raw=true&file=' + query.file,
@@ -606,7 +624,7 @@ exports.configure = function(
 {
 	app.get('/browse', function(req, res)
 	{
-		var query    = Y.QueryString.parse(mod_url.parse(req.url).query || '');
+		var query    = mod_qs.parse(mod_url.parse(req.url).query || '');
 		query.layout = !(query && query.layout == 'false');
 
 		res.setHeader('Content-Type', 'text/html');

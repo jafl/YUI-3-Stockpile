@@ -18,8 +18,9 @@
 
 	<style type="text/css">
 	body { margin:0; }
-	p.hd { padding:5px 10px; background-color:#EEEEEE; }
-	p.hd a { float:right; }
+	h1 { font-size:100%; text-align:center; margin:0; padding:5px 10px; background-color:#EEEEEE; }
+	a.back { float:left; padding:5px 10px; }
+	a.plain { float:right; padding:5px 10px; }
 	</style>
 
 	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
@@ -28,7 +29,9 @@
 
 <body>
 
-<p class="hd"><a href="{{raw}}">Plain</a>{{title}}</p>
+<a class="back" href="/browse?{{back}}">&larr; Back</a>
+<a class="plain" href="{{raw}}">Plain</a>
+<h1>{{title}}</h1>
 
 <pre class="brush:{{type}}">
 {{content}}
