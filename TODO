@@ -21,7 +21,6 @@ http://localhost:8666/combo?test/foo/3.5/assets/skins/ace/warn.png
 http://yui.yahooapis.com/gallery-2012.03.23-18-00/build/gallery-paginator/assets/skins/sam/warn.png
 
 switch to
-	https://github.com/mikeal/request
 	https://github.com/substack/node-seq
 
 upload

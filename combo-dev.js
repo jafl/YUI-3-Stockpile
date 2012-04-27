@@ -17,6 +17,7 @@ var mod_fs      = require('fs'),
 	mod_url     = require('url'),
 	mod_http    = require('http'),
 	mod_express = require('express'),
+	mod_request = require('request'),
 
 	content_type = require('./server/content-type.js');
 
@@ -114,30 +115,20 @@ app.get('/combo', function(req, res)
 
 	if (module_list)
 	{
-		var relay_url  = config.combo + module_list,
-			relay_data = [],
-			relay_done = tasks.add();
-
+		var relay_url = config.combo + module_list;
 		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
 
-		mod_http.get(mod_url.parse(relay_url), function (r)
+		mod_request(relay_url, tasks.add(function(error, response, body)
 		{
-			r.on('data', function(data)
+			if (error || response.statusCode != 200)
 			{
-				relay_data.push(data);
-			});
-
-			r.on('end', function()
+				Y.log(error.message + ' from ' + relay_url, 'warn', 'combo-dev');
+			}
+			else
 			{
-				res.write(relay_data.join(''), 'utf-8');
-				relay_done();
-			});
-		})
-		.on('error', function(err)
-		{
-			Y.log(err.message + ' from ' + relay_url, 'warn', 'combo-dev');
-			relay_done();
-		});
+				res.write(body, 'utf-8');
+			}
+		}));
 	}
 
 	if (file_list.length > 0)

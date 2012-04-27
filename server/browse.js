@@ -9,7 +9,6 @@ var mod_fs   = require('fs'),
 	mod_path = require('path'),
 	mod_url  = require('url'),
 	mod_qs   = require('querystring'),
-	mod_util = require('util'),
 	mod_hbs  = require('handlebars'),
 
 	content_type = require('./content-type.js');
@@ -588,7 +587,7 @@ function showFile(res, argv, query)
 	if (info.binary)
 	{
 		res.setHeader('Content-Type', info.type);
-		mod_util.pump(mod_fs.createReadStream(file), res);
+		mod_fs.createReadStream(file).pipe(res);
 	}
 	else
 	{
