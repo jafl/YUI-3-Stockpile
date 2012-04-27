@@ -1,7 +1,7 @@
 var YUI = require('yui').YUI;
 YUI({
 	useSync: true,
-	gallery: 'gallery-2012.04.10-14-57'
+	gallery: 'gallery-2012.04.26-15-49'
 }).use('gallery-funcprog', 'datatype-date', 'json', 'escape', function(Y) {
 "use strict";
 

@@ -1,0 +1,76 @@
+{ fields: { var: 'abc' },
+files:
+	{ file:
+	{ size: 1568,
+		path: '/tmp/54e6925ec784fa38acf8776b10153809',
+		name: 'LICENSE',
+		type: 'text/plain',
+		lastModifiedDate: Fri, 13 Apr 2012 23:37:11 GMT,
+		_writeStream: [Object],
+		length: [Getter],
+		filename: [Getter],
+		mime: [Getter] } } } at upload.pl line 29.
+
+
+https://github.com/rgrove/combohandler
+https://github.com/yui/phploader/blob/master/phploader/combo.php
+
+http://localhost:8666/combo?test/foo/3.5/sp-test-foo-min.js&uifwk/14.2.0.0.253/uifwk-bar/uifwk-bar-min.js
+http://localhost:8666/combo?test/foo/3.5/assets/skins/ace/sp-test-foo.css
+http://localhost:8666/combo?test/foo/3.5/assets/skins/ace/warn.png
+http://yui.yahooapis.com/gallery-2012.03.23-18-00/build/gallery-paginator/assets/skins/sam/warn.png
+
+switch to
+	https://github.com/mikeal/request
+	https://github.com/substack/node-seq
+
+upload
+	upload output of build: either a module (build/...) or bundle (the whole build directory or list of directories)
+
+	args:
+		namespace/module/version or bundle/version
+		directory
+		(optional) host url -- defaults to localhost:8080
+
+	fix relative url's in css files
+
+	default to `whoami`, override with -u
+		if new user and mail-server is not set, ask for email
+	initial request to check that module/bundle/version is not used and check authentication type
+		if require password, ask for it and send as part of upload token request
+	authenticate and get upload token
+		if namespace or bundle doesn't exist, create and set owner to creator
+	send one module at a time, since bundle could be huge
+		if doesn't have -min.js, create it
+		if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
+		compute transitive dependencies when upload, to reduce number of requests
+	send finished
+
+	upload token
+		store last used, so if conversation not closed, toss after 1 hour
+		cull when generate the next token
+auth
+	UnixAuth: when passwords on machine are sufficient
+	others, e.g., LDAPAuth
+
+	manage list of users who can upload/edit each namespace or bundle
+	config option:  --mail-server yahoo-inc.com
+		if set, allow author to not include @...; automatically append @host
+
+search
+	support "keywords" in description file
+	index description files when start up -- search by module name, keyword, short, long
+	update index when new modules/bundles are uploaded
+
+edit namespace/module/bundle descriptions & keywords
+
+mark namespace, bundle, ns module, version as deleted -- not actually deleted, to avoid re-using name/version
+
+ui for stats:
+	% of hits that caused re-add
+	graph all keys: % of total hits vs log(size of response)
+		for individual hour or range of hours
+		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
+		scroll buttons:  5% (<), 25% (<<), all the way (|<)
+
+script to pull a specific version of a gallery module into the repo

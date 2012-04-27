@@ -8,7 +8,7 @@
 
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.04.10-14-57'
+	gallery: 'gallery-2012.04.26-15-49'
 }).use('json', 'gallery-funcprog', function(Y) {
 "use strict";
 
@@ -44,15 +44,25 @@ var argv = optimist
 		default:  defaults.path || '/var/yui3-stockpile',
 		describe: 'Path to repository'
 	})
+	.option('address',
+	{
+		default:  defaults.address,
+		describe: 'Network address to listen on (default: all)'
+	})
 	.option('port',
 	{
-		default:  defaults.port || 80,
+		default:  defaults.port || 8080,
 		describe: 'Port to listen on'
 	})
 	.option('title',
 	{
 		default:  defaults.title || 'YUI 3 Stockpile Manager',
 		describe: 'Server name'
+	})
+	.option('auth',
+	{
+		default:  defaults.auth || none,
+		describe: 'Authentication method for uploading'
 	})
 	.option('debug',
 	{
@@ -67,6 +77,9 @@ if (debug)
 {
 	require('long-stack-traces');
 }
+
+var mod_auth = require('./server/auth/' + argv.auth + '.js');
+mod_auth.init(argv);
 
 var app = mod_express.createServer();
 app.use(mod_express.static(__dirname + '/client'));
@@ -89,7 +102,7 @@ app.post('/upload', function(req, res)
 	});
 });
 
-Y.log('listening on port ' + argv.port, 'debug', 'combo');
-app.listen(argv.port);
+Y.log('listening on' + (argv.address ? ' address ' + argv.address + ',' : '') + ' port ' + argv.port, 'debug', 'manager');
+app.listen(argv.port, argv.address);
 
 });

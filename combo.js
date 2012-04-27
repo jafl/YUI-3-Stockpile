@@ -8,14 +8,13 @@
 
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.03.23-18-00'
-}).use('json', 'gallery-mru-cache', 'datatype-date', function(Y)
-{
+	gallery: 'gallery-2012.04.26-15-49'
+}).use('json', 'parallel', 'gallery-mru-cache', 'datatype-date', function(Y) {
+"use strict";
 
 var mod_fs       = require('fs'),
 	mod_path     = require('path'),
 	mod_url      = require('url'),
-	mod_util     = require('util'),
 	mod_qs       = require('querystring'),
 	mod_compress = require('gzip'),
 	mod_express  = require('express'),
@@ -86,62 +85,7 @@ if (debug)
 
 if (argv.cache)
 {
-	var size = parseInt(argv.cache, 10) || 500;
-	Y.log('cache size: ' + size + 'MB', 'debug', 'combo');
-
-	function cache_metric(value)
-	{
-		return value.raw.length + value.gzip.length;
-	}
-
-	var response_cache = new Y.MRUCache(
-	{
-		metric: cache_metric,
-		limit: size * Math.pow(2, 20),
-		stats: function(key, value, stats)
-		{
-			stats.size = cache_metric(value);
-		}
-	});
-
-	function scheduleCacheLogDump()
-	{
-		var now  = new Date().getTime();
-		var next = new Date(now + cache_log_dump_interval*3600000);
-		if (cache_log_dump_interval > 1)
-		{
-			next.setMinutes(0);
-			next.setSeconds(0);
-		}
-
-		Y.later(next.getTime() - now, null, function()
-		{
-			scheduleCacheLogDump();
-
-			mod_fs.writeFile(
-				cache_log_dump_prefix +
-					Y.DataType.Date.format(next, { format: cache_log_dump_format }),
-				Y.JSON.stringify(response_cache.dumpStats(), null, 2));
-		});
-	}
-
-	if (argv['cache-log'])
-	{
-		Y.log('dumping cache stats every ' + argv['cache-log-interval'] + ' hours', 'debug', 'combo');
-
-		var cache_log_dump_prefix = argv['cache-log'] + '/dump-';
-
-		var cache_log_dump_interval = parseFloat(argv['cache-log-interval']);
-		var cache_log_dump_format   = '%Y-%m-%d-%H-%M';
-		if (cache_log_dump_interval >= 1)
-		{
-			cache_log_dump_interval = Math.round(cache_log_dump_interval);
-			cache_log_dump_format   = '%Y-%m-%d-%H';
-		}
-
-		scheduleCacheLogDump();
-	}
-
+	var response_cache    = require('./server/cache.js').init(argv);
 	var cache_key_pending = {};
 }
 
@@ -176,11 +120,11 @@ app.get('/combo', function(req, res)
 	else if (query_info.binary)
 	{
 		headers(res);
-		mod_util.pump(mod_fs.createReadStream(argv.path + '/' + query), res);	// security: don't use path.resolve
+		mod_fs.createReadStream(argv.path + '/' + query).pipe(res);		// security: don't use path.resolve
 		return;
 	}
 
-	var module_list = query.split('&'), module_index = 0;
+	var module_list = query.split('&');
 
 	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
 	var use_cache = response_cache && /-min\.js/.test(query);
@@ -208,18 +152,20 @@ app.get('/combo', function(req, res)
 		cache_key_pending[key] = true;
 	}
 
-	var response_data = [];
-	loadFile(module_list[0]);
-
-	function loadFile(f)
+	var tasks = new Y.Parallel();
+	Y.each(module_list, function(f)
 	{
-		if (!mod_path.extname(mod_path.basename(f)))	// require a file suffix, so we ignore notes
+		if (mod_path.extname(mod_path.basename(f)))	// require a file suffix, so we ignore notes
 		{
-			module_index++;
-			checkFinished();
-			return;
+			loadFile(f, tasks.add(function(data)
+			{
+				return data;
+			}));
 		}
+	});
 
+	function loadFile(f, callback)
+	{
 		// security: don't use mod_path.resolve
 
 		mod_fs.readFile(argv.path + '/' + f, 'utf-8', function(err, data)
@@ -227,61 +173,50 @@ app.get('/combo', function(req, res)
 			if (err && debug_re.test(f))
 			{
 				Y.log(err.message + '; trying raw', 'debug', 'combo');
-				loadFile(f.replace(debug_re, '.js'));
-				return;
+				loadFile(f.replace(debug_re, '.js'), callback);
 			}
 			else if (err && /\.js$/.test(f) && !/-min\.js$/.test(f))
 			{
 				Y.log(err.message + '; trying min', 'debug', 'combo');
-				loadFile(f.replace('.js', '-min.js'));
-				return;
+				loadFile(f.replace('.js', '-min.js'), callback);
 			}
 			else if (err)
 			{
 				Y.log(err.message, 'warn', 'combo');
+				callback('');
 			}
 			else
 			{
-				response_data.push(data);
+				callback(data);
 			}
-
-			module_index++;
-			checkFinished();
 		});
 	}
 
-	function checkFinished()
+	tasks.done(function(file_data)
 	{
-		if (module_index >= module_list.length)
+		var response_data = file_data.join('');
+		mod_compress(response_data, function(err, result)
 		{
-			response_data = response_data.join('');
-			mod_compress(response_data, function(err, result)
+			var cache_data =
 			{
-				var cache_data =
+				raw:  response_data,
+				gzip: result
+			};
+
+			if (use_cache)
+			{
+				response_cache.put(key, cache_data);
+
+				delete cache_key_pending[key];
+				Y.fire('mru-cache-key-ready',
 				{
-					raw:  response_data,
-					gzip: result
-				};
+					cacheKey: key
+				});
+			}
 
-				if (use_cache)
-				{
-					response_cache.put(key, cache_data);
-
-					delete cache_key_pending[key];
-					Y.fire('mru-cache-key-ready',
-					{
-						cacheKey: key
-					});
-				}
-
-				send(req, res, cache_data);
-			});
-		}
-		else
-		{
-			loadFile(module_list[module_index]);
-		}
-	}
+			send(req, res, cache_data);
+		});
+	});
 
 	function headers(res)
 	{

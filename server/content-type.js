@@ -1,9 +1,10 @@
 var YUI = require('yui').YUI;
 YUI({
 	useSync: true,
-	gallery: 'gallery-2012.04.10-14-57'
-}).use('gallery-funcprog', function(Y)
-{
+	gallery: 'gallery-2012.04.26-15-49'
+}).use('gallery-funcprog', function(Y) {
+"use strict";
+
 // All the requested items must have the same type, so we take the first
 // suffix that matches.
 

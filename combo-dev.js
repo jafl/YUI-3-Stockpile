@@ -8,14 +8,13 @@
 
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.03.23-18-00'
-}).use('json', 'gallery-funcprog', 'oop', function(Y)
-{
+	gallery: 'gallery-2012.04.26-15-49'
+}).use('json', 'parallel', 'gallery-funcprog', 'oop', function(Y) {
+"use strict";
 
 var mod_fs      = require('fs'),
 	mod_path    = require('path'),
 	mod_url     = require('url'),
-	mod_util    = require('util'),
 	mod_http    = require('http'),
 	mod_express = require('express'),
 
@@ -82,14 +81,14 @@ app.get('/combo', function(req, res)
 			file = mod_path.resolve(config.root || '', config.image[ file ])
 			if (mod_path.existsSync(file))
 			{
-				mod_util.pump(mod_fs.createReadStream(file), res);
+				mod_fs.createReadStream(file).pipe(res);
 				return;
 			}
 		}
 
 		mod_http.get(mod_url.parse(config.combo + query), function (r)
 		{
-			mod_util.pump(r, res);
+			r.pipe(res);
 		});
 		return;
 	}
@@ -111,15 +110,13 @@ app.get('/combo', function(req, res)
 		return mod_path.resolve(config.root || '', config.code[ moduleName(m) ]);
 	});
 
-	var file_index  = 0,
-		files_done  = true,
-		relay_done  = true;
+	var tasks = new Y.Parallel();
 
 	if (module_list)
 	{
-		relay_done     = false;
 		var relay_url  = config.combo + module_list,
-			relay_data = [];
+			relay_data = [],
+			relay_done = tasks.add();
 
 		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
 
@@ -133,16 +130,13 @@ app.get('/combo', function(req, res)
 			r.on('end', function()
 			{
 				res.write(relay_data.join(''), 'utf-8');
-
-				relay_done = true;
-				checkFinished();
+				relay_done();
 			});
 		})
 		.on('error', function(err)
 		{
 			Y.log(err.message + ' from ' + relay_url, 'warn', 'combo-dev');
-			relay_done = true;
-			checkFinished();
+			relay_done();
 		});
 	}
 
@@ -150,45 +144,26 @@ app.get('/combo', function(req, res)
 	{
 		Y.log('files: ' + file_list, 'debug', 'combo-dev');
 
-		files_done = false;
-		sendFile(file_list[0]);
-	}
-
-	checkFinished();
-
-	function sendFile(f)
-	{
-		mod_fs.readFile(f, 'utf-8', function(err, data)
+		Y.each(file_list, function(f)
 		{
-			if (err)
+			mod_fs.readFile(f, 'utf-8', tasks.add(function(err, data)
 			{
-				Y.log(err.message, 'warn', 'combo-dev');
-			}
-			else
-			{
-				res.write(data, 'utf-8');
-			}
-
-			file_index++;
-			if (file_index >= file_list.length)
-			{
-				files_done = true;
-				checkFinished();
-			}
-			else
-			{
-				sendFile(file_list[file_index]);
-			}
+				if (err)
+				{
+					Y.log(err.message, 'warn', 'combo-dev');
+				}
+				else
+				{
+					res.write(data, 'utf-8');
+				}
+			}));
 		});
 	}
 
-	function checkFinished()
+	tasks.done(function()
 	{
-		if (files_done && relay_done)
-		{
-			res.end();
-		}
-	}
+		res.end();
+	});
 });
 
 Y.log('listening on port ' + config.port, 'debug', 'combo-dev');
