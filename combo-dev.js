@@ -9,7 +9,10 @@
 var YUI = require('yui').YUI;
 YUI({
 	gallery: 'gallery-2012.04.26-15-49'
-}).use('json', 'parallel', 'gallery-funcprog', 'oop', function(Y) {
+}).use(
+	'json', 'parallel',
+	'gallery-funcprog',
+function(Y) {
 "use strict";
 
 var mod_fs      = require('fs'),
@@ -42,7 +45,7 @@ var argv = require('optimist')
 	.argv;
 
 var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config));
-config.port = argv.port || config.port;
+config.port = argv.port || config.port || 8666;
 
 var debug = argv.debug || config.debug;
 if (debug)
@@ -67,7 +70,7 @@ app.get('/combo', function(req, res)
 		return;
 	}
 
-	var query_info = content_type.analyze(query);
+	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
 		Y.log('unsupported request type: ' + query, 'debug', 'combo');

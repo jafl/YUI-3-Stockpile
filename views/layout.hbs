@@ -5,9 +5,11 @@
 	<title>{{title}}</title>
 	<meta http-equiv=content-type content="text/html; charset=utf-8">
 
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssreset/reset-min.css" />
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssfonts/fonts-min.css" />
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssbase/base-min.css" />
+	<script src="http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssreset/reset-min.css" />
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssfonts/fonts-min.css" />
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssbase/base-min.css" />
 
 	<style type="text/css">
 	body { margin:0; }
@@ -23,6 +25,7 @@
 	.code pre { border:1px solid black; padding:5px; background-color:#EEEEEE; }
 	.code pre .list-item:after { content:"," }
 	.code pre .list-item:last-child:after { content:"" }
+	#copy-code { float:right; }
 
 	.file-tree ul { margin:0; }
 	.file-tree li {  list-style-type:none; padding-left:17px; padding-top:5px; }
@@ -30,6 +33,10 @@
 	.file-tree li.file { background:url("/img/file.png") left 5px no-repeat; }
 
 	.notes { font-weight:bold; }
+
+	table,th,td { border:1px solid #CBCBCB; }
+	td { border-top:0; border-bottom:0; }
+	tr:nth-child(2n+1) td { background-color:#EDF5FF; }
 	</style>
 
 	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
@@ -44,6 +51,35 @@
 <div class="body">
 {{{body}}}
 </div>
+
+<script type="text/javascript">
+YUI({
+	gallery: 'gallery-2012.04.26-15-49'
+}).use('gallery-clipboard', function(Y) {
+"use strict";
+
+var button = Y.one('#copy-code');
+if (button)
+{
+	button.plug(Y.ClipBoard, { moviepath: '/' })
+		.on('clipboard:load', function()
+		{
+			var code = Y.one('#sample-code');
+			this.on('mouseover', function()
+			{
+				this.setAttribute('copy', code.get('innerText') || code.get('textContent'));
+			});
+
+			this.clipboard.setEvent('click', function()
+			{
+				this.clipboard.hide();
+			},
+			true);
+		});
+}
+
+});
+</script>
 
 </body>
 </html>

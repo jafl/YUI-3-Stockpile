@@ -1,8 +1,3 @@
-var YUI = require('yui').YUI;
-YUI({
-	useSync: true,
-	gallery: 'gallery-2012.04.26-15-49'
-}).use('gallery-funcprog', function(Y) {
 "use strict";
 
 // All the requested items must have the same type, so we take the first
@@ -18,12 +13,10 @@ var type_map =
 	'.gif':  { type: 'image/gif',       binary: true  }
 };
 
-exports.analyze = function(query)
+exports.analyze = function(Y, query)
 {
 	return Y.find(type_map, function(value, key)
 	{
 		return (query.indexOf(key) >= 0);
 	});
 };
-
-});

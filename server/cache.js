@@ -1,11 +1,6 @@
-var YUI = require('yui').YUI;
-YUI({
-	useSync: true,
-	gallery: 'gallery-2012.04.26-15-49'
-}).use('json', 'parallel', 'gallery-mru-cache', 'datatype-date', function(Y) {
 "use strict";
 
-exports.init = function(argv)
+exports.init = function(Y, argv)
 {
 	var size = parseInt(argv.cache, 10) || 500;
 	Y.log('cache size: ' + size + 'MB', 'debug', 'combo');
@@ -65,5 +60,3 @@ exports.init = function(argv)
 
 	return response_cache;
 };
-
-});

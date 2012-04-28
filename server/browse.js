@@ -1,11 +1,8 @@
-var YUI = require('yui').YUI;
-YUI({
-	useSync: true,
-	gallery: 'gallery-2012.04.26-15-49'
-}).use('gallery-funcprog', 'datatype-date', 'json', 'escape', function(Y) {
 "use strict";
 
-var mod_fs   = require('fs'),
+var Y,
+
+	mod_fs   = require('fs'),
 	mod_path = require('path'),
 	mod_url  = require('url'),
 	mod_qs   = require('querystring'),
@@ -15,42 +12,26 @@ var mod_fs   = require('fs'),
 
 var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf-8'));
 
-function compareStrings(a,b)
-{
-	a = a.toLowerCase();
-	b = b.toLowerCase();
-	return (a < b ? -1 : a > b ? +1 : 0);
-}
-
 function compareVersions(a,b)		// descending
 {
 	var count = Math.min(a.vers.length, b.vers.length);
 	for (var i=0; i<count; i++)
 	{
-		var r = compareStrings(b.vers[i], a.vers[i]);
+		var r = Y.Sort.compareAsStringNoCase(b.vers[i], a.vers[i]);
 		if (r !== 0)
 		{
 			return r;
 		}
 	}
 
-	return 0;
+	return b.vers.length - a.vers.length;
 }
 
 function scandir(path, callback)
 {
-	var job_count = 0, stats_map = {};
-
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			callback(null, stats_map);
-		}
-	}
-
 	mod_fs.readdir(path, function(err, names)
 	{
+		var stats_map = {};
 		if (err)
 		{
 			callback(err, stats_map);
@@ -62,32 +43,28 @@ function scandir(path, callback)
 			return;
 		}
 
+		var tasks = new Y.Parallel();
 		Y.each(names, function(name)
 		{
 			var p = path + '/' + name;
-			job_count++;
-			mod_fs.stat(p, function(err, stats)
+			mod_fs.stat(p, tasks.add(function(err, stats)
 			{
-				stats_map[ name ] = stats || {};
-				job_count--;
-				checkFinished();
-			});
+				if (!err)
+				{
+					stats_map[ name ] = stats;
+				}
+			}));
+		});
+
+		tasks.done(function()
+		{
+			callback(null, stats_map);
 		});
 	});
 }
 
 function buildDirectoryTree(root, path, callback)
 {
-	var job_count = 0, children = [];
-
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			callback(children);
-		}
-	}
-
 	scandir(root + '/' + path, function(err, stats_map)
 	{
 		if (err)
@@ -99,6 +76,8 @@ function buildDirectoryTree(root, path, callback)
 			return;
 		}
 
+		var children = [],
+			tasks    = new Y.Parallel();
 		Y.each(stats_map, function(stats, name)
 		{
 			var node =
@@ -111,13 +90,10 @@ function buildDirectoryTree(root, path, callback)
 			{
 				children.push(node);
 
-				job_count++;
-				buildDirectoryTree(root, path + '/' + name, function(c)
+				buildDirectoryTree(root, path + '/' + name, tasks.add(function(c)
 				{
 					node.children = c;
-					job_count--;
-					checkFinished();
-				});
+				}));
 			}
 			else if (stats.isFile() && name != 'notes')
 			{
@@ -125,7 +101,10 @@ function buildDirectoryTree(root, path, callback)
 			}
 		});
 
-		checkFinished();
+		tasks.done(function()
+		{
+			callback(children);
+		});
 	});
 }
 
@@ -180,22 +159,6 @@ function browseError(res, argv, back, err)
 
 function browseRoot(res, argv)
 {
-	var job_count = 0, ns = [], bundle = [];
-
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			res.render('browse-top.hbs',
-			{
-				title:  argv.title,
-				ns:     ns.length ? ns : null,
-				bundle: bundle.length? bundle : null,
-				layout: true
-			});
-		}
-	}
-
 	mod_fs.readdir(argv.path, function(err, dirs)
 	{
 		if (err)
@@ -204,11 +167,11 @@ function browseRoot(res, argv)
 			return;
 		}
 
+		var ns = [], bundle = [], tasks = new Y.Parallel();
 		Y.each(dirs, function(dir)
 		{
 			var f = argv.path + '/' + dir + '/description';
-			job_count++;
-			mod_fs.readFile(f, 'utf-8', function(err, data)
+			mod_fs.readFile(f, 'utf-8', tasks.add(function(err, data)
 			{
 				data = Y.JSON.parse(data);
 				(data.type == 'bundle' ? bundle : ns).push(
@@ -216,8 +179,17 @@ function browseRoot(res, argv)
 					name: dir,
 					desc: data.short
 				});
-				job_count--;
-				checkFinished();
+			}));
+		});
+
+		tasks.done(function()
+		{
+			res.render('browse-top.hbs',
+			{
+				title:  argv.title,
+				ns:     ns.length ? ns : null,
+				bundle: bundle.length? bundle : null,
+				layout: true
 			});
 		});
 	});
@@ -226,29 +198,6 @@ function browseRoot(res, argv)
 function browseNamespace(res, argv, query)
 {
 	var path = argv.path + '/' + query.ns;
-	var job_count = 0, modules = [], desc;
-
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			modules.sort(function(a,b)
-			{
-				return compareStrings(a.name, b.name);
-			});
-
-			res.render('browse-namespace.hbs',
-			{
-				title:   argv.title,
-				back:    ' ',
-				ns:      query.ns,
-				desc:    desc.long,
-				modules: modules,
-				layout:  query.layout
-			});
-		}
-	}
-
 	scandir(path, function(err, stats_map)
 	{
 		if (err)
@@ -257,6 +206,7 @@ function browseNamespace(res, argv, query)
 			return;
 		}
 
+		var modules = [], desc, tasks = new Y.Parallel();
 		Y.each(stats_map, function(stats, module)
 		{
 			if (!stats.isDirectory())
@@ -264,8 +214,7 @@ function browseNamespace(res, argv, query)
 				return;
 			}
 
-			job_count++;
-			scandir(path + '/' + module, function(err, v_stats_map)
+			scandir(path + '/' + module, tasks.add(function(err, v_stats_map)
 			{
 				var versions = [];
 				Y.each(v_stats_map, function(v_stats, vers)
@@ -288,17 +237,27 @@ function browseNamespace(res, argv, query)
 					vers:  versions[0].vers.join('.'),
 					date:  Y.DataType.Date.format(versions[0].date, { format: '%F %R' })
 				});
-				job_count--;
-				checkFinished();
-			});
+			}));
 		});
 
-		job_count++;
-		mod_fs.readFile(path + '/description', 'utf-8', function(err, data)
+		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = Y.JSON.parse(data);
-			job_count--;
-			checkFinished();
+		}));
+
+		tasks.done(function()
+		{
+			modules.sort(Y.bind(Y.Sort.compareKey, null, Y.Sort.compareAsStringNoCase, 'name'));
+
+			res.render('browse-namespace.hbs',
+			{
+				title:   argv.title,
+				back:    ' ',
+				ns:      query.ns,
+				desc:    desc.long,
+				modules: modules,
+				layout:  query.layout
+			});
 		});
 	});
 }
@@ -306,25 +265,6 @@ function browseNamespace(res, argv, query)
 function browseModule(res, argv, query)
 {
 	var path = argv.path + '/' + query.ns + '/' + query.m;
-	var versions = [], desc;
-
-	function finished()
-	{
-		versions.sort(compareVersions);
-
-		res.render('browse-module.hbs',
-		{
-			title:    argv.title,
-			back:     backQuery(query, 'm'),
-			ns:       query.ns,
-			name:     query.m,
-			desc:     desc.long,
-			versions: versions,
-			vers:     versions[0].name,
-			layout:   query.layout
-		});
-	}
-
 	scandir(path, function(err, stats_map)
 	{
 		if (err)
@@ -333,6 +273,7 @@ function browseModule(res, argv, query)
 			return;
 		}
 
+		var versions = [], desc, tasks = new Y.Parallel();
 		Y.each(stats_map, function(stats, dir)
 		{
 			if (stats.isDirectory())
@@ -346,10 +287,26 @@ function browseModule(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/description', 'utf-8', function(err, data)
+		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
-			finished();
+		}));
+
+		tasks.done(function()
+		{
+			versions.sort(compareVersions);
+
+			res.render('browse-module.hbs',
+			{
+				title:    argv.title,
+				back:     backQuery(query, 'm'),
+				ns:       query.ns,
+				name:     query.m,
+				desc:     desc.long,
+				versions: versions,
+				vers:     versions[0].name,
+				layout:   query.layout
+			});
 		});
 	});
 }
@@ -358,80 +315,45 @@ function browseModuleVersion(res, argv, query)
 {
 	var partial = query.ns + '/' + query.m + '/' + query.v;
 	var path    = argv.path + '/' + partial;
-	var job_count = 0, desc, notes, file_tree = '';
 
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			res.render('browse-module-version.hbs',
-			{
-				title:     argv.title,
-				back:      backQuery(query, 'v'),
-				ns:        query.ns,
-				name:      query.m,
-				vers:      query.v,
-				desc:      desc.long,
-				author:    notes.author,
-				notes:     notes.text,
-				file_tree: file_tree,
-				layout:    query.layout
-			});
-		}
-	}
+	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	job_count++;
-	mod_fs.readFile(path + '/notes', 'utf-8', function(err, data)
+	mod_fs.readFile(path + '/notes', 'utf-8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
-		job_count--;
-		checkFinished();
-	});
+	}));
 
-	job_count++;
-	mod_fs.readFile(path + '/../description', 'utf-8', function(err, data)
+	mod_fs.readFile(path + '/../description', 'utf-8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
-		job_count--;
-		checkFinished();
-	});
+	}));
 
-	job_count++;
-	buildDirectoryTree(argv.path, partial, function(children)
+	buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
 		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
-		job_count--;
-		checkFinished();
+	}));
+
+	tasks.done(function()
+	{
+		res.render('browse-module-version.hbs',
+		{
+			title:     argv.title,
+			back:      backQuery(query, 'v'),
+			ns:        query.ns,
+			name:      query.m,
+			vers:      query.v,
+			desc:      desc.long,
+			author:    notes.author,
+			notes:     notes.text,
+			file_tree: file_tree,
+			layout:    query.layout
+		});
 	});
 }
 
 function browseBundle(res, argv, query)
 {
 	var path = argv.path + '/' + query.b;
-	var versions = [], desc;
-
-	function finished()
-	{
-		versions.sort(compareVersions);
-
-		var code = bundle_code_tmpl(
-		{
-			bundle:  query.b,
-			version: versions[0].name
-		});
-
-		res.render('browse-bundle.hbs',
-		{
-			title:    argv.title,
-			back:     ' ',
-			bundle:   query.b,
-			desc:     desc.long,
-			versions: versions,
-			code:     code,
-			layout:   query.layout
-		});
-	}
-
 	scandir(path, function(err, stats_map)
 	{
 		if (err)
@@ -440,6 +362,7 @@ function browseBundle(res, argv, query)
 			return;
 		}
 
+		var versions = [], desc, tasks = new Y.Parallel();
 		Y.each(stats_map, function(stats, dir)
 		{
 			if (stats.isDirectory())
@@ -453,10 +376,31 @@ function browseBundle(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/description', 'utf-8', function(err, data)
+		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
-			finished();
+		}));
+
+		tasks.done(function()
+		{
+			versions.sort(compareVersions);
+
+			var code = bundle_code_tmpl(
+			{
+				bundle:  query.b,
+				version: versions[0].name
+			});
+
+			res.render('browse-bundle.hbs',
+			{
+				title:    argv.title,
+				back:     ' ',
+				bundle:   query.b,
+				desc:     desc.long,
+				versions: versions,
+				code:     code,
+				layout:   query.layout
+			});
 		});
 	});
 }
@@ -464,13 +408,36 @@ function browseBundle(res, argv, query)
 function browseBundleVersion(res, argv, query)
 {
 	var path = argv.path + '/' + query.b + '/' + query.v;
-	var job_count = 0, modules = [], desc, notes;
-
-	function checkFinished()
+	scandir(path, function(err, stats_map)
 	{
-		if (job_count <= 0)
+		if (err)
 		{
-			modules.sort(compareStrings);
+			browseError(res, argv, backQuery(query, 'v'), err);
+			return;
+		}
+
+		var modules = [], desc, notes, tasks = new Y.Parallel();
+		Y.each(stats_map, function(stats, dir)
+		{
+			if (stats.isDirectory())
+			{
+				modules.push(dir);
+			}
+		});
+
+		mod_fs.readFile(path + '/notes', 'utf-8', tasks.add(function(err, data)
+		{
+			notes = (data && Y.JSON.parse(data)) || {};
+		}));
+
+		mod_fs.readFile(path + '/../description', 'utf-8', tasks.add(function(err, data)
+		{
+			desc = (data && Y.JSON.parse(data)) || {};
+		}));
+
+		tasks.done(function()
+		{
+			modules.sort(Y.Sort.compareAsStringNoCase);
 
 			var code = bundle_code_tmpl(
 			{
@@ -491,39 +458,6 @@ function browseBundleVersion(res, argv, query)
 				code:    code,
 				layout:  query.layout
 			});
-		}
-	}
-
-	scandir(path, function(err, stats_map)
-	{
-		if (err)
-		{
-			browseError(res, argv, backQuery(query, 'v'), err);
-			return;
-		}
-
-		Y.each(stats_map, function(stats, dir)
-		{
-			if (stats.isDirectory())
-			{
-				modules.push(dir);
-			}
-		});
-
-		job_count++;
-		mod_fs.readFile(path + '/notes', 'utf-8', function(err, data)
-		{
-			notes = (data && Y.JSON.parse(data)) || {};
-			job_count--;
-			checkFinished();
-		});
-
-		job_count++;
-		mod_fs.readFile(path + '/../description', 'utf-8', function(err, data)
-		{
-			desc = (data && Y.JSON.parse(data)) || {};
-			job_count--;
-			checkFinished();
 		});
 	});
 }
@@ -532,49 +466,38 @@ function browseBundleModule(res, argv, query)
 {
 	var partial = query.b + '/' + query.v + '/' + query.m;
 	var path    = argv.path + '/' + partial;
-	var job_count = 0, desc, notes, file_tree = '';
 
-	function checkFinished()
-	{
-		if (job_count <= 0)
-		{
-			res.render('browse-bundle-module.hbs',
-			{
-				title:     argv.title,
-				back:      backQuery(query, 'm'),
-				name:      query.m,
-				vers:      query.v,
-				desc:      desc.long,
-				author:    notes.author,
-				notes:     notes.text,
-				file_tree: file_tree,
-				layout:    query.layout
-			});
-		}
-	}
+	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	job_count++;
-	mod_fs.readFile(path + '/../notes', 'utf-8', function(err, data)
+	mod_fs.readFile(path + '/../notes', 'utf-8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
-		job_count--;
-		checkFinished();
-	});
+	}));
 
-	job_count++;
-	mod_fs.readFile(path + '/../../description', 'utf-8', function(err, data)
+	mod_fs.readFile(path + '/../../description', 'utf-8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
-		job_count--;
-		checkFinished();
-	});
+	}));
 
-	job_count++;
-	buildDirectoryTree(argv.path, partial, function(children)
+	buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
 		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
-		job_count--;
-		checkFinished();
+	}));
+
+	tasks.done(function()
+	{
+		res.render('browse-bundle-module.hbs',
+		{
+			title:     argv.title,
+			back:      backQuery(query, 'm'),
+			name:      query.m,
+			vers:      query.v,
+			desc:      desc.long,
+			author:    notes.author,
+			notes:     notes.text,
+			file_tree: file_tree,
+			layout:    query.layout
+		});
 	});
 }
 
@@ -583,7 +506,7 @@ function showFile(res, argv, query)
 	// security: don't use path.resolve
 
 	var file = argv.path + '/' + query.file;
-	var info = content_type.analyze(file);
+	var info = content_type.analyze(Y, file);
 	if (info.binary)
 	{
 		res.setHeader('Content-Type', info.type);
@@ -609,7 +532,7 @@ function showFile(res, argv, query)
 					back:    mod_qs.unescape(query.back),
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,
-					raw:     '/browse?raw=true&file=' + query.file,
+					raw:     argv.combo + query.file,
 					layout:  false
 				});
 			}
@@ -618,9 +541,12 @@ function showFile(res, argv, query)
 }
 
 exports.configure = function(
+	/* object */	y,
 	/* express */	app,
 	/* map */		argv)
 {
+	Y = y;
+
 	app.get('/browse', function(req, res)
 	{
 		var query    = mod_qs.parse(mod_url.parse(req.url).query || '');
@@ -665,5 +591,3 @@ exports.configure = function(
 		}
 	});
 };
-
-});

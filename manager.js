@@ -9,7 +9,10 @@
 var YUI = require('yui').YUI;
 YUI({
 	gallery: 'gallery-2012.04.26-15-49'
-}).use('json', 'gallery-funcprog', function(Y) {
+}).use(
+	'json', 'escape', 'parallel', 'datatype-date',
+	'gallery-funcprog', 'gallery-sort-extras',
+function(Y) {
 "use strict";
 
 var mod_fs      = require('fs'),
@@ -44,6 +47,17 @@ var argv = optimist
 		default:  defaults.path || '/var/yui3-stockpile',
 		describe: 'Path to repository'
 	})
+	.option('combo',
+	{
+		demand:   true,
+		default:  defaults.combo,
+		describe: 'URL of combo handler'
+	})
+	.option('auth',
+	{
+		default:  defaults.auth || 'localhost',
+		describe: 'Authentication method for uploading'
+	})
 	.option('address',
 	{
 		default:  defaults.address,
@@ -58,11 +72,6 @@ var argv = optimist
 	{
 		default:  defaults.title || 'YUI 3 Stockpile Manager',
 		describe: 'Server name'
-	})
-	.option('auth',
-	{
-		default:  defaults.auth || none,
-		describe: 'Authentication method for uploading'
 	})
 	.option('debug',
 	{
@@ -84,7 +93,7 @@ mod_auth.init(argv);
 var app = mod_express.createServer();
 app.use(mod_express.static(__dirname + '/client'));
 
-require('./server/browse.js').configure(app, argv);
+require('./server/browse.js').configure(Y, app, argv);
 
 app.post('/upload', function(req, res)
 {

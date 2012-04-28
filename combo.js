@@ -9,7 +9,10 @@
 var YUI = require('yui').YUI;
 YUI({
 	gallery: 'gallery-2012.04.26-15-49'
-}).use('json', 'parallel', 'gallery-mru-cache', 'datatype-date', function(Y) {
+}).use(
+	'json', 'parallel', 'datatype-date',
+	'gallery-mru-cache','gallery-funcprog',
+function(Y) {
 "use strict";
 
 var mod_fs       = require('fs'),
@@ -85,7 +88,7 @@ if (debug)
 
 if (argv.cache)
 {
-	var response_cache    = require('./server/cache.js').init(argv);
+	var response_cache    = require('./server/cache.js').init(Y, argv);
 	var cache_key_pending = {};
 }
 
@@ -110,7 +113,7 @@ app.get('/combo', function(req, res)
 		return;
 	}
 
-	var query_info = content_type.analyze(query);
+	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
 		Y.log('unknown request type: ' + query, 'debug', 'combo');
