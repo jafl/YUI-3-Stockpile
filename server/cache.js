@@ -1,5 +1,7 @@
 "use strict";
 
+var mod_fs = require('fs');
+
 exports.init = function(Y, argv)
 {
 	var size = parseInt(argv.cache, 10) || 500;
