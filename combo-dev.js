@@ -45,7 +45,7 @@ var argv = require('optimist')
 	.argv;
 
 var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config));
-config.port = argv.port || config.port || 8666;
+config.port = argv.port || config.port || 8080;
 
 var debug = argv.debug || config.debug;
 if (debug)

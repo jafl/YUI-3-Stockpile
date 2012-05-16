@@ -24,7 +24,7 @@ exports.init = function(Y, argv)
 
 	function scheduleCacheLogDump()
 	{
-		var now  = new Date().getTime();
+		var now  = Date.now();
 		var next = new Date(now + cache_log_dump_interval*3600000);
 		if (cache_log_dump_interval > 1)
 		{

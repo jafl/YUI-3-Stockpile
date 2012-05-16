@@ -87,6 +87,8 @@ The top-level namespace directory helps avoid the file system's limit on
 the number of subdirectories:  each namespace can have the maximum number
 of modules, instead of the limit being global.
 
+Important:  The name of a namespace cannot contain any hyphens.
+
 Version numbers for individual modules must be specified by configuring
 each of the patterns in the YUI Loader group with this configFn:
 
@@ -145,9 +147,9 @@ Command line arguments override the values in the config files.
 A typical config file looks like this:
 
     {
-        "port":8667,
+        "port":8080,
 
-        "combo":"http://my-nightly-build-combo-server:8666/combo?",
+        "combo":"http://my-nightly-build-combo-server/combo?",
 
         "root":"/Users/johndoe/yui3-stockpile/dev",
         "code":

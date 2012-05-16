@@ -15,9 +15,10 @@ YUI({
 function(Y) {
 "use strict";
 
-var mod_fs      = require('fs'),
-	mod_express = require('express'),
-	mod_form    = require('formidable');
+var mod_os      = require('os'),
+	mod_fs      = require('fs'),
+	mod_path    = require('path'),
+	mod_express = require('express');
 
 // options
 
@@ -58,6 +59,16 @@ var argv = optimist
 		default:  defaults.auth || 'localhost',
 		describe: 'Authentication method for uploading'
 	})
+	.option('key',
+	{
+		default:  defaults.key || '/usr/share/yui3-stockpile/manager.key',
+		describe: 'Private key for https'
+	})
+	.option('cert',
+	{
+		default:  defaults.cert || '/usr/share/yui3-stockpile/manager.crt',
+		describe: 'Certificate for https'
+	})
 	.option('address',
 	{
 		default:  defaults.address,
@@ -65,8 +76,17 @@ var argv = optimist
 	})
 	.option('port',
 	{
-		default:  defaults.port || 8080,
-		describe: 'Port to listen on'
+		default:  defaults.port || 80,
+		describe: 'Port to listen on for public UI'
+	})
+	.option('adminport',
+	{
+		default:  defaults.adminport || 443,
+		describe: 'Port to listen on for admin functions'
+	})
+	.option('mailserver',
+	{
+		describe: 'mail server for all users'
 	})
 	.option('title',
 	{
@@ -87,31 +107,19 @@ if (debug)
 	require('long-stack-traces');
 }
 
-var mod_auth = require('./server/auth/' + argv.auth + '.js');
-mod_auth.init(argv);
+var log_addr = argv.address || os.hostname();
 
 var app = mod_express.createServer();
 app.use(mod_express.static(__dirname + '/client'));
 
 require('./server/browse.js').configure(Y, app, argv);
 
-app.post('/upload', function(req, res)
-{
-	var form = new mod_form.IncomingForm();
-	form.parse(req, function(err, fields, files)
-	{
-		res.writeHead(200, {'content-type': 'text/plain'});
-		res.write('received upload:\n\n');
-		res.end(require('util').inspect({fields: fields, files: files}));
-
-		Y.each(files, function(file)
-		{
-			mod_fs.unlink(file.path);
-		});
-	});
-});
-
-Y.log('listening on' + (argv.address ? ' address ' + argv.address + ',' : '') + ' port ' + argv.port, 'debug', 'manager');
+Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'debug', 'manager');
 app.listen(argv.port, argv.address);
+
+var admin = require('./server/admin.js').init(Y, mod_express, argv);
+
+Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'debug', 'manager');
+admin.app.listen(admin.port, argv.address);
 
 });
