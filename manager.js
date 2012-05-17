@@ -34,7 +34,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
 }
 catch (e)
 {
@@ -118,6 +118,8 @@ if (Y.Lang.isString(argv.admins))
 {
 	argv.admins = Y.Lang.trim(argv.admins).split(/\s*,\s*/);
 }
+
+require('./server/manager-util.js').init(Y, argv);
 
 var log_addr = argv.address || os.hostname();
 

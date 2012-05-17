@@ -38,7 +38,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
 }
 catch (e)
 {
@@ -171,7 +171,7 @@ app.get('/combo', function(req, res)
 	{
 		// security: don't use mod_path.resolve
 
-		mod_fs.readFile(argv.path + '/' + f, 'utf-8', function(err, data)
+		mod_fs.readFile(argv.path + '/' + f, 'utf8', function(err, data)
 		{
 			if (err && debug_re.test(f))
 			{

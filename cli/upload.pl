@@ -23,6 +23,20 @@ sub decode_response()
 	}
 }
 
+sub get_string($$)
+{
+	my ($desc, $name) = @_;
+
+	my $s = '';
+	until ($s)
+	{
+		print "Enter $desc for $name: ";
+		chomp($s = <STDIN>);
+	}
+
+	return $s;
+}
+
 my %opt;
 getopt('u', \%opt);
 
@@ -101,7 +115,7 @@ decode_response();
 
 my $token = $res->{token};
 
-my $user, my $group;
+my $user;
 if ($res->{usersrc} eq 'whoami')
 {
 	chomp($user = `whoami`);
@@ -110,7 +124,7 @@ else
 {
 	$user = $opt{u};
 
-	while (!$user)
+	until ($user)
 	{
 		print "Enter your username: ";
 		chomp($user = <STDIN>);
@@ -121,42 +135,15 @@ else
 			$user = '';
 		}
 	}
-
-	$res = ua->get($url.'/check-user', name => $user);
-	decode_response();
-	if (!$res->{exists})
-	{
-		print "Since you are a new user, please confirm your username: ";
-		chomp(my $confirm = <STDIN>);
-		if ($confirm ne $user)
-		{
-			print "did not match\n";
-			exit 1;
-		}
-
-		do
-		{
-			do
-			{
-				print "Enter the name of your new user group: ";
-				chomp($group = <STDIN>);
-			}
-				while (!$group);
-
-			$res = ua->get($url.'/create-group', name => $group, user => $user);
-			decode_response();
-		}
-			while (!$res->{success});
-	}
 }
 
 my $auth = 0;
-do
+until ($auth)
 {
 	my $password = '';
-	if ($res->{password})
+	if ($res->{needPassword})
 	{
-		do
+		until ($password)
 		{
 			print "Enter your password: ";
 			ReadMode('noecho');
@@ -164,7 +151,6 @@ do
 			ReadMode('restore');
 			print "\n";
 		}
-			until ($password);
 	}
 
 	$res = $ua->post
@@ -182,7 +168,81 @@ do
 
 	$auth = $res->{success};
 }
-	until ($auth);
+
+my ($group, $ns_b_short_desc, $ns_b_long_desc);
+my $new_module = $res->{newModule};
+if (scalar(@{$res->{groups}}) == 0)
+{
+	do
+	{
+		do
+		{
+			print "You are a new user.\nEnter the name of your new user group: ";
+			chomp($group = <STDIN>);
+		}
+			until ($group);
+
+		$res = ua->get($url.'/create-group', name => $group, user => $user);
+		decode_response();
+	}
+		until ($res->{success});
+}
+elsif ($res->{newNsOrBundle})
+{
+	my $index = 0;
+	if (scalar(@{$res->{groups}}) > 1)
+	{
+		print "\n";
+
+		my $i = 0;
+		foreach my $g (@{$res->{groups}})
+		{
+			$i++;
+			printf('%5s', $i);
+			print ') ',$g,"\n";
+		}
+
+		do
+		{
+			print "Select the group that should own ",($ns || $bundle),": ";
+			chomp($index = <STDIN>);
+			$index--;
+		}
+			until ($index >= 0 && $res->{groups}->[$index]);
+	}
+	$group = $res->{groups}->[$index];
+
+	$ns_b_short_desc = get_string("a short description", $ns || $bundle);
+	$ns_b_long_desc  = get_string("a long description ",  $ns || $bundle);
+}
+
+my ($module_short_desc, $module_long_desc);
+if ($new_module && $module)
+{
+	$module_short_desc = get_string("a short description", $module);
+	$module_long_desc  = get_string("a long description ",  $module);
+}
+
+my $notes = get_string("notes", "version $vers");
+
+$res = $ua->post
+(
+	$url.'/upload',
+	Content_Type => 'form-data',
+	Content =>
+	[
+		token => $token,
+		notes => $notes,
+		group => $group,
+
+		nsOrBundleShortDesc => $ns_b_short_desc,
+		nsOrBundleLongDesc  => $ns_b_long_desc,
+
+		moduleShortDesc => $module_short_desc,
+		moduleLongDesc  => $module_long_desc
+	]
+);
+decode_response();
 
 =pod
 
@@ -208,3 +268,14 @@ else
 }
 
 =cut
+
+$res = $ua->post
+(
+	$url.'/upload',
+	Content_Type => 'form-data',
+	Content =>
+	[
+		token => $token
+	]
+);
+decode_response();

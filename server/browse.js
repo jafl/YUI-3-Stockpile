@@ -10,7 +10,7 @@ var Y,
 
 	content_type = require('./content-type.js');
 
-var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf-8'));
+var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf8'));
 
 function compareVersions(a,b)		// descending
 {
@@ -159,7 +159,7 @@ function browseError(res, argv, back, err)
 
 function browseRoot(res, argv)
 {
-	mod_fs.readdir(argv.path, function(err, dirs)
+	scandir(argv.path, function(err, stats_map)
 	{
 		if (err)
 		{
@@ -168,10 +168,15 @@ function browseRoot(res, argv)
 		}
 
 		var ns = [], bundle = [], tasks = new Y.Parallel();
-		Y.each(dirs, function(dir)
+		Y.each(stats_map, function(stats, dir)
 		{
+			if (!stats.isDirectory())
+			{
+				return;
+			}
+
 			var f = argv.path + '/' + dir + '/info.json';
-			mod_fs.readFile(f, 'utf-8', tasks.add(function(err, data)
+			mod_fs.readFile(f, 'utf8', tasks.add(function(err, data)
 			{
 				data = Y.JSON.parse(data);
 				(data.type == 'bundle' ? bundle : ns).push(
@@ -240,7 +245,7 @@ function browseNamespace(res, argv, query)
 			}));
 		});
 
-		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, data)
 		{
 			desc = Y.JSON.parse(data);
 		}));
@@ -287,7 +292,7 @@ function browseModule(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -318,12 +323,12 @@ function browseModuleVersion(res, argv, query)
 
 	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../info.json', 'utf8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));
@@ -344,7 +349,7 @@ function browseModuleVersion(res, argv, query)
 			vers:      query.v,
 			desc:      desc.long,
 			author:    notes.author,
-			notes:     notes.text,
+			notes:     notes.notes,
 			file_tree: file_tree,
 			layout:    query.layout
 		});
@@ -376,7 +381,7 @@ function browseBundle(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -425,12 +430,12 @@ function browseBundleVersion(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, data)
 		{
 			notes = (data && Y.JSON.parse(data)) || {};
 		}));
 
-		mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/../info.json', 'utf8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -453,7 +458,7 @@ function browseBundleVersion(res, argv, query)
 				desc:    desc.long,
 				vers:    query.v,
 				author:  notes.author,
-				notes:   notes.text,
+				notes:   notes.notes,
 				modules: modules,
 				code:    code,
 				layout:  query.layout
@@ -469,12 +474,12 @@ function browseBundleModule(res, argv, query)
 
 	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../info.json', 'utf8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	mod_fs.readFile(path + '/../../info.json', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../../info.json', 'utf8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));
@@ -494,7 +499,7 @@ function browseBundleModule(res, argv, query)
 			vers:      query.v,
 			desc:      desc.long,
 			author:    notes.author,
-			notes:     notes.text,
+			notes:     notes.notes,
 			file_tree: file_tree,
 			layout:    query.layout
 		});
@@ -514,7 +519,7 @@ function showFile(res, argv, query)
 	}
 	else
 	{
-		mod_fs.readFile(file, 'utf-8', function(err, data)
+		mod_fs.readFile(file, 'utf8', function(err, data)
 		{
 			if (err)
 			{

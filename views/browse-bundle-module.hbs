@@ -11,18 +11,18 @@ YUI().use('{{name}}', function(Y) { ... });
 <h2>{{name}} {{vers}}</h2>
 
 <p class="notes">
-Uploaded by {{author}} <br>
+Uploaded by <a href="mailto:{{author}}">{{author}}</a> <br>
 Notes:  {{notes}}
 </p>
 
 <p>{{desc}}</p>
 
-<h3>Files</h3>
+<h3 class="file-title">Files</h3>
 
 {{#if file_tree}}
 <div class="file-tree">
 {{{file_tree}}}
 </div>
 {{else}}
-<p>None</p>
+<p class="file-tree">None</p>
 {{/if}}

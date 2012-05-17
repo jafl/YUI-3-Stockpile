@@ -44,7 +44,7 @@ var argv = require('optimist')
 	})
 	.argv;
 
-var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
+var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
 config.port = argv.port || config.port || 8080;
 
 var debug = argv.debug || config.debug;
@@ -129,7 +129,7 @@ app.get('/combo', function(req, res)
 			}
 			else
 			{
-				res.write(body, 'utf-8');
+				res.write(body, 'utf8');
 			}
 		}));
 	}
@@ -140,7 +140,7 @@ app.get('/combo', function(req, res)
 
 		Y.each(file_list, function(f)
 		{
-			mod_fs.readFile(f, 'utf-8', tasks.add(function(err, data)
+			mod_fs.readFile(f, 'utf8', tasks.add(function(err, data)
 			{
 				if (err)
 				{
@@ -148,7 +148,7 @@ app.get('/combo', function(req, res)
 				}
 				else
 				{
-					res.write(data, 'utf-8');
+					res.write(data, 'utf8');
 				}
 			}));
 		});

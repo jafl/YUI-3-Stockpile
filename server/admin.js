@@ -14,8 +14,8 @@ exports.init = function(y, mod_express, argv)
 	{
 		app = mod_express.createServer(
 		{
-			key:  mod_fs.readFileSync(argv.key, 'utf-8'),
-			cert: mod_fs.readFileSync(argv.cert, 'utf-8')
+			key:  mod_fs.readFileSync(argv.key, 'utf8'),
+			cert: mod_fs.readFileSync(argv.cert, 'utf8')
 		});
 		var type = 'https';
 	}
@@ -32,8 +32,8 @@ exports.init = function(y, mod_express, argv)
 
 	// modules
 
-	require('./upload.js').configure(Y, app, mod_auth, argv);
-	require('./user-group.js').configure(Y, app, mod_auth, argv);
+	require('./upload.js').configure(Y, app, argv);
+	require('./user-group.js').configure(Y, app, argv);
 
-	return { app: app, type: type, port: argv.adminport, auth: mod_auth };
+	return { app: app, type: type, port: argv.adminport };
 };

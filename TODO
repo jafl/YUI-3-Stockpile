@@ -22,6 +22,19 @@ optimize dependency loading via nodejs:
 	also provide function to generate loader config
 
 
+upload
+	send one module at a time, since bundle could be huge
+		if doesn't have -min.js, create it
+		if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
+		compute transitive dependencies when upload, to reduce number of requests
+
+	document protocol
+
+	args:
+		-g => gallery module, so prepend sp- to name
+
+	fix relative url's in css files
+
 auth
 	cli for creating/removing group
 		normal user can only remove group to which he belongs
@@ -31,27 +44,6 @@ auth
 	cli for deleting namespace, bundle, ns module, version
 		mark as deleted in info
 		(not actually deleted, to avoid re-using name/version)
-
-upload
-	upload output of build: either a module (build/...) or bundle (the whole build directory)
-
-	if new namespace or bundle
-		ask for description
-		record owning group
-	ask for version notes
-	send one module at a time, since bundle could be huge
-		if doesn't have -min.js, create it
-		if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
-		compute transitive dependencies when upload, to reduce number of requests
-	send finished
-		toss token
-
-	document protocol
-
-	args:
-		-g => gallery module, so prepend sp- to name
-
-	fix relative url's in css files
 
 search
 	support "keywords" in description file

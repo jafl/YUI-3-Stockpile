@@ -2,9 +2,12 @@
 
 var Y,
 
-	mod_fs      = require('fs'),
-	mod_path    = require('path'),
+	mod_fs   = require('fs'),
+	mod_path = require('path'),
 
+	mod_mgr_util = require('./manager-util.js'),
+
+	admins,
 	group_file,
 	groups,
 	mod_auth;
@@ -13,7 +16,7 @@ function updateGroupsFile()
 {
 	// sync since updates may arrive in rapid succession
 
-	mod_fs.writeFileSync(group_file, Y.JSON.stringify(groups), 'utf-8');
+	mod_fs.writeFileSync(group_file, Y.JSON.stringify(groups), 'utf8');
 }
 
 exports.init = function(y, argv)
@@ -39,15 +42,26 @@ exports.init = function(y, argv)
 
 	Y.mix(exports, mod_auth);
 
+	admins     = argv.admins;
 	group_file = argv.path + '/groups.json';
-	groups     = Y.JSON.parse(mod_fs.readFileSync(group_file), 'utf-8');
+	groups     = Y.JSON.parse(mod_fs.readFileSync(group_file), 'utf8');
+
+	if (argv.mailserver)
+	{
+		admins = Y.map(admins, mod_mgr_util.appendMailServer);
+
+		groups = Y.map(groups, function(users, group)
+		{
+			return Y.map(users, mod_mgr_util.appendMailServer);
+		});
+	}
 };
 
 exports.userExists = function(user)
 {
-	return Y.some(groups, function(group)
+	return Y.some(groups, function(users)
 	{
-		return Y.Array.indexOf(group, user) >= 0;
+		return Y.Array.indexOf(users, user) >= 0;
 	});
 };
 
@@ -58,8 +72,25 @@ exports.groupExists = function(group)
 
 exports.userInGroup = function(user, group)
 {
-	group = groups[group];
-	return group && Y.Array.indexOf(group, user) >= 0;
+	var users = groups[group];
+	return Y.Array.indexOf(admins, user) >= 0 || (users && Y.Array.indexOf(users, user) >= 0);
+};
+
+exports.getUserGroups = function(user)
+{
+	if (Y.Array.indexOf(admins, user) >= 0)
+	{
+		var map = groups;
+	}
+	else
+	{
+		var map = Y.filter(groups, function(users)
+		{
+			return Y.Array.indexOf(users, user) >= 0;
+		});
+	}
+
+	return Y.Object.keys(map);
 };
 
 exports.createGroup = function(group, user)

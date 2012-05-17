@@ -2,9 +2,10 @@
 
 var Y,
 
-	mod_url = require('url');
+	mod_url  = require('url'),
+	mod_auth = require('./auth.js');
 
-exports.configure = function(y, app, mod_auth, argv)
+exports.configure = function(y, app, argv)
 {
 	Y = y;
 
