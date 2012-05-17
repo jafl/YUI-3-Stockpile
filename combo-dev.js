@@ -44,7 +44,7 @@ var argv = require('optimist')
 	})
 	.argv;
 
-var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config));
+var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
 config.port = argv.port || config.port || 8080;
 
 var debug = argv.debug || config.debug;

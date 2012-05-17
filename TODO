@@ -22,12 +22,23 @@ optimize dependency loading via nodejs:
 	also provide function to generate loader config
 
 
-upload
-	upload output of build: either a module (build/...) or bundle (the whole build directory or list of directories)
+auth
+	cli for creating/removing group
+		normal user can only remove group to which he belongs
+	cli for adding/removing user from a group
+		normal user can only modify group to which he belongs
 
-	if namespace or bundle doesn't exist, create and record owner in description
+	cli for deleting namespace, bundle, ns module, version
+		mark as deleted in info
+		(not actually deleted, to avoid re-using name/version)
+
+upload
+	upload output of build: either a module (build/...) or bundle (the whole build directory)
+
+	if new namespace or bundle
 		ask for description
-	ask for notes
+		record owning group
+	ask for version notes
 	send one module at a time, since bundle could be huge
 		if doesn't have -min.js, create it
 		if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
@@ -35,19 +46,12 @@ upload
 	send finished
 		toss token
 
+	document protocol
+
 	args:
 		-g => gallery module, so prepend sp- to name
 
 	fix relative url's in css files
-
-	if new user and mail-server is not set, ask for email
-
-auth
-	manage list of users who can upload/edit each namespace or bundle
-		based on groups
-
-	config option:  --mail-server yahoo-inc.com
-		if set, allow author to not include @...; automatically append @host
 
 search
 	support "keywords" in description file
@@ -55,8 +59,6 @@ search
 	update index when new modules/bundles are uploaded
 
 edit namespace/module/bundle descriptions & keywords
-
-mark namespace, bundle, ns module, version as deleted -- not actually deleted, to avoid re-using name/version
 
 ui for stats:
 	% of hits that caused re-add

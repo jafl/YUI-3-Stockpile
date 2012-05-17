@@ -13,9 +13,8 @@ exports.init = function(argv)
 	}
 };
 
+exports.use_whoami    = true;
 exports.need_password = false;
-
-// for completeness; should never be called
 
 exports.checkPassword = function(user, pass)
 {

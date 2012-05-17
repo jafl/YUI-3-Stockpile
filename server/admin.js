@@ -14,8 +14,8 @@ exports.init = function(y, mod_express, argv)
 	{
 		app = mod_express.createServer(
 		{
-			key:  mod_fs.readFileSync(argv.key),
-			cert: mod_fs.readFileSync(argv.cert)
+			key:  mod_fs.readFileSync(argv.key, 'utf-8'),
+			cert: mod_fs.readFileSync(argv.cert, 'utf-8')
 		});
 		var type = 'https';
 	}
@@ -27,20 +27,13 @@ exports.init = function(y, mod_express, argv)
 
 	// Authentication
 
-	var auth_path = mod_path.resolve(__dirname, 'auth/' + argv.auth + '.js');
-	if (mod_path.existsSync(auth_path))
-	{
-		var mod_auth = require(auth_path);
-	}
-	else
-	{
-		var mod_auth = require(argv.auth);
-	}
-	mod_auth.init(argv);
+	var mod_auth = require('./auth.js');
+	mod_auth.init(Y, argv);
 
 	// modules
 
 	require('./upload.js').configure(Y, app, mod_auth, argv);
+	require('./user-group.js').configure(Y, app, mod_auth, argv);
 
 	return { app: app, type: type, port: argv.adminport, auth: mod_auth };
 };

@@ -95,7 +95,7 @@ function buildDirectoryTree(root, path, callback)
 					node.children = c;
 				}));
 			}
-			else if (stats.isFile() && name != 'notes')
+			else if (stats.isFile() && name != 'info.json')
 			{
 				children.push(node);
 			}
@@ -170,7 +170,7 @@ function browseRoot(res, argv)
 		var ns = [], bundle = [], tasks = new Y.Parallel();
 		Y.each(dirs, function(dir)
 		{
-			var f = argv.path + '/' + dir + '/description';
+			var f = argv.path + '/' + dir + '/info.json';
 			mod_fs.readFile(f, 'utf-8', tasks.add(function(err, data)
 			{
 				data = Y.JSON.parse(data);
@@ -240,7 +240,7 @@ function browseNamespace(res, argv, query)
 			}));
 		});
 
-		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = Y.JSON.parse(data);
 		}));
@@ -287,7 +287,7 @@ function browseModule(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -318,12 +318,12 @@ function browseModuleVersion(res, argv, query)
 
 	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	mod_fs.readFile(path + '/notes', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	mod_fs.readFile(path + '/../description', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));
@@ -376,7 +376,7 @@ function browseBundle(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/description', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -425,12 +425,12 @@ function browseBundleVersion(res, argv, query)
 			}
 		});
 
-		mod_fs.readFile(path + '/notes', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/info.json', 'utf-8', tasks.add(function(err, data)
 		{
 			notes = (data && Y.JSON.parse(data)) || {};
 		}));
 
-		mod_fs.readFile(path + '/../description', 'utf-8', tasks.add(function(err, data)
+		mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
 		{
 			desc = (data && Y.JSON.parse(data)) || {};
 		}));
@@ -469,12 +469,12 @@ function browseBundleModule(res, argv, query)
 
 	var desc, notes, file_tree = '', tasks = new Y.Parallel();
 
-	mod_fs.readFile(path + '/../notes', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../info.json', 'utf-8', tasks.add(function(err, data)
 	{
 		notes = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	mod_fs.readFile(path + '/../../description', 'utf-8', tasks.add(function(err, data)
+	mod_fs.readFile(path + '/../../info.json', 'utf-8', tasks.add(function(err, data)
 	{
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));

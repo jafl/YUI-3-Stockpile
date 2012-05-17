@@ -38,7 +38,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
 }
 catch (e)
 {
@@ -158,7 +158,7 @@ app.get('/combo', function(req, res)
 	var tasks = new Y.Parallel();
 	Y.each(module_list, function(f)
 	{
-		if (mod_path.extname(mod_path.basename(f)))	// require a file suffix, so we ignore notes
+		if (mod_path.basename(f) != 'info.json')
 		{
 			loadFile(f, tasks.add(function(data)
 			{

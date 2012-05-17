@@ -34,7 +34,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf-8'));
 }
 catch (e)
 {
@@ -84,8 +84,15 @@ var argv = optimist
 		default:  defaults.adminport || 443,
 		describe: 'Port to listen on for admin functions'
 	})
+	.option('admins',
+	{
+		demand:   true,
+		default:  defaults.admins,
+		describe: 'Comma-separated list of admin usernames (config file can use array)'
+	})
 	.option('mailserver',
 	{
+		default:  defaults.mailserver,
 		describe: 'mail server for all users'
 	})
 	.option('title',
@@ -105,6 +112,11 @@ var debug = argv.debug;
 if (debug)
 {
 	require('long-stack-traces');
+}
+
+if (Y.Lang.isString(argv.admins))
+{
+	argv.admins = Y.Lang.trim(argv.admins).split(/\s*,\s*/);
 }
 
 var log_addr = argv.address || os.hostname();

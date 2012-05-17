@@ -52,12 +52,7 @@ function generateToken()
 
 function preAuth(fields, argv, mod_auth, res)
 {
-	if (!fields.user)
-	{
-		error('missing user name', res);
-		return;
-	}
-	else if (fields.ns && fields.module && fields.version)
+	if (fields.ns && fields.module && fields.version)
 	{
 		var path = fields.ns + '/' + fields.module + '/' + fields.version;
 	}
@@ -83,8 +78,6 @@ function preAuth(fields, argv, mod_auth, res)
 
 		token_cache[token] =
 		{
-			user:    fields.user,
-			auth:    !mod_auth.need_password,
 			ns:      fields.ns,
 			module:  fields.module,
 			bundle:  fields.bundle,
@@ -92,9 +85,13 @@ function preAuth(fields, argv, mod_auth, res)
 			ts:      Date.now()
 		};
 
+		// requesting whoami is not secure, but it makes the cli interface nicer to use
+
 		res.json(
 		{
 			token:    token,
+			usersrc:  mod_auth.use_whoami ? 'whoami' : 'arg',
+			usertype: argv.mailserver ? 'name' : 'email',
 			password: mod_auth.need_password
 		});
 	});
@@ -102,13 +99,27 @@ function preAuth(fields, argv, mod_auth, res)
 
 function auth(fields, data, argv, mod_auth, res)
 {
-	if (!fields.password)
+	if (!fields.user)
+	{
+		error('missing user name', res);
+		return;
+	}
+	else if (mod_auth.need_password && !fields.password)
 	{
 		error('missing password', res);
 		return;
 	}
 
-	data.auth = mod_auth.checkPassword(data.user, fields.password);
+	data.auth = mod_auth.checkPassword(fields.user, fields.password);
+
+	if (data.auth)
+	{
+		data.user = fields.user;
+		if (argv.mailserver)
+		{
+			data.user += '@' + argv.mailserver;
+		}
+	}
 
 	res.json(
 	{

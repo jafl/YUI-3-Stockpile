@@ -2,6 +2,7 @@
 
 use strict;
 use Getopt::Std;
+use Term::ReadKey;
 use LWP::UserAgent;
 use JSON;
 
@@ -26,7 +27,6 @@ my %opt;
 getopt('u', \%opt);
 
 my $debug = $opt{d};
-chomp(my $user = $opt{u} || `whoami`);
 
 my $url = shift;
 
@@ -94,20 +94,67 @@ $res = $ua->post
 		ns      => $ns,
 		module  => $module,
 		bundle  => $bundle,
-		version => $vers,
-		user    => $user
+		version => $vers
 	]
 );
 decode_response();
 
 my $token = $res->{token};
 
-if ($res->{password})
+my $user, my $group;
+if ($res->{usersrc} eq 'whoami')
 {
-	use Term::ReadKey;
+	chomp($user = `whoami`);
+}
+else
+{
+	$user = $opt{u};
 
-	my $password = '', my $auth = 0;
-	do
+	while (!$user)
+	{
+		print "Enter your username: ";
+		chomp($user = <STDIN>);
+
+		if ($res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
+		{
+			print "Your username must be an email address.\n";
+			$user = '';
+		}
+	}
+
+	$res = ua->get($url.'/check-user', name => $user);
+	decode_response();
+	if (!$res->{exists})
+	{
+		print "Since you are a new user, please confirm your username: ";
+		chomp(my $confirm = <STDIN>);
+		if ($confirm ne $user)
+		{
+			print "did not match\n";
+			exit 1;
+		}
+
+		do
+		{
+			do
+			{
+				print "Enter the name of your new user group: ";
+				chomp($group = <STDIN>);
+			}
+				while (!$group);
+
+			$res = ua->get($url.'/create-group', name => $group, user => $user);
+			decode_response();
+		}
+			while (!$res->{success});
+	}
+}
+
+my $auth = 0;
+do
+{
+	my $password = '';
+	if ($res->{password})
 	{
 		do
 		{
@@ -118,23 +165,24 @@ if ($res->{password})
 			print "\n";
 		}
 			until ($password);
-
-		$res = $ua->post
-		(
-			$url.'/upload',
-			Content_Type => 'form-data',
-			Content =>
-			[
-				token    => $token,
-				password => $password
-			]
-		);
-		decode_response();
-
-		$auth = $res->{success};
 	}
-		until ($auth);
+
+	$res = $ua->post
+	(
+		$url.'/upload',
+		Content_Type => 'form-data',
+		Content =>
+		[
+			token    => $token,
+			user     => $user,
+			password => $password
+		]
+	);
+	decode_response();
+
+	$auth = $res->{success};
 }
+	until ($auth);
 
 =pod
 
