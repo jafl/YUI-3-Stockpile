@@ -42,6 +42,10 @@ var argv = require('optimist')
 		boolean:  true,
 		describe: 'Turn on debugging (causes leaks)'
 	})
+	.option('test',
+	{
+		describe: 'Name of file to create when initialization is finished'
+	})
 	.argv;
 
 var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
@@ -162,5 +166,10 @@ app.get('/combo', function(req, res)
 
 Y.log('listening on port ' + config.port, 'debug', 'combo-dev');
 app.listen(config.port);
+
+if (argv.test)
+{
+	mod_fs.writeFileSync(argv.test, 'ready', 'utf8');
+}
 
 });

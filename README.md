@@ -15,7 +15,7 @@ Installation
 Install nodejs and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui express request hbs gzip \
+    npm install yui@3.5.1 express request hbs gzip \
         optimist formidable long-stack-traces
 
 Usage

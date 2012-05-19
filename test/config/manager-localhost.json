@@ -1,0 +1,12 @@
+{
+	"address": "127.0.0.1",
+	"port":    8668,
+	"path":    "./test/files",
+	"combo":   "http://localhost:8666/combo?",
+
+	"auth":      "localhost",
+	"adminport": 8669,
+
+	"admins":     ["lindalj"],
+	"mailserver": "yahoo-inc.com"
+}

@@ -1,10 +1,27 @@
 #!/bin/sh
 
-npm install yui express request hbs gzip optimist formidable;
+if [[ "$1" != "--fast" ]]; then
+	npm install yui@3.5.1 express request hbs gzip optimist formidable;
+fi
 
-node manager.js &
+echo ===;
+whoami;
+echo ===;
+
+rm -rf test/init;
+mkdir test/init;
+
+rm -rf test/files;
+mkdir test/files;
+
+node manager.js --config test/config/manager-localhost.json --test test/init/manager.ready &
+node combo.js --config test/config/combo.json --test test/init/combo.ready &
+node combo-dev.js --config test/config/combo-dev.json --test test/init/combo-dev.ready &
+
+perl -e 'sleep(1) until (-e "./test/init/manager.ready" && -e "./test/init/combo.ready" && -e "./test/init/combo-dev.ready")';
 
 cd test;
+
 perl test-upload.pl &&
 perl test-browse.pl &&
 perl test-combo.pl &&

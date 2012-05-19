@@ -106,6 +106,10 @@ var argv = optimist
 		default:  defaults.debug,
 		describe: 'Turn on debugging'
 	})
+	.option('test',
+	{
+		describe: 'Name of file to create when initialization is finished'
+	})
 	.argv;
 
 var debug = argv.debug;
@@ -135,5 +139,10 @@ var admin = require('./server/admin.js').init(Y, mod_express, argv);
 
 Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'debug', 'manager');
 admin.app.listen(admin.port, argv.address);
+
+if (argv.test)
+{
+	mod_fs.writeFileSync(argv.test, 'ready', 'utf8');
+}
 
 });

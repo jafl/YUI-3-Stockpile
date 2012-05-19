@@ -78,6 +78,10 @@ var argv = optimist
 		default:  defaults.debug,
 		describe: 'Turn on debugging (crashes when receive request from combo-dev.js)'
 	})
+	.option('test',
+	{
+		describe: 'Name of file to create when initialization is finished'
+	})
 	.argv;
 
 var debug = argv.debug;
@@ -248,5 +252,10 @@ app.get('/combo', function(req, res)
 
 Y.log('listening on port ' + argv.port, 'debug', 'combo');
 app.listen(argv.port);
+
+if (argv.test)
+{
+	mod_fs.writeFileSync(argv.test, 'ready', 'utf8');
+}
 
 });

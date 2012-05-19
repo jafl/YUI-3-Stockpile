@@ -1,0 +1,16 @@
+{
+	"port":8667,
+
+	"combo":"http://localhost:8666/combo?",
+
+	"root":"test/dev",
+	"code":
+	{
+		"sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
+		"sp-test-foo.css": "sp-test-foo/ace/sp-test-foo.css"
+	},
+	"image":
+	{
+		"warn.png": "sp-test-foo/ace/error.png"
+	}
+}
