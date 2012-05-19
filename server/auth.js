@@ -9,7 +9,7 @@ var Y,
 
 	admins,
 	group_file,
-	groups,
+	groups = {},
 	mod_auth;
 
 function updateGroupsFile()
@@ -44,7 +44,10 @@ exports.init = function(y, argv)
 
 	admins     = argv.admins;
 	group_file = argv.path + '/groups.json';
-	groups     = Y.JSON.parse(mod_fs.readFileSync(group_file), 'utf8');
+	if (mod_path.existsSync(group_file))
+	{
+		groups = Y.JSON.parse(mod_fs.readFileSync(group_file), 'utf8');
+	}
 
 	if (argv.mailserver)
 	{

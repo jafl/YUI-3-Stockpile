@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-if [[ "$1" != "--fast" ]]; then
+if [[ ! -d node_modules ]]; then
 	npm install yui@3.5.1 express request hbs gzip optimist formidable;
 fi
 
@@ -8,21 +8,23 @@ echo ===;
 whoami;
 echo ===;
 
+killall node;
+
 rm -rf test/init;
 mkdir test/init;
 
 rm -rf test/files;
 mkdir test/files;
 
-node manager.js --config test/config/manager-localhost.json --test test/init/manager.ready &
+node manager.js --config test/config/manager-localhost-admin.json --test test/init/manager.ready &
 node combo.js --config test/config/combo.json --test test/init/combo.ready &
 node combo-dev.js --config test/config/combo-dev.json --test test/init/combo-dev.ready &
 
-perl -e 'sleep(1) until (-e "./test/init/manager.ready" && -e "./test/init/combo.ready" && -e "./test/init/combo-dev.ready")';
-
 cd test;
 
-perl test-upload.pl &&
+perl init-wait.pl &&
+perl test-upload-localhost-admin.pl &&
 perl test-browse.pl &&
 perl test-combo.pl &&
-perl test-combo-dev.pl;
+perl test-combo-dev.pl &&
+killall node;
