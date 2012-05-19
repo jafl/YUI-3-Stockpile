@@ -7,6 +7,8 @@ the old versions will still be available.
 The name "stockpile" was chosen because it's a synonym of gallery, but
 without the glamorous connotation.
 
+[![Build Status](https://secure.travis-ci.org/yahoo/YUI-3-Stockpile.png?branch=master)](http://travis-ci.org/yahoo/YUI-3-Stockpile)
+
 Installation
 ------------
 
