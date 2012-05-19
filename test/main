@@ -1,0 +1,6 @@
+#!/bin/sh
+
+perl test-upload.pl;
+perl test-browse.pl;
+perl test-combo.pl;
+perl test-combo-dev.pl;
