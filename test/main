@@ -1,5 +1,9 @@
 #!/bin/sh
 
+npm install yui express request hbs gzip optimist formidable;
+
+node manager.js &
+
 cd test;
 perl test-upload.pl &&
 perl test-browse.pl &&
