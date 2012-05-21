@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ ! -d node_modules ]]; then
-	npm install yui@3.5.1 express request hbs handlebars gzip optimist formidable;
+	npm install yui@3.5.1 express request hbs handlebars gzip optimist formidable mkdirp;
 fi
 
 echo ===;

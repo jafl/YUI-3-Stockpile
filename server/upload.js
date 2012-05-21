@@ -5,6 +5,7 @@ var Y,
 	mod_fs     = require('fs'),
 	mod_path   = require('path'),
 	mod_form   = require('formidable'),
+	mod_mkdirp = require('mkdirp'),
 
 	mod_auth         = require('./auth.js'),
 	mod_mgr_util     = require('./manager-util.js'),
@@ -314,7 +315,7 @@ exports.configure = function(y, app, argv)
 				count = 0;
 			Y.each(files, function(file, path)
 			{
-				path = path.replace(/\/+/, '');
+				path = path.replace(/^\/+/, '');
 				if (mod_path_util.invalidPath(path) || path == 'info.json')
 				{
 					Y.log('Blocked attempt to break sandbox: ' + path, 'debug', 'admin:upload');
@@ -325,19 +326,10 @@ exports.configure = function(y, app, argv)
 
 				mod_fs.readFile(file.path, tasks.add(function(err, contents)
 				{
-					var p = path.split('/');
-					p.pop();
-					Y.reduce(p, data.path, function(p, s)
-					{
-						p += '/' + s;
-						if (!mod_path.existsSync(p))
-						{
-							mod_fs.mkdirSync(p);
-						}
-						return p;
-					});
+					var p = data.path + '/' + path;
+					mod_mkdirp.sync(mod_path.dirname(p), dir_perm);
 
-					mod_fs.writeFile(data.path + '/' + path, contents, tasks.add(function(err)
+					mod_fs.writeFile(p, contents, tasks.add(function(err)
 					{
 						mod_fs.unlink(file.path);
 						count++;

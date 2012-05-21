@@ -40,23 +40,22 @@ sub get_string($$)
 }
 
 my ($ua, $url);
-sub send_module($$;$$)
+sub send_module($$$;$)
 {
 	my ($token, $path, $prefix, $files) = @_;
 
 	my $send = 0;
-	if (!$prefix)
+	if (!$files)
 	{
-		$prefix = '';
-		$files  = [ token => $token ];
-		$send   = 1;
+		$files = [ token => $token ];
+		$send  = 1;
 	}
 
 	opendir(my $h, $path);
 	for my $item (readdir($h))
 	{
 		next if $item =~ /^\./;
-	print $item,"\n";
+
 		my $p = $path.'/'.$item;
 		my $k = $prefix.'/'.$item;
 		if (-d $p)
@@ -295,14 +294,13 @@ if ($bundle)
 	for my $d (readdir($h))
 	{
 		next if $d =~ /^\./;
-	print $d,"\n";
-		send_module($token, $path.'/'.$d);
+		send_module($token, $path.'/'.$d, $d);
 	}
 	closedir($h);
 }
 else	# namespace
 {
-	send_module($token, $path);
+	send_module($token, $path, '');
 }
 
 $res = $ua->post
