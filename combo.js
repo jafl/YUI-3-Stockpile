@@ -22,7 +22,8 @@ var mod_fs       = require('fs'),
 	mod_compress = require('gzip'),
 	mod_express  = require('express'),
 
-	content_type = require('./server/content-type.js');
+	content_type = require('./server/content-type.js'),
+	path_util    = require('./server/path-util.js');
 
 // options
 
@@ -110,7 +111,7 @@ app.get('/combo', function(req, res)
 	}
 
 	query = mod_qs.unescape(query);
-	if (/[\0\s;]|\.\./.test(query))
+	if (path_util.invalidPath(query))
 	{
 		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
 		res.end();

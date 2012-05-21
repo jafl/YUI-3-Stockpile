@@ -6,6 +6,8 @@ use Term::ReadKey;
 use LWP::UserAgent;
 use JSON;
 
+# subroutines
+
 my $res;
 sub decode_response()
 {
@@ -37,12 +39,56 @@ sub get_string($$)
 	return $s;
 }
 
+my ($ua, $url);
+sub send_module($$;$$)
+{
+	my ($token, $path, $prefix, $files) = @_;
+
+	my $send = 0;
+	if (!$prefix)
+	{
+		$prefix = '';
+		$files  = [ token => $token ];
+		$send   = 1;
+	}
+
+	opendir(my $h, $path);
+	for my $item (readdir($h))
+	{
+		next if $item =~ /^\./;
+	print $item,"\n";
+		my $p = $path.'/'.$item;
+		my $k = $prefix.'/'.$item;
+		if (-d $p)
+		{
+			send_module($token, $p, $k, $files);
+		}
+		else
+		{
+			push(@{$files}, $k, [$p]);
+		}
+	}
+
+	if ($send)
+	{
+		$res = $ua->post
+		(
+			$url.'/upload',
+			Content_Type => 'form-data',
+			Content => $files
+		);
+		decode_response();
+	}
+}
+
+# main
+
 my %opt;
 getopt('u', \%opt);
 
 my $debug = $opt{d};
 
-my $url = shift;
+$url = shift;
 
 my $ns = '', my $module = '', my $bundle = '';
 if (scalar(@ARGV) == 4)
@@ -87,7 +133,7 @@ elsif ($ns)
 	}
 }
 
-my $ua = LWP::UserAgent->new();
+$ua = LWP::UserAgent->new();
 if ($ua->can('ssl_opts'))
 {
 	$ua->ssl_opts( verify_hostnames => 0 );
@@ -123,7 +169,6 @@ if ($res->{usersrc} eq 'whoami')
 else
 {
 	$user = $opt{u};
-
 	until ($user)
 	{
 		print "Enter your username: ";
@@ -244,30 +289,21 @@ $res = $ua->post
 );
 decode_response();
 
-=pod
-
-my $res = $ua->post
-(
-	$url.'/upload',
-	Content_Type => 'form-data',
-	Content =>
-	[
-		var  => 'abc',
-		file1 => [$path],
-		file2 => [$path]
-	]
-);
-
-if ($res->is_success())
+if ($bundle)
 {
-	warn $res->content;
+	opendir(my $h, $path);
+	for my $d (readdir($h))
+	{
+		next if $d =~ /^\./;
+	print $d,"\n";
+		send_module($token, $path.'/'.$d);
+	}
+	closedir($h);
 }
-else
+else	# namespace
 {
-	warn $res->error_as_HTML;
+	send_module($token, $path);
 }
-
-=cut
 
 $res = $ua->post
 (

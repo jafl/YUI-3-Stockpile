@@ -12,7 +12,7 @@ exports.init = function(y, _argv)
 
 exports.appendMailServer = function(user)
 {
-	return argv.mailserver ? user + '@' + argv.mailserver : user;
+	return argv.mailserver && !/@/.test(user) ? user + '@' + argv.mailserver : user;
 };
 
 exports.generateToken = function()

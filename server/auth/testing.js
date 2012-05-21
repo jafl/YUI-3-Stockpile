@@ -1,4 +1,4 @@
-// Only allow two users.
+// Only allows two users: foo/bar, baz/spaz
 // Manager listens only on localhost (127.0.0.1).
 
 exports.init = function(argv)
@@ -15,6 +15,6 @@ exports.need_password = true;
 
 exports.checkPassword = function(user, pass)
 {
-	return (user == 'foo' && pass == 'bar') ||
-		   (user == 'baz' && pass == 'spaz');
+	return (/^foo@/.test(user) && pass == 'bar') ||
+		   (/^baz@/.test(user) && pass == 'spaz');
 };

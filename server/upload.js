@@ -6,8 +6,12 @@ var Y,
 	mod_path   = require('path'),
 	mod_form   = require('formidable'),
 
-	mod_auth     = require('./auth.js'),
-	mod_mgr_util = require('./manager-util.js'),
+	mod_auth         = require('./auth.js'),
+	mod_mgr_util     = require('./manager-util.js'),
+	mod_path_util    = require('./path-util.js'),
+	mod_content_type = require('./content-type.js'),
+
+	dir_perm = 493,	// 0755
 
 	token_cache  = {},
 	token_expire = 5 * 60 * 1000;	// 5 minutes (ms)
@@ -115,12 +119,19 @@ function auth(fields, data, argv, res)
 		return;
 	}
 
-	data.auth = mod_auth.checkPassword(fields.user, fields.password);
+	var user = mod_mgr_util.appendMailServer(fields.user);
+	if (!/@/.test(user))
+	{
+		error('user name must resolve to an email address', res);
+		return;
+	}
+
+	data.auth = mod_auth.checkPassword(user, fields.password);
 
 	var tasks = new Y.Parallel(), respond = true, new_ns_b = false, new_module = false;
 	if (data.auth)
 	{
-		data.user = mod_mgr_util.appendMailServer(fields.user);
+		data.user = user;
 
 		var path = argv.path + '/' + (data.ns || data.bundle);
 		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, contents)
@@ -175,7 +186,7 @@ function createNsOrBundle(fields, path, type, res)
 			return false;
 		}
 
-		mod_fs.mkdirSync(path, 502);
+		mod_fs.mkdirSync(path, dir_perm);
 		mod_fs.writeFileSync(path + '/info.json', Y.JSON.stringify(
 		{
 			type:  type,
@@ -221,7 +232,7 @@ function create(fields, data, argv, res)
 		path += '/' + data.module;
 		if (!mod_path.existsSync(path))
 		{
-			mod_fs.mkdirSync(path, 502);
+			mod_fs.mkdirSync(path, dir_perm);
 			mod_fs.writeFileSync(path + '/info.json', Y.JSON.stringify(
 			{
 				short: fields.moduleShortDesc || '',
@@ -246,7 +257,7 @@ function create(fields, data, argv, res)
 	}
 
 	path += '/' + data.version;
-	mod_fs.mkdirSync(path, 502);
+	mod_fs.mkdirSync(path, dir_perm);
 	mod_fs.writeFileSync(path + '/info.json', Y.JSON.stringify(
 	{
 		notes:  fields.notes,
@@ -254,7 +265,7 @@ function create(fields, data, argv, res)
 	}),
 	'utf8');
 
-	data.created = true;
+	data.path = path;
 
 	res.json(
 	{
@@ -291,7 +302,7 @@ exports.configure = function(y, app, argv)
 				return;
 			}
 
-			if (!data.created)
+			if (!data.path)
 			{
 				create(fields, data, argv, res);
 				return;
@@ -299,19 +310,54 @@ exports.configure = function(y, app, argv)
 
 			console.log(require('util').inspect({fields: fields, files: files}));
 
-			var count = 0;
-			Y.each(files, function(file)
+			var tasks = new Y.Parallel(),
+				count = 0;
+			Y.each(files, function(file, path)
 			{
-				count++;
-				mod_fs.unlink(file.path);
+				path = path.replace(/\/+/, '');
+				if (mod_path_util.invalidPath(path) || path == 'info.json')
+				{
+					Y.log('Blocked attempt to break sandbox: ' + path, 'debug', 'admin:upload');
+					return;
+				}
+
+				// copy, because rename doesn't work across filesystems
+
+				mod_fs.readFile(file.path, tasks.add(function(err, contents)
+				{
+					var p = path.split('/');
+					p.pop();
+					Y.reduce(p, data.path, function(p, s)
+					{
+						p += '/' + s;
+						if (!mod_path.existsSync(p))
+						{
+							mod_fs.mkdirSync(p);
+						}
+						return p;
+					});
+
+					mod_fs.writeFile(data.path + '/' + path, contents, tasks.add(function(err)
+					{
+						mod_fs.unlink(file.path);
+						count++;
+					}));
+				}));
 			});
 
-			if (count === 0)
+			tasks.done(function()
 			{
-				Y.log('finished conversation: ' + fields.token, 'debug', 'admin:upload');
-				delete token_cache[ fields.token ];
-				res.json({ done: 1 });
-			}
+				if (count === 0)
+				{
+					Y.log('finished conversation: ' + fields.token, 'debug', 'admin:upload');
+					delete token_cache[ fields.token ];
+					res.json({ done: 1 });
+				}
+				else
+				{
+					res.json({ success: 1 });
+				}
+			});
 		});
 	});
 };

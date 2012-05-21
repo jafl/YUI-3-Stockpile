@@ -1,0 +1,56 @@
+upload
+
+	upload module
+		new module
+		new version
+		existing version - fail
+	upload bundle
+		new bundle
+		new version
+		existing version - fail
+
+	auth
+		localhost
+			admin
+			existing user
+			new user
+				new group
+				existing group - fail
+		testing
+			admin
+			known user
+				valid password
+				invalid password - fail
+			unknown user - fail
+
+combo -- 5 sets in parallel
+
+	one js file
+	two js files
+
+	one css file
+	two css files
+
+	image file
+
+	pdf file - fail
+
+	file with null - fail
+	file with space - fail
+	file with ; - fail
+	file with .. - fail
+
+combo-dev -- 5 sets in parallel
+
+	one relayed js file
+	two relayed js files
+
+	one overridden js file
+	two overridden js files
+
+	one relayed and one overridden js file
+
+	relayed image file
+	overridden image file
+
+	pdf file - fail

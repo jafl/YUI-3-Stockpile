@@ -23,15 +23,12 @@ optimize dependency loading via nodejs:
 
 
 upload
-	send one module at a time, since bundle could be huge
-		if doesn't have -min.js, create it
-		if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
-		compute transitive dependencies when upload, to reduce number of requests
+	if doesn't have -min.js, create it
+	if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
+	compute transitive dependencies when upload, to reduce number of requests
+	-g => gallery module, so prepend sp- to name
 
 	document protocol
-
-	args:
-		-g => gallery module, so prepend sp- to name
 
 	fix relative url's in css files
 
