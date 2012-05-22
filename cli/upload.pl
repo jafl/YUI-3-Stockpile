@@ -132,6 +132,8 @@ elsif ($ns)
 	}
 }
 
+# create HTTP object
+
 $ua = LWP::UserAgent->new();
 if ($ua->can('ssl_opts'))
 {
@@ -143,6 +145,8 @@ if ($debug)
 	$ua->add_handler('request_send',  sub { shift->dump; return });
 	$ua->add_handler('response_done', sub { shift->dump; return });
 }
+
+# pre-auth
 
 $res = $ua->post
 (
@@ -159,6 +163,8 @@ $res = $ua->post
 decode_response();
 
 my $token = $res->{token};
+
+# user
 
 my $user;
 if ($res->{usersrc} eq 'whoami')
@@ -180,6 +186,8 @@ else
 		}
 	}
 }
+
+# auth
 
 my $auth = 0;
 until ($auth)
@@ -212,6 +220,8 @@ until ($auth)
 
 	$auth = $res->{success};
 }
+
+# namespace/bundle info
 
 my ($group, $ns_b_short_desc, $ns_b_long_desc);
 my $new_module = $res->{newModule};
@@ -260,6 +270,8 @@ elsif ($res->{newNsOrBundle})
 	$ns_b_long_desc  = get_string("a long description ",  $ns || $bundle);
 }
 
+# module info
+
 my ($module_short_desc, $module_long_desc);
 if ($new_module && $module)
 {
@@ -288,6 +300,8 @@ $res = $ua->post
 );
 decode_response();
 
+# upload
+
 if ($bundle)
 {
 	opendir(my $h, $path);
@@ -302,6 +316,8 @@ else	# namespace
 {
 	send_module($token, $path, '');
 }
+
+# done
 
 $res = $ua->post
 (

@@ -1,3 +1,3 @@
 #!/usr/bin/perl
 
-print "browse\n";
+print "$0\n";

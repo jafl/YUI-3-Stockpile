@@ -1,3 +1,3 @@
 #!/usr/bin/perl
 
-print "combo-dev\n";
+print "$0\n";

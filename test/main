@@ -15,6 +15,7 @@ mkdir test/init;
 
 rm -rf test/files;
 mkdir test/files;
+cp test/groups.json test/files;
 
 node manager.js --config test/config/manager-localhost-admin.json --test test/init/manager.ready &
 node combo.js --config test/config/combo.json --test test/init/combo.ready &
@@ -27,4 +28,5 @@ perl test-upload-localhost-admin.pl &&
 perl test-browse.pl &&
 perl test-combo.pl &&
 perl test-combo-dev.pl &&
-killall node;
+killall node &&
+true; # rm -rf test/init test/files;

@@ -1,3 +1,3 @@
 #!/usr/bin/perl
 
-print "combo\n";
+print "$0\n";

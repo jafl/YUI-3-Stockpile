@@ -3,7 +3,7 @@
 
 	"combo":"http://localhost:8666/combo?",
 
-	"root":"test/dev",
+	"root":"./test/dev",
 	"code":
 	{
 		"sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
