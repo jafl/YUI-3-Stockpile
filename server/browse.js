@@ -234,14 +234,17 @@ function browseNamespace(res, argv, query)
 					}
 				});
 
-				versions.sort(compareVersions);
-
-				modules.push(
+				if (versions.length > 0)
 				{
-					name:  module,
-					vers:  versions[0].vers.join('.'),
-					date:  Y.DataType.Date.format(versions[0].date, { format: '%F %R' })
-				});
+					versions.sort(compareVersions);
+
+					modules.push(
+					{
+						name:  module,
+						vers:  versions[0].vers.join('.'),
+						date:  Y.DataType.Date.format(versions[0].date, { format: '%F %R' })
+					});
+				}
 			}));
 		});
 
@@ -309,7 +312,7 @@ function browseModule(res, argv, query)
 				name:     query.m,
 				desc:     desc.long,
 				versions: versions,
-				vers:     versions[0].name,
+				vers:     versions.length ? versions[0].name : '',
 				layout:   query.layout
 			});
 		});
@@ -388,13 +391,17 @@ function browseBundle(res, argv, query)
 
 		tasks.done(function()
 		{
-			versions.sort(compareVersions);
-
-			var code = bundle_code_tmpl(
+			var code = '';
+			if (versions.length > 0)
 			{
-				bundle:  query.b,
-				version: versions[0].name
-			});
+				versions.sort(compareVersions);
+
+				code = bundle_code_tmpl(
+				{
+					bundle:  query.b,
+					version: versions[0].name
+				});
+			}
 
 			res.render('browse-bundle.hbs',
 			{

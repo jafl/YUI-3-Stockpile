@@ -1,19 +1,21 @@
-<div class="code">
-<button id="copy-code">Copy</button>
-<p>To use the latest version of {{name}}:</p>
-<pre id="sample-code">
-var moduleVersion =
-{
-	'sp-{{ns}}-{{name}}': '{{vers}}',
-	...
-};
+{{#if vers}}
+	<div class="code">
+	<button id="copy-code">Copy</button>
+	<p>To use the latest version of {{name}}:</p>
+	<pre id="sample-code">
+	var moduleVersion =
+	{
+		'sp-{{ns}}-{{name}}': '{{vers}}',
+		...
+	};
 
-function insertVersion(m) { ... }
-window.YUI_config = { ... }
+	function insertVersion(m) { ... }
+	window.YUI_config = { ... }
 
-YUI().use('sp-{{ns}}-{{name}}', function(Y) { ... });
-</pre>
-</div>
+	YUI().use('sp-{{ns}}-{{name}}', function(Y) { ... });
+	</pre>
+	</div>
+{{/if}}
 
 <h2>{{name}}</h2>
 
