@@ -189,7 +189,7 @@ function browseRoot(res, argv)
 
 		tasks.done(function()
 		{
-			res.render('browse-top.hbs',
+			res.render('browse-root.hbs',
 			{
 				title:  argv.title,
 				ns:     ns.length ? ns : null,

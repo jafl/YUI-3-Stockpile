@@ -1,0 +1,1 @@
+YUI.add('bundle-baz', function(Y) {}, '2.0');

@@ -11,10 +11,7 @@ use JSON;
 my $res;
 sub decode_response()
 {
-	if (!$res->is_success())
-	{
-		die $res->as_string;
-	}
+	die $res->as_string unless $res->is_success();
 
 	$res = decode_json($res->decoded_content);
 

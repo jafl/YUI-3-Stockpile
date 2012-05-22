@@ -1,1 +1,0 @@
-YUI.add('uifwk-baz', function(Y) {Y.uifwk_baz=true;}, '@VERSION', {requires:['calendar']});

@@ -283,6 +283,12 @@ exports.configure = function(y, app, argv)
 		var form = new mod_form.IncomingForm();
 		form.parse(req, function(err, fields, files)
 		{
+			if (err)
+			{
+				error(err.message, res);
+				return;
+			}
+
 			if (!fields.token)
 			{
 				preAuth(fields, argv, res);
@@ -309,7 +315,10 @@ exports.configure = function(y, app, argv)
 				return;
 			}
 
-			console.log(require('util').inspect({fields: fields, files: files}));
+			if (argv.debug)
+			{
+				console.log(require('util').inspect({fields: fields, files: files}));
+			}
 
 			var tasks = new Y.Parallel(),
 				count = 0;
