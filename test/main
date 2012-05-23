@@ -6,6 +6,7 @@ fi
 
 echo ===;
 whoami;
+pwd;
 echo ===;
 
 killall node;

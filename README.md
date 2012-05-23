@@ -18,6 +18,10 @@ Install nodejs and then install these packages:
     npm install yui@3.5.1 express request hbs handlebars gzip \
         optimist formidable mkdirp long-stack-traces
 
+Use cpan to install the required Perl modules:
+
+    sudo cpan install JSON
+
 Usage
 -----
 
