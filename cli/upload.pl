@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use lib "./pm";
+use lib "./pm";		# during testing
 
 use strict;
 use Getopt::Std;

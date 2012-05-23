@@ -1,13 +1,12 @@
 #!/bin/bash
 
+echo ===;
+whoami;
+echo ===;
+
 if [[ ! -d node_modules ]]; then
 	npm install yui@3.5.1 express request hbs handlebars gzip optimist formidable mkdirp;
 fi
-
-echo ===;
-whoami;
-pwd;
-echo ===;
 
 killall node;
 
