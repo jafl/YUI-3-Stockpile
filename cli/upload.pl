@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use lib "./pm"
+
 use strict;
 use Getopt::Std;
 use Term::ReadKey;
