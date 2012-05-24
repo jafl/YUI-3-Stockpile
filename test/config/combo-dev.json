@@ -6,8 +6,9 @@
 	"root":"./test/dev",
 	"code":
 	{
+		"sp-ns-foo.css": ["foo/assets/sp-ns-foo-core.css","foo/assets/skins/ace/sp-ns-foo-skin.css"],
 		"sp-ns-blah.js": "blah/sp-ns-blah-debug.js",
-		"sp-ns-foo.css": ["foo/assets/sp-ns-foo-core.css","foo/assets/skins/ace/sp-ns-foo-skin.css"]
+		"bundle-bar.js": "bar/bundle-bar-debug.js"
 	},
 	"image":
 	{

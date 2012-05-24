@@ -101,33 +101,34 @@ app.get('/combo', function(req, res)
 		return;
 	}
 
-	res.setHeader('Content-Type', query_info.type);
-	res.setHeader('Cache-Control', 'no-cache');
-	res.setHeader('Expires', 'Wed, 31 Dec 1969 16:00:00 GMT');
+	query = query.split('&');
 
-	var module = Y.partition(query.split('&'), function(m)
+	var module = Y.partition(query, function(m)
 	{
 		var name = moduleName(m);
 		return (name && config.code[ name ]);
 	});
 
-	var module_list = module.rejects.join('&');
-
 	var file_list = Y.reduce(module.matches, [], function(list, m)
 	{
 		Y.each(Y.Array(config.code[ moduleName(m) ]), function(f)
 		{
-			list.push(mod_path.resolve(config.root || '', f));
+			list.push(
+			{
+				m: m,
+				f: mod_path.resolve(config.root || '', f)
+			});
 		});
 
 		return list;
 	});
 
-	var tasks = new Y.Parallel();
+	var tasks   = new Y.Parallel(),
+		results = {};
 
-	if (module_list)
+	Y.each(module.rejects, function(m)
 	{
-		var relay_url = config.combo + module_list;
+		var relay_url = config.combo + m;
 		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
 
 		mod_request(relay_url, tasks.add(function(error, response, body)
@@ -135,37 +136,42 @@ app.get('/combo', function(req, res)
 			if (error || response.statusCode != 200)
 			{
 				Y.log(error.message + ' from ' + relay_url, 'warn', 'combo-dev');
+				results[m] = '';
 			}
 			else
 			{
-				res.write(body, 'utf8');
+				results[m] = body;
 			}
 		}));
-	}
+	});
 
-	if (file_list.length > 0)
+	Y.each(file_list, function(info)
 	{
-		Y.log('files: ' + file_list, 'debug', 'combo-dev');
+		Y.log('file: ' + info.f, 'debug', 'combo-dev');
 
-		Y.each(file_list, function(f)
+		mod_fs.readFile(info.f, 'utf8', tasks.add(function(err, data)
 		{
-			mod_fs.readFile(f, 'utf8', tasks.add(function(err, data)
+			if (err)
 			{
-				if (err)
-				{
-					Y.log(err.message, 'warn', 'combo-dev');
-				}
-				else
-				{
-					res.write(data, 'utf8');
-				}
-			}));
-		});
-	}
+				Y.log(err.message, 'warn', 'combo-dev');
+			}
+			else
+			{
+				results[info.m] = (results[info.m] || '') + data;
+			}
+		}));
+	});
 
 	tasks.done(function()
 	{
-		res.end();
+		res.setHeader('Content-Type', query_info.type);
+		res.setHeader('Cache-Control', 'no-cache');
+		res.setHeader('Expires', 'Wed, 31 Dec 1969 16:00:00 GMT');
+
+		res.send(Y.reduce(query, '', function(s, q)
+		{
+			return s + results[q];
+		}));
 	});
 });
 

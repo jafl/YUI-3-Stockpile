@@ -1,1 +1,1 @@
-YUI.add('bundle-baz', function(Y) {}, '@1.0');
+YUI.add('bundle-baz', function(Y) {}, '1.0');
