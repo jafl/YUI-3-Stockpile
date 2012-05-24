@@ -269,6 +269,7 @@ function browseNamespace(res, argv, query)
 				back:    ' ',
 				ns:      query.ns,
 				desc:    desc.long,
+				group:   desc.group,
 				modules: modules,
 				layout:  query.layout
 			});
@@ -415,6 +416,7 @@ function browseBundle(res, argv, query)
 				back:     ' ',
 				bundle:   query.b,
 				desc:     desc.long,
+				group:    desc.group,
 				versions: versions,
 				code:     code,
 				layout:   query.layout

@@ -11,6 +11,8 @@ upload
 +		new version
 		existing version - fail
 
+	wildcard group
+
 	auth
 		localhost
 +			admin

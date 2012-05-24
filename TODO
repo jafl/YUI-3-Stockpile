@@ -8,8 +8,8 @@ optimize dependency loading via nodejs:
 	also provide function to generate loader config
 
 
-show group when browsing
-gallery group should have "*" as user, to allow anybody to manage
+animation + history manager when browsing
+	attach event to Back link
 
 upload
 	if doesn't have -min.js, create it

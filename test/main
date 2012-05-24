@@ -34,4 +34,4 @@ perl test-browse.pl &&
 perl test-combo.pl &&
 perl test-combo-dev.pl &&
 killall node &&
-true; # rm -rf test/init test/files;
+rm -rf init files;

@@ -12,11 +12,12 @@ var Y,
 	mod_path = require('path'),
 
 	mod_mgr_util = require('./manager-util.js'),
+	mod_auth,
 
 	admins,
 	group_file,
 	groups = {},
-	mod_auth;
+	wildcard_user = '*';
 
 function updateGroupsFile()
 {
@@ -82,7 +83,9 @@ exports.groupExists = function(group)
 exports.userInGroup = function(user, group)
 {
 	var users = groups[group];
-	return Y.Array.indexOf(admins, user) >= 0 || (users && Y.Array.indexOf(users, user) >= 0);
+	return  Y.Array.indexOf(admins, user) >= 0 ||
+			Y.Array.indexOf(users, wildcard_user) >= 0 ||
+			(users && Y.Array.indexOf(users, user) >= 0);
 };
 
 exports.getUserGroups = function(user)
@@ -95,7 +98,8 @@ exports.getUserGroups = function(user)
 	{
 		var map = Y.filter(groups, function(users)
 		{
-			return Y.Array.indexOf(users, user) >= 0;
+			return  Y.Array.indexOf(users, wildcard_user) >= 0 ||
+					Y.Array.indexOf(users, user) >= 0;
 		});
 	}
 
