@@ -3,3 +3,7 @@ node_js:
  - 0.6
 
 script: ./test/main
+
+notifications:
+  email:
+    - travisci@jjlindal.net
