@@ -1,17 +1,3 @@
-{ fields: { var: 'abc' },
-files:
-	{ file:
-	{ size: 1568,
-		path: '/tmp/54e6925ec784fa38acf8776b10153809',
-		name: 'LICENSE',
-		type: 'text/plain',
-		lastModifiedDate: Fri, 13 Apr 2012 23:37:11 GMT,
-		_writeStream: [Object],
-		length: [Getter],
-		filename: [Getter],
-		mime: [Getter] } } } at upload.pl line 29.
-
-
 npm module
 	load from app directory or npm module
 
