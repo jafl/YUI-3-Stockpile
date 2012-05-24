@@ -1,3 +1,11 @@
+"use strict";
+
+/* Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+ *
+ * The copyrights embodied in the content of this file are licensed by
+ * Yahoo! Inc. under the BSD (revised) open source license.
+ */
+
 // Only allows two users: foo/bar, baz/spaz
 // Manager listens only on localhost (127.0.0.1).
 

@@ -6,11 +6,11 @@
 	"root":"./test/dev",
 	"code":
 	{
-		"sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
-		"sp-test-foo.css": "sp-test-foo/ace/sp-test-foo.css"
+		"sp-ns-blah.js": "blah/sp-ns-blah-debug.js",
+		"sp-ns-foo.css": ["foo/assets/sp-ns-foo-core.css","foo/assets/skins/ace/sp-ns-foo-skin.css"]
 	},
 	"image":
 	{
-		"warn.png": "sp-test-foo/ace/error.png"
+		"warn.png": "foo/assets/skins/ace/warn.png"
 	}
 }

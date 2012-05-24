@@ -1,5 +1,11 @@
 "use strict";
 
+/* Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+ *
+ * The copyrights embodied in the content of this file are licensed by
+ * Yahoo! Inc. under the BSD (revised) open source license.
+ */
+
 // All the requested items must have the same type, so we take the first
 // suffix that matches.
 

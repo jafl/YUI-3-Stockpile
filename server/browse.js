@@ -1,5 +1,11 @@
 "use strict";
 
+/* Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+ *
+ * The copyrights embodied in the content of this file are licensed by
+ * Yahoo! Inc. under the BSD (revised) open source license.
+ */
+
 var Y,
 
 	mod_fs   = require('fs'),

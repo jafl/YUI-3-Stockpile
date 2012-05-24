@@ -22,6 +22,9 @@ optimize dependency loading via nodejs:
 	also provide function to generate loader config
 
 
+show group when browsing
+gallery group should have "*" as user, to allow anybody to manage
+
 upload
 	if doesn't have -min.js, create it
 		https://github.com/mishoo/UglifyJS

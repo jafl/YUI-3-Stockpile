@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+# Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+#
+# The copyrights embodied in the content of this file are licensed by
+# Yahoo! Inc. under the BSD (revised) open source license.
+
 use strict;
 use LWP::UserAgent;
 

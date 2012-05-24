@@ -113,9 +113,14 @@ app.get('/combo', function(req, res)
 
 	var module_list = module.rejects.join('&');
 
-	var file_list = Y.map(module.matches, function(m)
+	var file_list = Y.reduce(module.matches, [], function(list, m)
 	{
-		return mod_path.resolve(config.root || '', config.code[ moduleName(m) ]);
+		Y.each(Y.Array(config.code[ moduleName(m) ]), function(f)
+		{
+			list.push(mod_path.resolve(config.root || '', f));
+		});
+
+		return list;
 	});
 
 	var tasks = new Y.Parallel();
