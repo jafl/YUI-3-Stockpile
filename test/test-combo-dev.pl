@@ -116,7 +116,7 @@ sub test()
 	my $res  = $ua->get('http://127.0.0.1:8666/combo?ns/foo/1.0.f/assets/skins/ace/invalid.pdf');
 	my $code = decode_response($res);
 	die $code,"\nwrong data" unless
-		$code eq 'abc';
+		$code eq '';
 
 	return 'success';
 }
