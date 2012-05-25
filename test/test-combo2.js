@@ -6,6 +6,8 @@
  * Yahoo! Inc. under the BSD (revised) open source license.
  */
 
+console.log('test-combo2.js');
+
 var module_version =
 {
 	'sp-ns-foo':  '1.0.f',

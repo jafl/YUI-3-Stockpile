@@ -85,11 +85,13 @@ var argv = optimist
 	})
 	.argv;
 
-var debug = argv.debug;
-if (debug)
+var log_levels = ['info', 'warn', 'error'];
+if (argv.debug)
 {
 	require('long-stack-traces');
+	log_levels.push('debug');
 }
+require('./server/yui-log-filter.js').installFilter(Y, log_levels);
 
 if (argv.cache)
 {
@@ -113,7 +115,7 @@ app.get('/combo', function(req, res)
 	query = mod_qs.unescape(query);
 	if (path_util.invalidPath(query))
 	{
-		Y.log('Blocked attempt to break sandbox: ' + query, 'debug', 'combo');
+		Y.log('Blocked attempt to break sandbox: ' + query, 'warn', 'combo');
 		res.end();
 		return;
 	}
@@ -121,7 +123,7 @@ app.get('/combo', function(req, res)
 	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
-		Y.log('unknown request type: ' + query, 'debug', 'combo');
+		Y.log('unknown request type: ' + query, 'warn', 'combo');
 		res.end();
 		return;
 	}

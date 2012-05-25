@@ -1,5 +1,6 @@
-npm module
+npm modules
 	load from app directory or npm module
+	yui log filter
 
 optimize dependency loading via nodejs:
 	configure versions on the server

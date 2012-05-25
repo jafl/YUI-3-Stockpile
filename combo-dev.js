@@ -51,11 +51,14 @@ var argv = require('optimist')
 var config  = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
 config.port = argv.port || config.port || 8080;
 
-var debug = argv.debug || config.debug;
+var log_levels = ['info', 'warn', 'error'];
+var debug      = argv.debug || config.debug;
 if (debug)
 {
 	require('long-stack-traces');
+	log_levels.push('debug');
 }
+require('./server/yui-log-filter.js').installFilter(Y, log_levels);
 
 var app = mod_express.createServer();
 
