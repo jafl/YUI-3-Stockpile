@@ -108,7 +108,7 @@ function preAuth(fields, argv, res)
 			token:        token,
 			usersrc:      mod_auth.use_whoami ? 'whoami' : 'arg',
 			usertype:     argv.mailserver ? 'name' : 'email',
-			needPassword: mod_auth.need_password
+			needPassword: mod_auth.needs_password
 		});
 	});
 }
@@ -120,7 +120,7 @@ function auth(fields, data, argv, res)
 		error('missing user name', res);
 		return;
 	}
-	else if (mod_auth.need_password && !fields.password)
+	else if (mod_auth.needs_password && !fields.password)
 	{
 		error('missing password', res);
 		return;

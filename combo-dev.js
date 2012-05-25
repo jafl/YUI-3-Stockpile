@@ -111,11 +111,12 @@ app.get('/combo', function(req, res)
 
 	var file_list = Y.reduce(module.matches, [], function(list, m)
 	{
-		Y.each(Y.Array(config.code[ moduleName(m) ]), function(f)
+		Y.each(Y.Array(config.code[ moduleName(m) ]), function(f, i)
 		{
 			list.push(
 			{
 				m: m,
+				i: i,
 				f: mod_path.resolve(config.root || '', f)
 			});
 		});
@@ -136,11 +137,10 @@ app.get('/combo', function(req, res)
 			if (error || response.statusCode != 200)
 			{
 				Y.log(error.message + ' from ' + relay_url, 'warn', 'combo-dev');
-				results[m] = '';
 			}
 			else
 			{
-				results[m] = body;
+				results[m] = [body];
 			}
 		}));
 	});
@@ -149,15 +149,17 @@ app.get('/combo', function(req, res)
 	{
 		Y.log('file: ' + info.f, 'debug', 'combo-dev');
 
+		results[info.m] = [];
 		mod_fs.readFile(info.f, 'utf8', tasks.add(function(err, data)
 		{
 			if (err)
 			{
 				Y.log(err.message, 'warn', 'combo-dev');
+				results[info.m][info.i] = '';
 			}
 			else
 			{
-				results[info.m] = (results[info.m] || '') + data;
+				results[info.m][info.i] = data;
 			}
 		}));
 	});
@@ -170,12 +172,17 @@ app.get('/combo', function(req, res)
 
 		res.send(Y.reduce(query, '', function(s, q)
 		{
-			return s + results[q];
+			var r = results[q];
+			if (r)
+			{
+				s += r.join('');
+			}
+			return s;
 		}));
 	});
 });
 
-Y.log('listening on port ' + config.port, 'debug', 'combo-dev');
+Y.log('listening on port ' + config.port, 'info', 'combo-dev');
 app.listen(config.port);
 
 if (argv.test)

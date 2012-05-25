@@ -5,27 +5,26 @@ upload
 	upload module
 +		new module
 +		new version
-		existing version - fail
++		existing version - fail
 	upload bundle
 +		new bundle
 +		new version
-		existing version - fail
-
-	wildcard group
++		existing version - fail
 
 	auth
 		localhost
 +			admin
-			existing user
++			existing user
 			new user
 				new group
 				existing group - fail
 		testing
-			admin
-			known user
-				valid password
-				invalid password - fail
-			unknown user - fail
++			known user
++				valid password
++				invalid password - fail
++			unknown user - fail
+
+		wildcard group
 
 combo
 
@@ -34,7 +33,7 @@ combo
 +	one js file
 +	two js files
 
-	one css file
++	one css file
 +	two css files
 
 +	image file

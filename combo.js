@@ -160,14 +160,16 @@ app.get('/combo', function(req, res)
 		cache_key_pending[key] = true;
 	}
 
-	var tasks = new Y.Parallel();
+	var tasks   = new Y.Parallel(),
+		results = {};
+
 	Y.each(module_list, function(f)
 	{
 		if (mod_path.basename(f) != 'info.json')
 		{
 			loadFile(f, tasks.add(function(data)
 			{
-				return data;
+				results[f] = data;
 			}));
 		}
 	});
@@ -200,9 +202,13 @@ app.get('/combo', function(req, res)
 		});
 	}
 
-	tasks.done(function(file_data)
+	tasks.done(function()
 	{
-		var response_data = file_data.join('');
+		var response_data = Y.reduce(module_list, '', function(s, f)
+		{
+			return s + results[f];
+		});
+
 		mod_compress(response_data, function(err, result)
 		{
 			var cache_data =
@@ -251,7 +257,7 @@ app.get('/combo', function(req, res)
 	}
 });
 
-Y.log('listening on port ' + argv.port, 'debug', 'combo');
+Y.log('listening on port ' + argv.port, 'info', 'combo');
 app.listen(argv.port);
 
 if (argv.test)

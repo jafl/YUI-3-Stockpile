@@ -178,8 +178,18 @@ if ($res->{usersrc} eq 'whoami')
 else
 {
 	$user = $opt{u};
+	if ($user && $res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
+	{
+		print "Your username must be an email address.\n";
+		$user = '';
+	}
+
+	my $count = 0;
 	until ($user)
 	{
+		$count++;
+		die "patience exceeded, stopped" if $count > 5;
+
 		print "Enter your username: ";
 		chomp($user = <STDIN>);
 
@@ -193,11 +203,14 @@ else
 
 # auth
 
-my $auth = 0;
+my $auth = 0, my $need_pw = $res->{needPassword}, my $pw_count = 0;
 until ($auth)
 {
+	$pw_count++;
+	die "patience exceeded, stopped" if $pw_count > 5;
+
 	my $password = '';
-	if ($res->{needPassword})
+	if ($need_pw)
 	{
 		until ($password)
 		{
@@ -240,7 +253,7 @@ if (scalar(@{$res->{groups}}) == 0)
 		}
 			until ($group);
 
-		$res = ua->get($url.'/create-group', name => $group, user => $user);
+		$res = $ua->get($url.'/create-group', name => $group, user => $user);
 		decode_response();
 	}
 		until ($res->{success});

@@ -39,3 +39,6 @@ print F1 "blah 2.0.b: notes\n";
 close(F1);
 
 close(F2);
+
+open(F1, '| perl ../cli/upload.pl http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2');
+close(F1);

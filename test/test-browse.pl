@@ -18,6 +18,9 @@ sub decode_response($)
 	return $res->decoded_content;
 }
 
+my $ns_group     = shift;
+my $bundle_group = shift;
+
 my $ua = LWP::UserAgent->new();
 
 # home
@@ -34,6 +37,7 @@ die $html,"\nmissing link to bundle desc, stopped" unless $html =~ m|bundle: sho
 my $res  = $ua->get('http://127.0.0.1:8668/browse?ns=ns');
 my $html = decode_response($res);
 die $html,"\nmissing link to desc, stopped" unless $html =~ m|ns: long desc|;
+die $html,"\nmissing group, stopped" unless $html =~ m|Managed by group: $ns_group|;
 die $html,"\nmissing link to foo, stopped" unless $html =~ m|<a href="/browse\?ns=ns&amp;m=foo">foo</a>|;
 die $html,"\nmissing link to foo version, stopped" unless $html =~ m|1\.0\.f|;
 die $html,"\nmissing link to blah, stopped" unless $html =~ m|<a href="/browse\?ns=ns&amp;m=blah">blah</a>|;
@@ -87,6 +91,7 @@ die $html,"\nunexpected link to css file, stopped" if $html =~ m|sp-ns-blah\.css
 my $res  = $ua->get('http://127.0.0.1:8668/browse?b=bundle');
 my $html = decode_response($res);
 die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
+die $html,"\nmissing group, stopped" unless $html =~ m|Managed by group: $bundle_group|;
 die $html,"\nmissing link to 1.0.z, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=1\.0\.z">1\.0\.z</a>|;
 die $html,"\nmissing link to 2.0.z, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=2\.0\.z">2\.0\.z</a>|;
 

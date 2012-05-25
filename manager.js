@@ -132,12 +132,12 @@ app.use(mod_express.static(__dirname + '/client'));
 
 require('./server/browse.js').configure(Y, app, argv);
 
-Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'debug', 'manager');
+Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'info', 'manager');
 app.listen(argv.port, argv.address);
 
 var admin = require('./server/admin.js').init(Y, mod_express, argv);
 
-Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'debug', 'manager');
+Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'info', 'manager');
 admin.app.listen(admin.port, argv.address);
 
 if (argv.test)

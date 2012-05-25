@@ -18,8 +18,8 @@ exports.init = function(argv)
 	}
 };
 
-exports.use_whoami    = false;
-exports.need_password = true;
+exports.use_whoami     = false;
+exports.needs_password = true;
 
 exports.checkPassword = function(user, pass)
 {
