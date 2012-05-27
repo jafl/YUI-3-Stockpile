@@ -173,6 +173,8 @@ my $token = $res->{token};
 my $user;
 if ($res->{usersrc} eq 'whoami')
 {
+	print "ignoring -u option\n" if $opt{u};
+
 	chomp($user = `whoami`);
 }
 else

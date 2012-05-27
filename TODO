@@ -5,7 +5,7 @@ npm modules
 optimize dependency loading via nodejs:
 	configure versions on the server
 	call function that does Y.Loader.resolve() to return complete list of deps
-		store in info.json
+		memoized, so the result is cached
 	also provide function to generate loader config
 
 
@@ -13,11 +13,9 @@ animation + history manager when browsing
 	attach event to Back link
 
 upload
-	if doesn't have -min.js, create it
-		https://github.com/mishoo/UglifyJS
 	if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
-	compute transitive dependencies when upload, to reduce number of requests
-	-g => gallery module, so prepend sp- to name
+	compute transitive dependencies within bundle when upload, to reduce number of requests
+		store in info.json
 
 	document protocol
 
