@@ -8,10 +8,10 @@
 
 var mod_fs = require('fs');
 
-exports.init = function(Y, argv)
+exports.create = function(Y, size, path, interval)
 {
-	var size = parseInt(argv.cache, 10) || 500;
-	Y.log('cache size: ' + size + 'MB', 'debug', 'combo');
+	var size = parseInt(size, 10) || 500;
+	Y.log('cache size: ' + size + 'MB', 'info', 'combo');
 
 	function cacheMetric(value)
 	{
@@ -49,13 +49,13 @@ exports.init = function(Y, argv)
 		});
 	}
 
-	if (argv['cache-log'])
+	if (path)
 	{
-		Y.log('dumping cache stats every ' + argv['cache-log-interval'] + ' hours', 'debug', 'combo');
+		Y.log('dumping cache stats every ' + interval + ' hours', 'info', 'combo');
 
-		var cache_log_dump_prefix = argv['cache-log'] + '/dump-';
+		var cache_log_dump_prefix = path + '/dump-';
 
-		var cache_log_dump_interval = parseFloat(argv['cache-log-interval']);
+		var cache_log_dump_interval = parseFloat(interval);
 		var cache_log_dump_format   = '%Y-%m-%d-%H-%M';
 		if (cache_log_dump_interval >= 1)
 		{

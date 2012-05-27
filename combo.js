@@ -95,7 +95,7 @@ require('./server/yui-log-filter.js').installFilter(Y, log_levels);
 
 if (argv.cache)
 {
-	var response_cache    = require('./server/cache.js').init(Y, argv);
+	var response_cache    = require('./server/cache.js').create(Y, argv.cache, argv['cache-log'], argv['cache-log-interval']);
 	var cache_key_pending = {};
 }
 

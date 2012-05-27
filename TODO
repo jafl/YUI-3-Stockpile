@@ -5,7 +5,7 @@ npm modules
 optimize dependency loading via nodejs:
 	configure versions on the server
 	call function that does Y.Loader.resolve() to return complete list of deps
-		memoized, so the result is cached
+		store in info.json
 	also provide function to generate loader config
 
 
