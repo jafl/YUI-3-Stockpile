@@ -179,22 +179,24 @@ Command line arguments override the values in the config files.
 
 A typical config file looks like this:
 
+```js
+{
+    "port":8080,
+
+    "combo":"http://my-nightly-build-combo-server/combo?",
+
+    "root":"/Users/johndoe/yui3-stockpile/dev",
+    "code":
     {
-        "port":8080,
-
-        "combo":"http://my-nightly-build-combo-server/combo?",
-
-        "root":"/Users/johndoe/yui3-stockpile/dev",
-        "code":
-        {
-            "sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
-            "sp-test-foo.css": "sp-test-foo/skin/sam/sp-test-foo.css"
-        },
-        "image":
-        {
-            "warn.png": "sp-test-foo/sam/warn.png"
-        }
+        "sp-test-blah.js": "sp-test-blah/sp-test-blah-debug.js",
+        "sp-test-foo.css": "sp-test-foo/skin/sam/sp-test-foo.css"
+    },
+    "image":
+    {
+        "warn.png": "sp-test-foo/sam/warn.png"
     }
+}
+```
 
 Requests for the JavaScript for module sp-test-blah or the CSS for module
 sp-test-foo or an image named warn.png will return the local files.  All
