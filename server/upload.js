@@ -105,10 +105,10 @@ function preAuth(fields, argv, res)
 
 		res.json(
 		{
-			token:        token,
-			usersrc:      mod_auth.use_whoami ? 'whoami' : 'arg',
-			usertype:     argv.mailserver ? 'name' : 'email',
-			needPassword: mod_auth.needs_password
+			token:         token,
+			usersrc:       mod_auth.use_whoami ? 'whoami' : 'arg',
+			usertype:      argv.mailserver ? 'name' : 'email',
+			needsPassword: mod_auth.needs_password
 		});
 	});
 }

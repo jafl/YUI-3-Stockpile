@@ -15,7 +15,7 @@ Code Organization
     combo.js        Combo handler
     combo-dev.js    Combo handler for development mode
     manager.js      Admin UI
-    cli             Command line utilities
+    cli             Command line tools
     client          Client modules
     server          Server modules
     views           Client web pages
@@ -53,7 +53,10 @@ Start the combo handler:
 Start the admin UI:
 
     node manager.js [--config path_to_json_config_file]
-                  [--path path_to_repository] [--port port]
+                  [--address bind_address] [--port port] [--adminport port]
+                  [--path path_to_repository] [--combo combo_handler_url]
+                  [--auth type] [--cert https_crt_file] [--key https_key_file]
+                  [--admins admin_list] [--mailserver mail_server_hostname]
                   [--title title_to_display]
                   [--debug]
 
@@ -129,13 +132,19 @@ root of the YUI Loader group:
 
 The advantage of using a bundle is that when modules are requested,
 dependencies within the bundle are automatically resolved and loaded.  This
-reduces the number of modules you need to list in your YUI().use()
+reduces the number of modules you need to list in your `YUI().use()`
 statement and also reduces the number of requests made by YUI Loader.
 
 The disadvantage of using a bundle is that all the modules must be
 published simultaneously, inside the {bundle-name}/{version}/ directory.
 
 Examples of using modules and bundles can be found in test/*.js
+
+Deployment
+----------
+
+You should publishing only your minified code to your public deployment of
+YUI 3 Stockpile, so you can keep your commented code private.
 
 Uploading
 ---------
@@ -154,11 +163,39 @@ descriptions, or release notes.
 
 Run upload.pl without arguments to get additional usage information.
 
-Deployment
-----------
+Authentication
+--------------
 
-You should publishing only your minified code to your public deployment of
-YUI 3 Stockpile, so you can keep your commented code private.
+All users must authenticate themselves when using the command line tools.
+The authentication method is configured via `--auth`.  The built-in
+authentication method is called "localhost".  This requires that
+`--address` is `127.0.0.1` so users authenticate by logging into the
+machine.
+
+You can build your own authentication plugin, install it via npm, and then
+configure `--auth` to be the name of your module.  The API is demonstrated
+in `./server/auth/testauth.js`.
+
+Any authentication method that requires a password should only be run over
+https.  Simply configure `--cert` and `--key`, and `--adminport` will
+automatically use https instead of http.
+
+To make it easy to contact the owner of a module, all user names are email
+addresses.  If all users are on the same mail server, then configure
+`--mailserver` so users only have to type their username when invoking the
+command line tools.
+
+Authorization
+-------------
+
+Authorization is based on user groups.  First, configure `--admins` with
+the list of users who have access to all groups.  All other users are only
+allowed to access groups to which they belong.  If a user belongs to a
+group, he/she can add other users to that group.  Adding `*` to a group
+allows all users to access that group.  Any user can create a new group.
+
+Each namespace or bundle is managed by a single group.  The group name is
+displayed when browsing.
 
 Development Mode
 ----------------
@@ -211,7 +248,7 @@ Unfortunately, not all requests will accept compressed responses, so the
 cache must store both raw and gzipped versions.
 
 The cache key is the sorted list of requested files.  The cache itself is a
-map of keys to { response data, reference to MRU item }.  The MRU items
+map of keys to `{ response data, reference to MRU item }`.  The MRU items
 (each of which stores a key) are stored in a doubly linked list to allow
 easy re-ordering and dropping of oldest items.
 
@@ -220,7 +257,7 @@ updated, and then items are removed from the end of the MRU linked list
 until the size drops back within the prescribed limit.
 
 For tuning, the cache logs the following data:  total # of hits and a map
-of cache keys to { # of puts, # of gets, response size }.  This can be
+of cache keys to `{ # of puts, # of gets, response size }`.  This can be
 plotted on a graph of log(response size) vs % of total hits.  Keys with
 high percentages indicate thrashing.  The response size helps determine how
 much the cache should be expanded.
@@ -232,3 +269,10 @@ When a bundle is uploaded, the "requires" configuration for each module is
 updated to include transitive dependencies within the bundle.  This ensures
 that YUI Loader will only have to make two requests to get all the required
 modules within the bundle.
+
+Why Perl?
+---------
+
+Perl was chosen for the command line tools because it is available
+everywhere.  We did not want to require installation of NodeJS on machines
+which only need to deploy to Stockpile.

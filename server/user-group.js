@@ -15,30 +15,31 @@ exports.configure = function(y, app, argv)
 {
 	Y = y;
 
-	app.get('/check-user', function(req, res)
+	app.get('/auth-info', function(req, res)
 	{
-		var query = mod_url.parse(req.url, true).query;
 		res.json(
 		{
-			exists: query.name && mod_auth.userExists(query.name) ? 1 : 0
-		});
-	});
-
-	app.get('/check-group', function(req, res)
-	{
-		var query = mod_url.parse(req.url, true).query;
-		res.json(
-		{
-			exists: query.name && mod_auth.groupExists(query.name) ? 1 : 0
+			usersrc:       mod_auth.use_whoami ? 'whoami' : 'arg',
+			usertype:      argv.mailserver ? 'name' : 'email',
+			needsPassword: mod_auth.needs_password
 		});
 	});
 
 	app.get('/create-group', function(req, res)
 	{
-		var query = mod_url.parse(req.url, true).query;
+		var query   = mod_url.parse(req.url, true).query,
+			success = 0;
+
+		if (query.name && query.user &&
+			mod_auth.checkPassword(query.user, query.pass))
+		{
+			mod_auth.addUserToGroup(query.name, query.user);
+			success = 1;
+		}
+
 		res.json(
 		{
-			success: query.name && query.user && mod_auth.createGroup(query.name, query.user) ? 1 : 0
+			success: success
 		});
 	});
 };

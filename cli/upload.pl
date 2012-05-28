@@ -205,7 +205,7 @@ else
 
 # auth
 
-my $auth = 0, my $need_pw = $res->{needPassword}, my $pw_count = 0;
+my $auth = 0, my $need_pw = $res->{needsPassword}, my $pw_count = 0;
 until ($auth)
 {
 	$pw_count++;

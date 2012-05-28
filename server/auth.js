@@ -106,11 +106,37 @@ exports.getUserGroups = function(user)
 	return Y.Object.keys(map);
 };
 
-exports.createGroup = function(group, user)
+exports.addUserToGroup = function(group, user)
 {
-	if (!groups[group])
+	var g = groups[group];
+	if (g && Y.Array.indexOf(g, user) >= 0)
+	{
+		// do nothing
+	}
+	else if (g)
+	{
+		g.push(user);
+		updateGroupsFile();
+	}
+	else
 	{
 		groups[group] = [ user ];
+		updateGroupsFile();
+	}
+};
+
+exports.removeUserFromGroup = function(group, user)
+{
+	var g = groups[group];
+	if (!g)
+	{
+		return false;
+	}
+
+	var i = Y.Array.indexOf(g, user);
+	if (i >= 0)
+	{
+		g.splice(i,1);
 		updateGroupsFile();
 		return true;
 	}
