@@ -65,16 +65,16 @@ close(F1);
 
 # auth
 
-open(F1, '| perl ../cli/new-group.pl http://127.0.0.1:8669 test1 foo@yahoo.com > /dev/null');
+open(F1, '| perl ../cli/new-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 > /dev/null');
 print F1 "bar\n";
 
-open(F2, '| perl ../cli/new-group.pl http://127.0.0.1:8669 test2 baz@yahoo.com > /dev/null');
+open(F2, '| perl ../cli/new-group.pl -u baz@yahoo.com http://127.0.0.1:8669 test2 > /dev/null');
 print F2 "spaz\n";
 
 close(F1);
 close(F2);
 
-open(F1, '| perl ../cli/new-group.pl http://127.0.0.1:8669 test2 foo@yahoo.com > /dev/null');
+open(F1, '| perl ../cli/new-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test2 > /dev/null');
 print F1 "bar\n";
 
 my $groups = decode_json(slurp('./files/groups.json'));
