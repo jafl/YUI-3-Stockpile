@@ -8,15 +8,9 @@
 use strict;
 use LWP::UserAgent;
 
+do './util.pl';
+
 print "$0\n";
-
-sub decode_response($)
-{
-	my ($res) = @_;
-
-	die $res->as_string unless $res->is_success();
-	return $res->decoded_content;
-}
 
 my $ns_group     = shift;
 my $bundle_group = shift;

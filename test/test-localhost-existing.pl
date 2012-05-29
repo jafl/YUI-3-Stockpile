@@ -5,7 +5,12 @@
 # The copyrights embodied in the content of this file are licensed by
 # Yahoo! Inc. under the BSD (revised) open source license.
 
+use lib "./pm";
+
 use strict;
+use JSON;
+
+do './util.pl';
 
 print "$0\n";
 
@@ -40,5 +45,25 @@ close(F1);
 
 close(F2);
 
+# fail - already exists
+
 open(F1, '| perl ../cli/upload.pl http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2');
 close(F1);
+
+# auth
+
+open(F1, '| perl ../cli/new-group.pl http://127.0.0.1:8669 test1 > /dev/null');
+open(F2, '| perl ../cli/new-group.pl http://127.0.0.1:8669 test2 > /dev/null');
+close(F1);
+close(F2);
+
+chomp(my $user = `whoami`);
+
+my $groups = decode_json(slurp('./files/groups.json'));
+my @groups = keys(%{$groups});
+die "wrong number of groups, stopped" unless scalar(@groups) == 3;
+die "missing group: test, stopped" unless $groups->{test};
+die "missing group: test1, stopped" unless $groups->{test1};
+die "wrong user in group test1 (",$groups->{test1}->[0],"), stopped" unless $groups->{test1}->[0] eq $user;
+die "missing group: test2, stopped" unless $groups->{test2};
+die "wrong user in group test2 (",$groups->{test2}->[0],"), stopped" unless $groups->{test2}->[0] eq $user;

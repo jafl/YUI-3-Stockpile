@@ -21,7 +21,7 @@ upload
 	fix relative url's in css files
 
 auth
-	cli for creating/removing group
+	cli for removing group
 		normal user can only remove group to which he belongs
 	cli for adding/removing user from a group
 		normal user can only modify group to which he belongs

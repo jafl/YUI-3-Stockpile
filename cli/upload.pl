@@ -206,12 +206,13 @@ else
 # auth
 
 my $auth = 0, my $need_pw = $res->{needsPassword}, my $pw_count = 0;
+my $password = '';
 until ($auth)
 {
 	$pw_count++;
 	die "patience exceeded, stopped" if $pw_count > 5;
 
-	my $password = '';
+	$password = '';
 	if ($need_pw)
 	{
 		until ($password)
@@ -255,7 +256,7 @@ if (scalar(@{$res->{groups}}) == 0)
 		}
 			until ($group);
 
-		$res = $ua->get($url.'/create-group', name => $group, user => $user);
+		$res = $ua->get($url.'/create-group?name='.$group.'&user='.$user.'&pass='.$password);
 		decode_response();
 	}
 		until ($res->{success});

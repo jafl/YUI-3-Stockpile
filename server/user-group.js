@@ -30,16 +30,26 @@ exports.configure = function(y, app, argv)
 		var query   = mod_url.parse(req.url, true).query,
 			success = 0;
 
-		if (query.name && query.user &&
-			mod_auth.checkPassword(query.user, query.pass))
+		if (!query.name)
+		{
+			res.json({ error: 'missing group name' });
+		}
+		else if (!query.user)
+		{
+			res.json({ error: 'missing user name' });
+		}
+		else if (!mod_auth.checkPassword(query.user, query.pass))
+		{
+			res.json({ error: 'invalid password' });
+		}
+		else if (mod_auth.groupExists(query.name))
+		{
+			res.json({ error: 'group already exists' });
+		}
+		else
 		{
 			mod_auth.addUserToGroup(query.name, query.user);
-			success = 1;
+			res.json({ success: 1 });
 		}
-
-		res.json(
-		{
-			success: success
-		});
 	});
 };
