@@ -44,7 +44,7 @@ if (scalar(@ARGV) < 2)
 
 my $url   = shift;
 my $group = shift;
-my $user  = shift;
+my $user  = $opt{u};
 
 my $ua = LWP::UserAgent->new();
 if ($ua->can('ssl_opts'))
@@ -57,7 +57,7 @@ decode_response();
 
 if ($res->{usersrc} eq 'whoami')
 {
-	print "ignoring user argument\n" if $user;
+	print "ignoring -u option\n" if $user;
 
 	chomp($user = `whoami`);
 }
