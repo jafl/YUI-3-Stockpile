@@ -38,13 +38,13 @@ my $debug = $opt{d};
 
 if (scalar(@ARGV) < 2)
 {
-	print "usage: $0 [-d] [-u user] stockpile_manager_url group\n";
+	print "usage: $0 [-d] [-u user] stockpile_manager_url group add_user\n";
 	exit 1;
 }
 
-my $url   = shift;
-my $group = shift;
-my $user  = $opt{u};
+my $url      = shift;
+my $group    = shift;
+my $add_user = shift;
 
 my $ua = LWP::UserAgent->new();
 if ($ua->can('ssl_opts'))
@@ -61,9 +61,10 @@ if ($debug)
 $res = $ua->get($url.'/auth-info');
 decode_response();
 
+my $user = $opt{u};
 if ($res->{usersrc} eq 'whoami')
 {
-	print "ignoring -u option\n" if $user;
+	print "ignoring -u option\n" if $opt{u};
 
 	chomp($user = `whoami`);
 }
@@ -85,12 +86,13 @@ if ($res->{needsPassword})
 
 $res = $ua->post
 (
-	$url.'/create-group',
+	$url.'/add-user-to-group',
 	Content =>
 	[
-		name => $group,
-		user => $user,
-		pass => $password
+		name      => $group,
+		orig_user => $user,
+		pass      => $password,
+		new_user  => $add_user
 	]
 );
 decode_response();

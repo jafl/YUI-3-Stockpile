@@ -256,7 +256,16 @@ if (scalar(@{$res->{groups}}) == 0)
 		}
 			until ($group);
 
-		$res = $ua->get($url.'/create-group?name='.$group.'&user='.$user.'&pass='.$password);
+		$res = $ua->post
+		(
+			$url.'/create-group',
+			Content =>
+			[
+				name => $group,
+				user => $user,
+				pass => $password
+			]
+		);
 		decode_response();
 	}
 		until ($res->{success});

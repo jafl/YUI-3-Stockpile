@@ -22,8 +22,7 @@ upload
 
 auth
 	cli for removing group
-		normal user can only remove group to which he belongs
-	cli for adding/removing user from a group
+	cli for removing user from a group
 		normal user can only modify group to which he belongs
 
 	cli for deleting namespace, bundle, ns module, version
