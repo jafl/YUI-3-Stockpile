@@ -35,24 +35,30 @@ exports.configure = function(y, app, argv)
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
+				return;
 			}
 			else if (!fields.user)
 			{
 				res.json({ error: 'missing user name' });
+				return;
 			}
-			else if (!mod_auth.checkPassword(fields.user, fields.pass))
+
+			mod_auth.checkPassword(fields.user, fields.pass, function(auth)
 			{
-				res.json({ error: 'invalid password' });
-			}
-			else if (mod_auth.groupExists(fields.name))
-			{
-				res.json({ error: 'group already exists' });
-			}
-			else
-			{
-				mod_auth.addUserToGroup(fields.name, fields.user);
-				res.json({ success: 1 });
-			}
+				if (!auth)
+				{
+					res.json({ error: 'invalid password' });
+				}
+				else if (mod_auth.groupExists(fields.name))		// don't tell just anybody
+				{
+					res.json({ error: 'group already exists' });
+				}
+				else
+				{
+					mod_auth.addUserToGroup(fields.name, fields.user);
+					res.json({ success: 1 });
+				}
+			});
 		});
 	});
 
@@ -66,32 +72,39 @@ exports.configure = function(y, app, argv)
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
+				return;
 			}
 			else if (!fields.orig_user)
 			{
 				res.json({ error: 'missing initiating user name' });
+				return;
 			}
 			else if (!fields.new_user)
 			{
 				res.json({ error: 'missing target user name' });
+				return;
 			}
-			else if (!mod_auth.checkPassword(fields.orig_user, fields.pass))
+
+			mod_auth.checkPassword(fields.orig_user, fields.pass, function(auth)
 			{
-				res.json({ error: 'invalid password' });
-			}
-			else if (!mod_auth.groupExists(fields.name))
-			{
-				res.json({ error: 'group does not exist' });
-			}
-			else if (!mod_auth.userInGroup(fields.orig_user, fields.name))
-			{
-				res.json({ error: 'initiating user is not in group' });
-			}
-			else
-			{
-				mod_auth.addUserToGroup(fields.name, fields.new_user);
-				res.json({ success: 1 });
-			}
+				if (!auth)
+				{
+					res.json({ error: 'invalid password' });
+				}
+				else if (!mod_auth.groupExists(fields.name))					// don't tell just anybody
+				{
+					res.json({ error: 'group does not exist' });
+				}
+				else if (!mod_auth.userInGroup(fields.orig_user, fields.name))	// don't tell just anybody
+				{
+					res.json({ error: 'initiating user is not in group' });
+				}
+				else
+				{
+					mod_auth.addUserToGroup(fields.name, fields.new_user);
+					res.json({ success: 1 });
+				}
+			});
 		});
 	});
 
@@ -105,32 +118,39 @@ exports.configure = function(y, app, argv)
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
+				return;
 			}
 			else if (!fields.orig_user)
 			{
 				res.json({ error: 'missing initiating user name' });
+				return;
 			}
 			else if (!fields.del_user)
 			{
 				res.json({ error: 'missing target user name' });
+				return;
 			}
-			else if (!mod_auth.checkPassword(fields.orig_user, fields.pass))
+
+			mod_auth.checkPassword(fields.orig_user, fields.pass, function(auth)
 			{
-				res.json({ error: 'invalid password' });
-			}
-			else if (!mod_auth.groupExists(fields.name))
-			{
-				res.json({ error: 'group does not exist' });
-			}
-			else if (!mod_auth.userInGroup(fields.orig_user, fields.name))
-			{
-				res.json({ error: 'initiating user is not in group' });
-			}
-			else
-			{
-				var done = mod_auth.removeUserFromGroup(fields.name, fields.del_user);
-				res.json({ success: done ? 1 : 0 });
-			}
+				if (!auth)
+				{
+					res.json({ error: 'invalid password' });
+				}
+				else if (!mod_auth.groupExists(fields.name))					// don't tell just anybody
+				{
+					res.json({ error: 'group does not exist' });
+				}
+				else if (!mod_auth.userInGroup(fields.orig_user, fields.name))	// don't tell just anybody
+				{
+					res.json({ error: 'initiating user is not in group' });
+				}
+				else
+				{
+					var done = mod_auth.removeUserFromGroup(fields.name, fields.del_user);
+					res.json({ success: done ? 1 : 0 });
+				}
+			});
 		});
 	});
 };

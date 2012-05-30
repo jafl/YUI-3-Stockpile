@@ -133,53 +133,56 @@ function auth(fields, data, argv, res)
 		return;
 	}
 
-	data.auth = mod_auth.checkPassword(user, fields.password);
-
-	var tasks = new Y.Parallel(), respond = true, new_ns_b = false, new_module = false;
-	if (data.auth)
+	mod_auth.checkPassword(user, fields.password, function(auth)
 	{
-		data.user = user;
+		data.auth = auth;
 
-		var path = argv.path + '/' + (data.ns || data.bundle);
-		mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, contents)
+		var tasks = new Y.Parallel(), respond = true, new_ns_b = false, new_module = false;
+		if (data.auth)
 		{
-			if (err)
+			data.user = user;
+
+			var path = argv.path + '/' + (data.ns || data.bundle);
+			mod_fs.readFile(path + '/info.json', 'utf8', tasks.add(function(err, contents)
 			{
-				new_ns_b = true;
-			}
-			else
-			{
-				var info = Y.JSON.parse(contents);
-				if (!mod_auth.userInGroup(data.user, info.group))
+				if (err)
 				{
-					data.auth = false;
-					error('You do not have permissions to modify ' + (data.ns || data.bundle), res);
-					respond = false;
+					new_ns_b = true;
 				}
-			}
-		}));
-
-		if (data.ns)
-		{
-			mod_path.exists(path + '/' + data.module, tasks.add(function(exists)
-			{
-				new_module = !exists;
+				else
+				{
+					var info = Y.JSON.parse(contents);
+					if (!mod_auth.userInGroup(data.user, info.group))
+					{
+						data.auth = false;
+						error('You do not have permissions to modify ' + (data.ns || data.bundle), res);
+						respond = false;
+					}
+				}
 			}));
-		}
-	}
 
-	tasks.done(function()
-	{
-		if (respond)
-		{
-			res.json(
+			if (data.ns)
 			{
-				success:       data.auth ? 1 : 0,
-				groups:        mod_auth.getUserGroups(data.user),
-				newNsOrBundle: new_ns_b,
-				newModule:     new_module
-			});
+				mod_path.exists(path + '/' + data.module, tasks.add(function(exists)
+				{
+					new_module = !exists;
+				}));
+			}
 		}
+
+		tasks.done(function()
+		{
+			if (respond)
+			{
+				res.json(
+				{
+					success:       data.auth ? 1 : 0,
+					groups:        mod_auth.getUserGroups(data.user),
+					newNsOrBundle: new_ns_b,
+					newModule:     new_module
+				});
+			}
+		});
 	});
 }
 

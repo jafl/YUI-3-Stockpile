@@ -21,8 +21,9 @@ exports.init = function(argv)
 exports.use_whoami     = false;
 exports.needs_password = true;
 
-exports.checkPassword = function(user, pass)
+exports.checkPassword = function(user, pass, callback)
 {
-	return (/^foo@/.test(user) && pass == 'bar') ||
-		   (/^baz@/.test(user) && pass == 'spaz');
+	callback.call(this,
+		(/^foo@/.test(user) && pass == 'bar') ||
+		(/^baz@/.test(user) && pass == 'spaz'));
 };
