@@ -14,6 +14,8 @@ do './util.pl';
 
 print "$0\n";
 
+# upload
+
 open(F1, '| perl ../cli/upload.pl http://127.0.0.1:8669 ns foo 1.0.f ./upload/foo > /dev/null');
 print F1 "whee\n";	# does not exist
 print F1 "foo\n";	# must be email
@@ -65,26 +67,32 @@ close(F1);
 
 # auth
 
-open(F1, '| perl ../cli/new-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 > /dev/null');
+open(F1, '| perl ../cli/manage-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 new > /dev/null');
 print F1 "bar\n";
 
-open(F2, '| perl ../cli/new-group.pl -u baz@yahoo.com http://127.0.0.1:8669 test2 > /dev/null');
+open(F2, '| perl ../cli/manage-group.pl -u baz@yahoo.com http://127.0.0.1:8669 test2 new > /dev/null');
 print F2 "spaz\n";
 
 close(F1);
 close(F2);
 
-my $test_user = 'zzyyxx';
-open(F1, '| perl ../cli/add-user-to-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 '.$test_user.' > /dev/null');
+my $test_user1 = 'zzyyxx', my $test_user2 = 'aabbcc';
+open(F1, '| perl ../cli/manage-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 add '.$test_user1.' > /dev/null');
 print F1 "bar\n";
 
 # fail - not authorized
 
-open(F2, '| perl ../cli/add-user-to-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test2 '.$test_user.' > /dev/null');
+open(F2, '| perl ../cli/manage-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test2 add '.$test_user1.' > /dev/null');
 print F2 "bar\n";
+
+open(F3, '| perl ../cli/manage-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 add '.$test_user2.' > /dev/null');
 
 close(F1);
 close(F2);
+close(F3);
+
+open(F1, '| perl ../cli/manage-group.pl -u foo@yahoo.com http://127.0.0.1:8669 test1 remove '.$test_user2.' > /dev/null');
+close(F1);
 
 my $groups = decode_json(slurp('./files/groups.json'));
 my @groups = keys(%{$groups});
@@ -94,7 +102,7 @@ die "missing group: baz, stopped" unless $groups->{baz};
 die "missing group: test1, stopped" unless $groups->{test1};
 die "wrong number of users in group test1, stopped" unless scalar(@{$groups->{test1}}) == 2;
 die "foo@ missing from group test1 (",$groups->{test1}->[0],"), stopped" unless $groups->{test1}->[0] eq 'foo@yahoo.com';
-die "$test_user missing from group test1 (",$groups->{test1}->[1],"), stopped" unless $groups->{test1}->[1] eq $test_user;
+die "$test_user1 missing from group test1 (",$groups->{test1}->[1],"), stopped" unless $groups->{test1}->[1] eq $test_user1;
 die "missing group: test2, stopped" unless $groups->{test2};
 die "wrong number of users in group test2, stopped" unless scalar(@{$groups->{test2}}) == 1;
 die "baz@ missing from group test2 (",$groups->{test2}->[0],"), stopped" unless $groups->{test2}->[0] eq 'baz@yahoo.com';

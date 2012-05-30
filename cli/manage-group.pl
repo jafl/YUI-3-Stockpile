@@ -36,15 +36,17 @@ getopt('u', \%opt);
 
 my $debug = $opt{d};
 
-if (scalar(@ARGV) < 2)
+if (scalar(@ARGV) < 3)
 {
-	print "usage: $0 [-d] [-u user] stockpile_manager_url group\n";
+	print "usage: $0 [-d] [-u user] stockpile_manager_url group action [...]\n";
+	print "\tactions: new, add <user>, remove <user>\n";
 	exit 1;
 }
 
-my $url   = shift;
-my $group = shift;
-my $user  = $opt{u};
+my $url    = shift;
+my $group  = shift;
+my $action = shift;
+my $user   = $opt{u};
 
 my $ua = LWP::UserAgent->new();
 if ($ua->can('ssl_opts'))
@@ -83,14 +85,52 @@ if ($res->{needsPassword})
 	print "\n";
 }
 
-$res = $ua->post
-(
-	$url.'/create-group',
-	Content =>
-	[
-		name => $group,
-		user => $user,
-		pass => $password
-	]
-);
+if ($action eq 'new')
+{
+	$res = $ua->post
+	(
+		$url.'/create-group',
+		Content =>
+		[
+			name => $group,
+			user => $user,
+			pass => $password
+		]
+	);
+}
+elsif ($action eq 'add')
+{
+	my $add_user = shift;
+	$res = $ua->post
+	(
+		$url.'/add-user-to-group',
+		Content =>
+		[
+			name      => $group,
+			orig_user => $user,
+			pass      => $password,
+			new_user  => $add_user
+		]
+	);
+}
+elsif ($action eq 'remove')
+{
+	my $del_user = shift;
+	$res = $ua->post
+	(
+		$url.'/remove-user-from-group',
+		Content =>
+		[
+			name      => $group,
+			orig_user => $user,
+			pass      => $password,
+			del_user  => $del_user
+		]
+	);
+}
+else
+{
+	print "unknown action: $action\n";
+	exit 1;
+}
 decode_response();

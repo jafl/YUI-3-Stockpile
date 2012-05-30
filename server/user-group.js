@@ -94,4 +94,43 @@ exports.configure = function(y, app, argv)
 			}
 		});
 	});
+
+	app.post('/remove-user-from-group', function(req, res)
+	{
+		var form = new mod_form.IncomingForm();
+		form.parse(req, function(err, fields, files)
+		{
+			var success = 0;
+
+			if (!fields.name)
+			{
+				res.json({ error: 'missing group name' });
+			}
+			else if (!fields.orig_user)
+			{
+				res.json({ error: 'missing initiating user name' });
+			}
+			else if (!fields.del_user)
+			{
+				res.json({ error: 'missing target user name' });
+			}
+			else if (!mod_auth.checkPassword(fields.orig_user, fields.pass))
+			{
+				res.json({ error: 'invalid password' });
+			}
+			else if (!mod_auth.groupExists(fields.name))
+			{
+				res.json({ error: 'group does not exist' });
+			}
+			else if (!mod_auth.userInGroup(fields.orig_user, fields.name))
+			{
+				res.json({ error: 'initiating user is not in group' });
+			}
+			else
+			{
+				var done = mod_auth.removeUserFromGroup(fields.name, fields.del_user);
+				res.json({ success: done ? 1 : 0 });
+			}
+		});
+	});
 };
