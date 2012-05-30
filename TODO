@@ -1,3 +1,6 @@
+update TESTING with cases for group mgmt, module mgmt, etc
+
+
 npm modules
 	load from app directory or npm module
 	yui log filter
@@ -11,6 +14,10 @@ optimize dependency loading via nodejs:
 
 animation + history manager when browsing
 	attach event to Back link
+
+combo,combo-dev
+	support https
+	need separate instances, for CSS image links :(
 
 upload
 	if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */

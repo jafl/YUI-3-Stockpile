@@ -8,5 +8,5 @@
 	"adminport": 8669,
 
 	"admins":     ["vagrant","lindalj"],
-	"mailserver": "yahoo-inc.com"
+	"mailserver": "yahoo.com"
 }

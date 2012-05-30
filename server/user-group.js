@@ -9,7 +9,9 @@
 var Y,
 
 	mod_form = require('formidable'),
-	mod_auth = require('./auth.js');
+	mod_auth = require('./auth.js'),
+
+	mod_mgr_util = require('./manager-util.js');
 
 exports.configure = function(y, app, argv)
 {
@@ -43,7 +45,8 @@ exports.configure = function(y, app, argv)
 				return;
 			}
 
-			mod_auth.checkPassword(fields.user, fields.pass, function(auth)
+			var user = mod_mgr_util.appendMailServer(fields.user);
+			mod_auth.checkPassword(user, fields.pass, function(auth)
 			{
 				if (!auth)
 				{
@@ -55,7 +58,7 @@ exports.configure = function(y, app, argv)
 				}
 				else
 				{
-					mod_auth.addUserToGroup(fields.name, fields.user);
+					mod_auth.addUserToGroup(fields.name, user);
 					res.json({ success: 1 });
 				}
 			});
@@ -85,23 +88,25 @@ exports.configure = function(y, app, argv)
 				return;
 			}
 
-			mod_auth.checkPassword(fields.orig_user, fields.pass, function(auth)
+			var orig_user = mod_mgr_util.appendMailServer(fields.orig_user);
+			var new_user  = mod_mgr_util.appendMailServer(fields.new_user);
+			mod_auth.checkPassword(orig_user, fields.pass, function(auth)
 			{
 				if (!auth)
 				{
 					res.json({ error: 'invalid password' });
 				}
-				else if (!mod_auth.groupExists(fields.name))					// don't tell just anybody
+				else if (!mod_auth.groupExists(fields.name))			// don't tell just anybody
 				{
 					res.json({ error: 'group does not exist' });
 				}
-				else if (!mod_auth.userInGroup(fields.orig_user, fields.name))	// don't tell just anybody
+				else if (!mod_auth.userInGroup(orig_user, fields.name))	// don't tell just anybody
 				{
 					res.json({ error: 'initiating user is not in group' });
 				}
 				else
 				{
-					mod_auth.addUserToGroup(fields.name, fields.new_user);
+					mod_auth.addUserToGroup(fields.name, new_user);
 					res.json({ success: 1 });
 				}
 			});
@@ -131,23 +136,25 @@ exports.configure = function(y, app, argv)
 				return;
 			}
 
-			mod_auth.checkPassword(fields.orig_user, fields.pass, function(auth)
+			var orig_user = mod_mgr_util.appendMailServer(fields.orig_user);
+			var del_user  = mod_mgr_util.appendMailServer(fields.del_user);
+			mod_auth.checkPassword(orig_user, fields.pass, function(auth)
 			{
 				if (!auth)
 				{
 					res.json({ error: 'invalid password' });
 				}
-				else if (!mod_auth.groupExists(fields.name))					// don't tell just anybody
+				else if (!mod_auth.groupExists(fields.name))			// don't tell just anybody
 				{
 					res.json({ error: 'group does not exist' });
 				}
-				else if (!mod_auth.userInGroup(fields.orig_user, fields.name))	// don't tell just anybody
+				else if (!mod_auth.userInGroup(orig_user, fields.name))	// don't tell just anybody
 				{
 					res.json({ error: 'initiating user is not in group' });
 				}
 				else
 				{
-					var done = mod_auth.removeUserFromGroup(fields.name, fields.del_user);
+					var done = mod_auth.removeUserFromGroup(fields.name, del_user);
 					res.json({ success: done ? 1 : 0 });
 				}
 			});

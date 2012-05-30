@@ -48,6 +48,11 @@ var argv = optimist
 		default:  defaults.path || '/var/yui3-stockpile',
 		describe: 'Path to repository'
 	})
+	.option('logpath',
+	{
+		default:  defaults.logpath || '/var/log/yui3-stockpile',
+		describe: 'Path to combo.js log files'
+	})
 	.option('combo',
 	{
 		demand:   true,
@@ -112,11 +117,13 @@ var argv = optimist
 	})
 	.argv;
 
-var debug = argv.debug;
-if (debug)
+var log_levels = ['info', 'warn', 'error'];
+if (argv.debug)
 {
 	require('long-stack-traces');
+	log_levels.push('debug');
 }
+require('./server/yui-log-filter.js').installFilter(Y, log_levels);
 
 if (Y.Lang.isString(argv.admins))
 {
@@ -125,7 +132,7 @@ if (Y.Lang.isString(argv.admins))
 
 require('./server/manager-util.js').init(Y, argv);
 
-var log_addr = argv.address || os.hostname();
+var log_addr = argv.address || mod_os.hostname();
 
 var app = mod_express.createServer();
 app.use(mod_express.static(__dirname + '/client'));
