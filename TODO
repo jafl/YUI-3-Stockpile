@@ -22,7 +22,6 @@ upload
 
 auth
 	cli for removing group
-	cli for removing user from a group
 		normal user can only modify group to which he belongs
 
 	cli for deleting namespace, bundle, ns module, version
@@ -42,8 +41,6 @@ ui for stats:
 		for individual hour or range of hours
 		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
 		scroll buttons:  5% (<), 25% (<<), all the way (|<)
-
-script to pull a specific version of a gallery module into the repo
 
 -----
 
