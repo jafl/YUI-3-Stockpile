@@ -63,13 +63,14 @@ if ($debug)
 $res = $ua->get($url.'/auth-info');
 decode_response();
 
-if ($res->{usersrc} eq 'whoami')
+if ($res->{usersrc} eq 'whoami' || !$user)
 {
 	print "ignoring -u option\n" if $user;
 
 	chomp($user = `whoami`);
 }
-elsif ($res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
+
+if ($res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
 {
 	print "Your username must be an email address.\n";
 	exit 1;

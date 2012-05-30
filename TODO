@@ -1,4 +1,5 @@
 update TESTING with cases for group mgmt, module mgmt, etc
+switch to use nodejs native zlib support
 
 
 npm modules

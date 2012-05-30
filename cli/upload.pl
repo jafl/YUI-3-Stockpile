@@ -170,37 +170,18 @@ my $token = $res->{token};
 
 # user
 
-my $user;
-if ($res->{usersrc} eq 'whoami')
+my $user = $opt{u};
+if ($res->{usersrc} eq 'whoami' || !$user)
 {
-	print "ignoring -u option\n" if $opt{u};
+	print "ignoring -u option\n" if $user;
 
 	chomp($user = `whoami`);
 }
-else
+
+if ($user && $res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
 {
-	$user = $opt{u};
-	if ($user && $res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
-	{
-		print "Your username must be an email address.\n";
-		$user = '';
-	}
-
-	my $count = 0;
-	until ($user)
-	{
-		$count++;
-		die "patience exceeded, stopped" if $count > 5;
-
-		print "Enter your username: ";
-		chomp($user = <STDIN>);
-
-		if ($res->{usertype} eq 'email' && $user !~ /.+\@.+\..+/)
-		{
-			print "Your username must be an email address.\n";
-			$user = '';
-		}
-	}
+	print "Your username must be an email address.\n";
+	exit 1;
 }
 
 # auth

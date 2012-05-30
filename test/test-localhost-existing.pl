@@ -14,7 +14,7 @@ do './util.pl';
 
 print "$0\n";
 
-# upload
+### upload
 
 open(F1, '| perl ../cli/upload.pl http://127.0.0.1:8669 ns foo 1.0.f ./upload/foo > /dev/null');
 print F1 "ns: short desc\n";
@@ -52,7 +52,7 @@ close(F2);
 open(F1, '| perl ../cli/upload.pl http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2');
 close(F1);
 
-# auth
+### auth
 
 open(F1, '| perl ../cli/manage-group.pl http://127.0.0.1:8669 test1 new > /dev/null');
 open(F2, '| perl ../cli/manage-group.pl http://127.0.0.1:8669 test2 new > /dev/null');

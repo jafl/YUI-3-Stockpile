@@ -18,11 +18,11 @@ upload
 			new user
 				new group
 				existing group - fail
-		testing
+		testauth
 +			known user
 +				valid password
 +				invalid password - fail
-+			unknown user - fail
+			unknown user - fail
 
 		wildcard group
 
