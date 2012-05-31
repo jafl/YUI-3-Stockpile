@@ -9,6 +9,7 @@
 var Y,
 
 	mod_crypto = require('crypto'),
+	mod_auth   = require('./auth.js'),
 
 	argv;
 
@@ -20,7 +21,14 @@ exports.init = function(y, _argv)
 
 exports.appendMailServer = function(user)
 {
-	return argv.mailserver && !/@/.test(user) ? user + '@' + argv.mailserver : user;
+	if (mod_auth.isWildcardUser(user))
+	{
+		return user;
+	}
+	else
+	{
+		return argv.mailserver && !/@/.test(user) ? user + '@' + argv.mailserver : user;
+	}
 };
 
 exports.generateToken = function()

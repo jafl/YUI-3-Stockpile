@@ -1,3 +1,4 @@
+browse: make group a link to page showing members of group
 update TESTING with cases for group mgmt, module mgmt, etc
 switch to use nodejs native zlib support
 

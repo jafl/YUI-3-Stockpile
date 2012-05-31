@@ -67,6 +67,11 @@ exports.init = function(y, argv)
 	}
 };
 
+exports.isWildcardUser = function(user)
+{
+	return (user == wildcard_user);
+};
+
 exports.userExists = function(user)
 {
 	return Y.some(groups, function(users)
