@@ -340,12 +340,23 @@ exports.configure = function(y, app, argv)
 					return;
 				}
 
-				// copy, because rename doesn't work across filesystems
+				// copy, because (1) rename doesn't work across filesystems
+				// and (2) we need to modify css image paths
 
 				mod_fs.readFile(file.path, tasks.add(function(err, contents)
 				{
-					var p = data.path + '/' + path;
-					mod_mkdirp.sync(mod_path.dirname(p), dir_perm);
+					var p = data.path + '/' + path,
+						d = mod_path.dirname(p);
+					mod_mkdirp.sync(d, dir_perm);
+
+					var info = mod_content_type.analyze(Y, path);
+					if (info && info.type == 'text/css')
+					{
+						// use only relative path, to support both http and https
+
+						var d1 = d.replace(argv.path, '').replace(/^\/+/, '');
+						contents = contents.toString().replace(/url\s*\(\s*(['"]?)([^\)\/])/g, 'url($1' + d1 + '/$2');
+					}
 
 					mod_fs.writeFile(p, contents, tasks.add(function(err)
 					{

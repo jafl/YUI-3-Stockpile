@@ -49,7 +49,7 @@ sub test()
 	my $res  = $ua->get('http://127.0.0.1:8666/combo?ns/foo/1.0.f/assets/skins/ace/sp-ns-foo.css&bundle/1.0.z/bundle-bar/assets/skins/sam/bundle-bar.css');
 	my $code = decode_response($res);
 	die $code,"\nwrong data" unless
-		$code eq slurp('./upload/foo/assets/skins/ace/sp-ns-foo.css')
+		$code eq slurp('./upload-result/foo/1.0.f/sp-ns-foo.css')
 				.slurp('./upload/bundle1/bundle-bar/assets/skins/sam/bundle-bar.css');
 
 	# image

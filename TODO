@@ -1,6 +1,5 @@
 combo,combo-dev
 	support https
-	fix relative url's in css files -- only relative path, to support both http and https
 
 
 npm modules
