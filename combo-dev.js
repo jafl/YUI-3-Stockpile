@@ -18,6 +18,7 @@ function(Y) {
 var mod_fs      = require('fs'),
 	mod_path    = require('path'),
 	mod_url     = require('url'),
+	mod_qs      = require('querystring'),
 	mod_http    = require('http'),
 	mod_express = require('express'),
 	mod_request = require('request'),
@@ -68,15 +69,8 @@ function moduleName(s)
 	return (m && m.length && (m[1]+m[2]));
 }
 
-app.get('/combo', function(req, res)
+function combo(req, res, query)
 {
-	var query = mod_url.parse(req.url).query;
-	if (!query)
-	{
-		res.end();
-		return;
-	}
-
 	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
@@ -183,6 +177,23 @@ app.get('/combo', function(req, res)
 			return s;
 		}));
 	});
+}
+
+app.get('/combo', function(req, res)
+{
+	var query = mod_url.parse(req.url).query;
+	if (!query)
+	{
+		res.end();
+		return;
+	}
+
+	combo(req, res, mod_qs.unescape(query));
+});
+
+app.get('/*', function(req, res)
+{
+	combo(req, res, req.params[0]);
 });
 
 Y.log('listening on port ' + config.port, 'info', 'combo-dev');

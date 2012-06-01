@@ -11,20 +11,34 @@ upload
 +		new version
 +		existing version - fail
 
-	auth
-		localhost
-+			admin
-+			existing user
-			new user
-				new group
-				existing group - fail
-		testauth
-+			known user
-+				valid password
-+				invalid password - fail
-			unknown user - fail
+delete
+	namespace
+	module
+	module version
+	bundle
+	bundle version
 
-		wildcard group
+auth -- cross with all above tests
+
+	localhost
++		admin
++		existing user
+		new user
+			new group
+			existing group - fail
+
+	testauth
++		known user
++			valid password
++			invalid password - fail
+		unknown user - fail
+
+	wildcard group
+
++	create group
+	remove group
++	add user to group
++	remove user from group
 
 combo
 
@@ -45,6 +59,8 @@ combo
 +	file with ; - fail
 +	file with .. - fail
 
+	direct file access (without /combo)
+
 combo-dev
 
 +	5 sets in parallel
@@ -63,3 +79,5 @@ combo-dev
 +	overridden image file
 
 +	pdf file - fail
+
+	direct file access (without /combo)

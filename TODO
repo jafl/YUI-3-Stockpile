@@ -1,6 +1,7 @@
 browse: make group a link to page showing members of group
-update TESTING with cases for group mgmt, module mgmt, etc
-switch to use nodejs native zlib support
+combo,combo-dev
+	support https
+	fix relative url's in css files -- only relative path, to support both http and https
 
 
 npm modules
@@ -17,17 +18,12 @@ optimize dependency loading via nodejs:
 animation + history manager when browsing
 	attach event to Back link
 
-combo,combo-dev
-	support https
-	need separate instances, for CSS image links :(
 
 upload
 	if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
 
 	compute transitive dependencies within bundle when upload, to reduce number of requests
 		store in info.json
-
-	fix relative url's in css files
 
 auth
 	cli for removing group

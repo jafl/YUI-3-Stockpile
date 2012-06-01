@@ -103,16 +103,8 @@ var app = mod_express.createServer();
 
 var debug_re = /-debug\.js$/;
 
-app.get('/combo', function(req, res)
+function combo(req, res, query)
 {
-	var query = mod_url.parse(req.url).query;
-	if (!query)
-	{
-		res.end();
-		return;
-	}
-
-	query = mod_qs.unescape(query);
 	if (path_util.invalidPath(query))
 	{
 		Y.log('Blocked attempt to break sandbox: ' + query, 'warn', 'combo');
@@ -127,7 +119,7 @@ app.get('/combo', function(req, res)
 		res.end();
 		return;
 	}
-	else if (query_info.binary)
+	else if (query_info.binary)	// not cached, because should be on separate CDN
 	{
 		headers(res);
 		mod_fs.createReadStream(argv.path + '/' + query).pipe(res);		// security: don't use path.resolve
@@ -257,6 +249,23 @@ app.get('/combo', function(req, res)
 		}
 		res.send(send_compressed ? data.gzip : data.raw);
 	}
+}
+
+app.get('/combo', function(req, res)
+{
+	var query = mod_url.parse(req.url).query;
+	if (!query)
+	{
+		res.end();
+		return;
+	}
+
+	combo(req, res, mod_qs.unescape(query));
+});
+
+app.get('/*', function(req, res)
+{
+	combo(req, res, req.params[0]);
 });
 
 Y.log('listening on port ' + argv.port, 'info', 'combo');

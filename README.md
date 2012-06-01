@@ -262,6 +262,9 @@ plotted on a graph of log(response size) vs % of total hits.  Keys with
 high percentages indicate thrashing.  The response size helps determine how
 much the cache should be expanded.
 
+Images are not cached because these should be uploaded separately to a CDN.
+Images are supported only to simplify the development process.
+
 Dependency Optimization
 -----------------------
 
@@ -276,3 +279,8 @@ Why Perl?
 Perl was chosen for the command line tools because it is available
 everywhere.  We did not want to require installation of NodeJS on machines
 which only need to deploy to Stockpile.
+
+Why gzip instead of NodeJS zlib?
+--------------------------------
+
+The gzip module spawns a separate process, so it can run on a separate core.
