@@ -1,4 +1,3 @@
-browse: make group a link to page showing members of group
 combo,combo-dev
 	support https
 	fix relative url's in css files -- only relative path, to support both http and https
@@ -46,6 +45,10 @@ ui for stats:
 		for individual hour or range of hours
 		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
 		scroll buttons:  5% (<), 25% (<<), all the way (|<)
+
+option to use multiple cores
+	automatically fork appropriate number of workers
+	http://nodejs.org/docs/latest/api/cluster.html
 
 -----
 

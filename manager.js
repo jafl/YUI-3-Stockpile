@@ -137,7 +137,9 @@ var log_addr = argv.address || mod_os.hostname();
 var app = mod_express.createServer();
 app.use(mod_express.static(__dirname + '/client'));
 
+require('./server/browse-util.js').init(Y);
 require('./server/browse.js').configure(Y, app, argv);
+require('./server/browse-groups.js').configure(Y, app, argv);
 
 Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'info', 'manager');
 app.listen(argv.port, argv.address);

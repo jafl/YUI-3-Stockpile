@@ -150,3 +150,9 @@ exports.removeUserFromGroup = function(group, user)
 		return false;
 	}
 };
+
+exports.getUsersInGroup = function(group)
+{
+	var g = groups[group];
+	return g ? g.slice(0) : null;
+};

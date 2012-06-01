@@ -1,0 +1,13 @@
+<h2>Members of group: {{group}}</h2>
+
+{{#if users}}
+	<ul>
+	{{#users}}
+		<li><a href="mailto:{{.}}">{{.}}</a></li>
+	{{/users}}
+	</ul>
+
+	<p>Only existing members of this group are allowed to add new members.</p>
+{{else}}
+	<p>This group does not exist.</p>
+{{/if}}
