@@ -14,6 +14,7 @@ var Y,
 	mod_qs   = require('querystring'),
 	mod_hbs  = require('handlebars'),
 
+	browse_util  = require('./browse-util.js'),
 	content_type = require('./content-type.js');
 
 var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf8'));
@@ -33,143 +34,13 @@ function compareVersions(a,b)		// descending
 	return b.vers.length - a.vers.length;
 }
 
-function scandir(path, callback)
-{
-	mod_fs.readdir(path, function(err, names)
-	{
-		var stats_map = {};
-		if (err)
-		{
-			callback(err, stats_map);
-			return;
-		}
-		else if (names.length === 0)
-		{
-			callback(null, stats_map);
-			return;
-		}
-
-		var tasks = new Y.Parallel();
-		Y.each(names, function(name)
-		{
-			var p = path + '/' + name;
-			mod_fs.stat(p, tasks.add(function(err, stats)
-			{
-				if (!err)
-				{
-					stats_map[ name ] = stats;
-				}
-			}));
-		});
-
-		tasks.done(function()
-		{
-			callback(null, stats_map);
-		});
-	});
-}
-
-function buildDirectoryTree(root, path, callback)
-{
-	scandir(root + '/' + path, function(err, stats_map)
-	{
-		if (err)
-		{
-			callback(
-			[{
-				error: Y.Escape.html(err.message)
-			}]);
-			return;
-		}
-
-		var children = [],
-			tasks    = new Y.Parallel();
-		Y.each(stats_map, function(stats, name)
-		{
-			var node =
-			{
-				name: name,
-				path: path
-			};
-
-			if (stats.isDirectory())
-			{
-				children.push(node);
-
-				buildDirectoryTree(root, path + '/' + name, tasks.add(function(c)
-				{
-					node.children = c;
-				}));
-			}
-			else if (stats.isFile() && name != 'info.json')
-			{
-				children.push(node);
-			}
-		});
-
-		tasks.done(function()
-		{
-			callback(children);
-		});
-	});
-}
-
-function renderDirectoryTree(nodes, back)
-{
-	function renderNode(markup, node)
-	{
-		var name =
-			node.error    ? node.error :
-			node.children ? node.name :
-			Y.Lang.sub('<a href="/browse?file={path}/{name}&amp;back={back}">{name}</a>',
-			{
-				path: node.path,
-				name: node.name,
-				back: mod_qs.escape(back)
-			});
-
-		return markup + Y.Lang.sub('<li class="{c}">{name}{children}</li>',
-		{
-			name:     name,
-			c:        node.error ? 'error' : node.children ? 'directory' : 'file',
-			children: node.children && node.children.length ? Y.reduce(node.children, '<ul>', renderNode) + '</ul>' : ''
-		});
-	}
-
-	var markup = Y.reduce(nodes, '', renderNode);
-	if (markup)
-	{
-		markup = '<ul>' + markup + '</ul>';
-	}
-	return markup;
-}
-
-function backQuery(query, exclude)
-{
-	return mod_qs.stringify(Y.clone(query, true, function(value, key)
-	{
-		return (key != exclude && key != 'layout');
-	}));
-}
-
-function browseError(res, argv, back, err)
-{
-	res.render('browse-error.hbs',
-	{
-		title:    argv.title,
-		back:     back,
-		err:      err.message.replace(argv.path, '').replace(/'\/+/, '\''),
-		layout:   true
-	});
-}
-
 function browseRoot(res, argv)
 {
-	scandir(argv.path, function(err, stats_map)
+	browse_util.scandir(argv.path, function(err, stats_map)
 	{
 		if (err)
 		{
-			browseError(res, argv, '', err);
+			browse_util.browseError(res, argv, '', err);
 			return;
 		}
 
@@ -209,11 +80,11 @@ function browseRoot(res, argv)
 function browseNamespace(res, argv, query)
 {
 	var path = argv.path + '/' + query.ns;
-	scandir(path, function(err, stats_map)
+	browse_util.scandir(path, function(err, stats_map)
 	{
 		if (err)
 		{
-			browseError(res, argv, ' ', err);
+			browse_util.browseError(res, argv, ' ', err);
 			return;
 		}
 
@@ -225,7 +96,7 @@ function browseNamespace(res, argv, query)
 				return;
 			}
 
-			scandir(path + '/' + module, tasks.add(function(err, v_stats_map)
+			browse_util.scandir(path + '/' + module, tasks.add(function(err, v_stats_map)
 			{
 				var versions = [];
 				Y.each(v_stats_map, function(v_stats, vers)
@@ -280,11 +151,11 @@ function browseNamespace(res, argv, query)
 function browseModule(res, argv, query)
 {
 	var path = argv.path + '/' + query.ns + '/' + query.m;
-	scandir(path, function(err, stats_map)
+	browse_util.scandir(path, function(err, stats_map)
 	{
 		if (err)
 		{
-			browseError(res, argv, backQuery(query, 'm'), err);
+			browse_util.browseError(res, argv, browse_util.backQuery(query, 'm'), err);
 			return;
 		}
 
@@ -314,7 +185,7 @@ function browseModule(res, argv, query)
 			res.render('browse-module.hbs',
 			{
 				title:    argv.title,
-				back:     backQuery(query, 'm'),
+				back:     browse_util.backQuery(query, 'm'),
 				ns:       query.ns,
 				name:     query.m,
 				desc:     desc.long,
@@ -343,9 +214,9 @@ function browseModuleVersion(res, argv, query)
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	buildDirectoryTree(argv.path, partial, tasks.add(function(children)
+	browse_util.buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
-		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
+		file_tree = browse_util.renderDirectoryTree(children, mod_qs.stringify(query));
 	}));
 
 	tasks.done(function()
@@ -353,7 +224,7 @@ function browseModuleVersion(res, argv, query)
 		res.render('browse-module-version.hbs',
 		{
 			title:     argv.title,
-			back:      backQuery(query, 'v'),
+			back:      browse_util.backQuery(query, 'v'),
 			ns:        query.ns,
 			name:      query.m,
 			vers:      query.v,
@@ -369,11 +240,11 @@ function browseModuleVersion(res, argv, query)
 function browseBundle(res, argv, query)
 {
 	var path = argv.path + '/' + query.b;
-	scandir(path, function(err, stats_map)
+	browse_util.scandir(path, function(err, stats_map)
 	{
 		if (err)
 		{
-			browseError(res, argv, ' ', err);
+			browse_util.browseError(res, argv, ' ', err);
 			return;
 		}
 
@@ -428,11 +299,11 @@ function browseBundle(res, argv, query)
 function browseBundleVersion(res, argv, query)
 {
 	var path = argv.path + '/' + query.b + '/' + query.v;
-	scandir(path, function(err, stats_map)
+	browse_util.scandir(path, function(err, stats_map)
 	{
 		if (err)
 		{
-			browseError(res, argv, backQuery(query, 'v'), err);
+			browse_util.browseError(res, argv, browse_util.backQuery(query, 'v'), err);
 			return;
 		}
 
@@ -468,7 +339,7 @@ function browseBundleVersion(res, argv, query)
 			res.render('browse-bundle-version.hbs',
 			{
 				title:   argv.title,
-				back:    backQuery(query, 'v'),
+				back:    browse_util.backQuery(query, 'v'),
 				bundle:  query.b,
 				desc:    desc.long,
 				vers:    query.v,
@@ -499,9 +370,9 @@ function browseBundleModule(res, argv, query)
 		desc = (data && Y.JSON.parse(data)) || {};
 	}));
 
-	buildDirectoryTree(argv.path, partial, tasks.add(function(children)
+	browse_util.buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
-		file_tree = renderDirectoryTree(children, mod_qs.stringify(query));
+		file_tree = browse_util.renderDirectoryTree(children, mod_qs.stringify(query));
 	}));
 
 	tasks.done(function()
@@ -509,7 +380,7 @@ function browseBundleModule(res, argv, query)
 		res.render('browse-bundle-module.hbs',
 		{
 			title:     argv.title,
-			back:      backQuery(query, 'm'),
+			back:      browse_util.backQuery(query, 'm'),
 			name:      query.m,
 			vers:      query.v,
 			desc:      desc.long,
@@ -538,7 +409,7 @@ function showFile(res, argv, query)
 		{
 			if (err)
 			{
-				browseError(res, argv, mod_qs.unescape(query.back), err);
+				browse_util.browseError(res, argv, mod_qs.unescape(query.back), err);
 			}
 			else if (query.raw == 'true')
 			{

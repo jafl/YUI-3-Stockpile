@@ -36,7 +36,7 @@ Install nodejs and then install these packages:
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
 
-    sudo cpan install JSON
+    sudo cpan JSON
 
 Usage
 -----

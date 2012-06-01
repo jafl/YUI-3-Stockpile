@@ -13,11 +13,6 @@ var exec = require('child_process').exec;
 
 exports.init = function(argv)
 {
-	if (argv.address != 'localhost' && argv.address != '127.0.0.1')
-	{
-		console.error('auth=testing requires manager address to be localhost (127.0.0.1)');
-		process.exit(1);
-	}
 };
 
 exports.use_whoami     = false;
