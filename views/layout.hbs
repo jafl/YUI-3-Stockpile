@@ -1,83 +1,114 @@
 <!DOCTYPE HTML>
+<html lang="en">
 <html>
 
 <head>
-	<title>{{title}}</title>
-	<meta http-equiv=content-type content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <meta name="MSSmartTagsPreventParsing" content="TRUE" />
+    <meta http-equiv="X-UI-Compatible" content="IE=edge,chrome=1" />
 
-	<script src="http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js"></script>
+    <title>{{title}}</title>
 
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssreset/reset-min.css" />
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssfonts/fonts-min.css" />
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssbase/base-min.css" />
+    <script src="http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js"></script>
 
-	<style type="text/css">
-	body { margin:0; }
-	.body { margin:0 10px; }
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssreset/reset-min.css" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssfonts/fonts-min.css" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssbase/base-min.css" />
 
-	h1 { font-size:100%; text-align:center; margin:0; padding:5px 10px; background-color:#EEEEEE; }
-	a.back { float:left; padding:5px 10px; }
+    <style>
+    body {margin:0;}
 
-	.ns-list { float:left; margin-right:50px; }
-	.bundle-list { float:left; }
+    a, a:link, a:visited {text-decoration:none;font-weight:bold;color:#3a6;}
+    a:hover {text-decoration:underline;}
 
-	.code { float:right; margin-top:1em; }
-	.code pre { border:1px solid black; padding:5px; background-color:#EEEEEE; }
-	.code pre .list-item:after { content:"," }
-	.code pre .list-item:last-child:after { content:"" }
-	#copy-code { float:right; }
+    .drill-back {margin-right:6px;}
 
-	.file-title { margin-bottom:0; }
-	.file-tree { margin-left:10px; }
-	.file-tree ul { margin:0; }
-	.file-tree li {  list-style-type:none; padding-left:17px; padding-top:5px; }
-	.file-tree li.directory { background:url("/img/directory.png") left 5px no-repeat; }
-	.file-tree li.file { background:url("/img/file.png") left 5px no-repeat; }
+    .header {height:40px;padding:0 18px;border-bottom:1px solid #cacaca;background-color:#eaeaea;
+        background-image:linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        background-image:-o-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        background-image:-moz-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        background-image:-webkit-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);}
+    .header h1 {float:left;margin:0;height:40px;line-height:40px;padding-right:18px;border-right:1px solid #e7e7e7;}
+    .header .nav {float:left;height:40px;line-height:40px;padding-left:12px;border-left:1px solid #fff;font-weight:bold;}
 
-	.notes { font-weight:bold; }
+    .content {margin:0 18px;}
+    .content .nav .drill-back {float:left;line-height:150%;}
+    .content .nav .toggle-code-highlight {float:right;font-size:108%;font-weight:normal;}
+    .content .nav a:hover {text-decoration:none;}
 
-	table,th,td { border:1px solid #CBCBCB; }
-	td { border-top:0; border-bottom:0; }
-	tr:nth-child(2n+1) td { background-color:#EDF5FF; }
-	</style>
+    .ns-list {float:left;margin-right:50px;}
+    .bundle-list {float:left;}
 
-	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
-	<meta http-equiv="X-UI-Compatible" content="IE=edge,chrome=1" />
+    .code {float:right;margin-top:1em;}
+    .code pre {border:1px solid black;padding:5px;background-color:#eee;}
+    .code pre .list-item:after {content:",";}
+    .code pre .list-item:last-child:after {content:"";}
+    #copy-code {float:right;}
+
+    .file-title {margin-bottom:0;}
+    .file-tree {margin-left:10px;}
+    .file-tree ul {margin:0;}
+    .file-tree li {list-style-type:none;padding-left:17px;padding-top:5px;}
+    .file-tree li.directory {background:url("/img/directory.png") left 5px no-repeat;}
+    .file-tree li.file {background:url("/img/file.png") left 5px no-repeat;}
+
+    .notes {font-weight:bold;}
+
+    table, th, td {border:1px solid #cbcbcb;}
+    td {border-top:0;border-bottom:0;}
+    tr:nth-child(2n+1) td {background-color:#edf5ff;}
+    </style>
 </head>
 
 <body class="yui3-skin-sam">
 
-{{#if back}}<a class="back" href="/browse?{{back}}">&larr; Back</a>{{/if}}
-<h1>{{title}}</h1>
+<header>
+    <div class="header">
+        <h1>{{title}}</h1>
+        <nav>
+            <div class="nav">
+                <!-- reserved for future use -->
+            </div>
+        </nav>
+    </div>
+</header>
 
-<div class="body">
-{{{body}}}
-</div>
+<section>
+    <div class="section content">
+        <nav>
+            <div class="nav">
+                {{#if back}}<a class="drill-back" href="/browse?{{back}}" title="Move back one level">&#9664;</a>{{/if}}
+            </div>
+        </nav>
+        {{{body}}}
+    </div>
+</section>
 
 <script type="text/javascript">
 YUI({
-	gallery: 'gallery-2012.04.26-15-49'
+    gallery: 'gallery-2012.04.26-15-49'
 }).use('gallery-clipboard', function(Y) {
 "use strict";
 
 var button = Y.one('#copy-code');
 if (button)
 {
-	button.plug(Y.ClipBoard, { moviepath: '/' })
-		.on('clipboard:load', function()
-		{
-			var code = Y.one('#sample-code');
-			this.on('mouseover', function()
-			{
-				this.setAttribute('copy', code.get('innerText') || code.get('textContent'));
-			});
+    button.plug(Y.ClipBoard, { moviepath: '/' })
+        .on('clipboard:load', function()
+        {
+            var code = Y.one('#sample-code');
+            this.on('mouseover', function()
+            {
+                this.setAttribute('copy', code.get('innerText') || code.get('textContent'));
+            });
 
-			this.clipboard.setEvent('click', function()
-			{
-				this.clipboard.hide();
-			},
-			true);
-		});
+            this.clipboard.setEvent('click', function()
+            {
+                this.clipboard.hide();
+            },
+            true);
+        });
 }
 
 });
