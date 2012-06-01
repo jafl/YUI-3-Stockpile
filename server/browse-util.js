@@ -49,7 +49,7 @@ exports.scandir = function(path, callback)
 
 exports.buildDirectoryTree = function(root, path, callback)
 {
-	scandir(root + '/' + path, function(err, stats_map)
+	exports.scandir(root + '/' + path, function(err, stats_map)
 	{
 		if (err)
 		{
@@ -74,7 +74,7 @@ exports.buildDirectoryTree = function(root, path, callback)
 			{
 				children.push(node);
 
-				buildDirectoryTree(root, path + '/' + name, tasks.add(function(c)
+				exports.buildDirectoryTree(root, path + '/' + name, tasks.add(function(c)
 				{
 					node.children = c;
 				}));
