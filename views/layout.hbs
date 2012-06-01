@@ -29,22 +29,31 @@
         background-image:-moz-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-webkit-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);}
-    .header h1 {float:left;margin:0;height:40px;line-height:40px;padding-right:18px;border-right:1px solid #e7e7e7;}
+    .header h1 {float:left;margin:0;height:40px;line-height:40px;padding-right:18px;border-right:1px solid #d9d9d9;}
     .header .nav {float:left;height:40px;line-height:40px;padding-left:12px;border-left:1px solid #fff;font-weight:bold;}
 
     .content {margin:0 18px;}
     .content .nav .drill-back {float:left;line-height:150%;}
     .content .nav .toggle-code-highlight {float:right;font-size:108%;font-weight:normal;}
     .content .nav a:hover {text-decoration:none;}
+    .content h2 {border-bottom:1px solid #e0e0e0;padding-bottom:12px;}
+    .content .ns-list h2, .content .bundle-list h2 {padding-bottom:0;border-bottom:none;margin-left:0;}
 
-    .ns-list {float:left;margin-right:50px;}
-    .bundle-list {float:left;}
+    .ns-list {float:left;width:45%;}
+    .bundle-list {float:right;width:50%;padding:0 0 18px 18px;border-left:1px solid #e7e7e7;}
 
-    .code {float:right;margin-top:1em;}
-    .code pre {border:1px solid black;padding:5px;background-color:#eee;}
+    .code {clear:both;float:right;width:50%;margin-right:-18px;padding:18px 24px 18px 18px;background-color:#eaeaea;
+        background-image:linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
+        background-image:-o-linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
+        background-image:-moz-linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
+        background-image:-webkit-linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
+        background-image:-ms-linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
+        border:1px solid #cacaca;border-width:1px 0 1px 1px;}
+    .code pre {padding:5px;background-color:#fff;overflow:auto;
+        border:1px solid #e0e0e0;border-top-color:#cacaca;border-left-color:#cacaca;}
     .code pre .list-item:after {content:",";}
     .code pre .list-item:last-child:after {content:"";}
-    #copy-code {float:right;}
+    button#copy-code {float:right;}
 
     .file-title {margin-bottom:0;}
     .file-tree {margin-left:10px;}
