@@ -1,5 +1,6 @@
-combo,combo-dev
-	support https
+combo: send 404 if not found
+combo-dev: propagate 404 from combo, send 404 if dev version not found
+test deleting module: check for 404
 
 
 npm modules
@@ -32,11 +33,11 @@ auth
 		(not actually deleted, to avoid re-using name/version)
 
 search
-	support "keywords" in description file
-	index description files when start up -- search by module name, keyword, short, long
+	support "tags" in description file
+	index description files when start up -- search by module name, tag, short, long
 	update index when new modules/bundles are uploaded
 
-edit namespace/module/bundle descriptions & keywords
+edit namespace/module/bundle descriptions & tags
 
 ui for stats:
 	% of hits that caused re-add

@@ -66,12 +66,12 @@ var argv = optimist
 	})
 	.option('key',
 	{
-		default:  defaults.key || '/usr/share/yui3-stockpile/manager.key',
+		default:  defaults.key || '/usr/share/yui3-stockpile/stockpile.key',
 		describe: 'Private key for https'
 	})
 	.option('cert',
 	{
-		default:  defaults.cert || '/usr/share/yui3-stockpile/manager.crt',
+		default:  defaults.cert || '/usr/share/yui3-stockpile/stockpile.crt',
 		describe: 'Certificate for https'
 	})
 	.option('address',

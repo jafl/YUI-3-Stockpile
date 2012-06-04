@@ -56,7 +56,22 @@ var argv = optimist
 	.option('port',
 	{
 		default:  defaults.port || 80,
-		describe: 'Port to listen on'
+		describe: 'Port to listen on for http'
+	})
+	.option('secureport',
+	{
+		default:  defaults.port || 443,
+		describe: 'Port to listen on for https (only used if cert/key are provided)'
+	})
+	.option('key',
+	{
+		default:  defaults.key || '/usr/share/yui3-stockpile/stockpile.key',
+		describe: 'Private key for https'
+	})
+	.option('cert',
+	{
+		default:  defaults.cert || '/usr/share/yui3-stockpile/stockpile.crt',
+		describe: 'Certificate for https'
 	})
 	.option('cache',
 	{
@@ -98,8 +113,6 @@ if (argv.cache)
 	var response_cache    = require('./server/cache.js').create(Y, argv.cache, argv['cache-log'], argv['cache-log-interval']);
 	var cache_key_pending = {};
 }
-
-var app = mod_express.createServer();
 
 var debug_re = /-debug\.js$/;
 
@@ -251,25 +264,44 @@ function combo(req, res, query)
 	}
 }
 
-app.get('/combo', function(req, res)
+function configureApp(app)
 {
-	var query = mod_url.parse(req.url).query;
-	if (!query)
+	app.get('/combo', function(req, res)
 	{
-		res.end();
-		return;
-	}
+		var query = mod_url.parse(req.url).query;
+		if (!query)
+		{
+			res.end();
+			return;
+		}
 
-	combo(req, res, mod_qs.unescape(query));
-});
+		combo(req, res, mod_qs.unescape(query));
+	});
 
-app.get('/*', function(req, res)
-{
-	combo(req, res, req.params[0]);
-});
+	app.get('/*', function(req, res)
+	{
+		combo(req, res, req.params[0]);
+	});
+}
 
-Y.log('listening on port ' + argv.port, 'info', 'combo');
+var app = mod_express.createServer();
+configureApp(app);
+
+Y.log('listening on http port ' + argv.port, 'info', 'combo');
 app.listen(argv.port);
+
+if (mod_path.existsSync(argv.key) && mod_path.existsSync(argv.cert))
+{
+	var sapp = mod_express.createServer(
+	{
+		key:  mod_fs.readFileSync(argv.key, 'utf8'),
+		cert: mod_fs.readFileSync(argv.cert, 'utf8')
+	});
+	configureApp(sapp);
+
+	Y.log('listening on https port ' + argv.secureport, 'info', 'combo');
+	sapp.listen(argv.secureport);
+}
 
 if (argv.test)
 {
