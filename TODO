@@ -1,3 +1,7 @@
+browse
+	breadcrumb on show file page
+	/group shows list of all groups
+
 combo: send 404 if not found
 combo-dev: propagate 404 from combo, send 404 if dev version not found
 test deleting module: check for 404

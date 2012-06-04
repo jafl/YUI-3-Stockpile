@@ -15,7 +15,13 @@ var Y,
 	mod_hbs  = require('handlebars'),
 
 	browse_util  = require('./browse-util.js'),
-	content_type = require('./content-type.js');
+	content_type = require('./content-type.js'),
+
+	trail_root =
+	{
+		url:  '/browse',
+		text: 'Browse'
+	};
 
 var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf8'));
 
@@ -38,9 +44,10 @@ function browseRoot(res, argv)
 {
 	browse_util.scandir(argv.path, function(err, stats_map)
 	{
+		var trail = [];
 		if (err)
 		{
-			browse_util.browseError(res, argv, null, 'Root', err);
+			browse_util.browseError(res, argv, trail, trail_root.text, err);
 			return;
 		}
 
@@ -69,6 +76,8 @@ function browseRoot(res, argv)
 			res.render('browse-root.hbs',
 			{
 				title:  argv.title,
+				trail:  trail,
+				curr:   trail_root.text,
 				ns:     ns.length ? ns : null,
 				bundle: bundle.length? bundle : null,
 				layout: true
@@ -82,7 +91,7 @@ function browseNamespace(res, argv, query)
 	var path = argv.path + '/' + query.ns;
 	browse_util.scandir(path, function(err, stats_map)
 	{
-		var trail = [];
+		var trail = [ trail_root ];
 		if (err)
 		{
 			browse_util.browseError(res, argv, trail, query.ns, err);
@@ -157,6 +166,7 @@ function browseModule(res, argv, query)
 	{
 		var trail =
 		[
+			trail_root,
 			{ query: browse_util.breadcrumbQuery(query, ['m']), text: query.ns }
 		];
 
@@ -231,6 +241,7 @@ function browseModuleVersion(res, argv, query)
 	{
 		var trail =
 		[
+			trail_root,
 			{ query: browse_util.breadcrumbQuery(query, ['m','v']), text: query.ns },
 			{ query: browse_util.breadcrumbQuery(query, ['v']), text: query.m }
 		];
@@ -257,7 +268,7 @@ function browseBundle(res, argv, query)
 	var path = argv.path + '/' + query.b;
 	browse_util.scandir(path, function(err, stats_map)
 	{
-		var trail = [];
+		var trail = [ trail_root ];
 		if (err)
 		{
 			browse_util.browseError(res, argv, trail, query.b, err);
@@ -320,6 +331,7 @@ function browseBundleVersion(res, argv, query)
 	{
 		var trail =
 		[
+			trail_root,
 			{ query: browse_util.breadcrumbQuery(query, ['v']), text: query.b }
 		];
 
@@ -402,6 +414,7 @@ function browseBundleModule(res, argv, query)
 	{
 		var trail =
 		[
+			trail_root,
 			{ query: browse_util.breadcrumbQuery(query, ['v','m']), text: query.b },
 			{ query: browse_util.breadcrumbQuery(query, ['m']), text: query.v }
 		];

@@ -12,15 +12,32 @@ var Y,
 	mod_qs  = require('querystring'),
 
 	mod_auth    = require('./auth.js'),
-	browse_util = require('./browse-util.js');
+	browse_util = require('./browse-util.js'),
+
+	trail_root =
+	{
+		url:  '/groups',
+		text: 'Groups'
+	};
 
 function showGroupMembers(res, argv, query)
 {
+	var trail = [ trail_root ];
+
+	var users = mod_auth.getUsersInGroup(query.name);
+	if (!users)
+	{
+		browse_util.browseError(res, argv, trail, query.name, { message: query.name + ' does not exist.' });
+		return;
+	}
+
 	res.render('browse-group-members.hbs',
 	{
 		title:  argv.title,
+		trail:  trail,
+		curr:   query.name,
 		group:  query.name,
-		users:  mod_auth.getUsersInGroup(query.name).sort(),
+		users:  users.sort(),
 		layout: query.layout
 	});
 }
