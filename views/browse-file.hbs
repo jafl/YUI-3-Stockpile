@@ -28,21 +28,23 @@
 
     .drill-back {margin-right:6px;}
 
-    .header {height:40px;padding:0 18px;border-bottom:1px solid #cacaca;background-color:#eaeaea;
+    .header {min-height:40px;padding:0;border-bottom:1px solid #cacaca;background-color:#eaeaea;
         background-image:linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-o-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-moz-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-webkit-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);}
-    .header h1 {float:left;margin:0;height:40px;line-height:40px;padding-right:18px;border-right:1px solid #d9d9d9;}
-    .header .nav {float:left;height:40px;line-height:40px;padding-left:12px;border-left:1px solid #fff;font-weight:bold;}
+    .header h1 {float:left;margin:0;height:40px;line-height:40px;padding:0 18px;border-right:1px solid #d9d9d9;}
+    .header h2 {margin:0;min-height:30px;line-height:30px;padding:0 18px;background-color:#fff;
+        border-top:1px solid #cacaca;}
+    .header .section {float:left;height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
+    .header .nav {clear:both;}
+    .header .nav a {line-height:150%;padding:0;}
+    .header .nav .jump-back:after {content:" / ";}
+    .header .nav a:hover {text-decoration:none;}
 
-    .content {margin:0 18px;}
-    .content .nav .drill-back {float:left;line-height:150%;}
-    .content .nav .toggle-code-highlight {float:right;font-size:108%;font-weight:normal;}
-    .content .nav a:hover {text-decoration:none;}
-    .content h2 {border-bottom:1px solid #e0e0e0;padding-bottom:12px;}
-    .content .ns-list h2, .content .bundle-list h2 {padding-bottom:0;border-bottom:none;margin-left:0;}
+    .content {margin:18px 18px 0;}
+    .content .toggle-syntax-highlight a:hover {text-decoration:none;}
     </style>
 </head>
 
@@ -51,9 +53,18 @@
 <header>
     <div class="header">
         <h1>{{title}}</h1>
+        <section>
+            <div class="section">
+                <!-- reserved for future use -->
+            </div>
+        </section>
         <nav>
             <div class="nav">
-                <!-- reserved for future use -->
+                <h2>
+                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
+                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
+                    <span class="current">level name here</span>
+                </h2>
             </div>
         </nav>
     </div>
@@ -61,13 +72,9 @@
 
 <section>
     <div class="section content">
-        <nav>
-            <div class="nav">
-                {{#if back}}<a class="drill-back" href="/browse?{{back}}" title="Move back one level">&#9664;</a>{{/if}}
-				<a class="toggle-code-highlight" href="{{raw}}" title="Disable syntax highlighting">&#8855; disable syntax highlighting</a>
-            </div>
-        </nav>
+        <!-- LINDALJ: remove this redundant title once breadcrumb is done -->
         <h2>uifwk-bar 14.2.0.0.253</h2>
+        <p class="toggle-syntax-highlight"><a href="{{raw}}" title="Disable syntax highlighting">&#8855; disable syntax highlighting</a></p>
         <pre class="brush:{{type}}">
             {{content}}
         </pre>
