@@ -25,10 +25,10 @@
 <tr>
 	<th>Version</th><th>Release Date</th>
 </tr>
-{{#versions}}
+{{#each versions}}
 	<tr>
 		<td><a href="/browse?ns={{../ns}}&amp;m={{../name}}&amp;v={{name}}">{{name}}</a></td>
 		<td>{{date}}</td>
 	</tr>
-{{/versions}}
+{{/each}}
 </table>

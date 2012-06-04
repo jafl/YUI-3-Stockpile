@@ -40,7 +40,7 @@ function browseRoot(res, argv)
 	{
 		if (err)
 		{
-			browse_util.browseError(res, argv, '', err);
+			browse_util.browseError(res, argv, null, 'Root', err);
 			return;
 		}
 
@@ -82,9 +82,10 @@ function browseNamespace(res, argv, query)
 	var path = argv.path + '/' + query.ns;
 	browse_util.scandir(path, function(err, stats_map)
 	{
+		var trail = [];
 		if (err)
 		{
-			browse_util.browseError(res, argv, ' ', err);
+			browse_util.browseError(res, argv, trail, query.ns, err);
 			return;
 		}
 
@@ -137,7 +138,8 @@ function browseNamespace(res, argv, query)
 			res.render('browse-namespace.hbs',
 			{
 				title:   argv.title,
-				back:    ' ',
+				trail:   trail,
+				curr:    query.ns,
 				ns:      query.ns,
 				desc:    desc.long,
 				group:   desc.group,
@@ -153,9 +155,14 @@ function browseModule(res, argv, query)
 	var path = argv.path + '/' + query.ns + '/' + query.m;
 	browse_util.scandir(path, function(err, stats_map)
 	{
+		var trail =
+		[
+			{ query: browse_util.breadcrumbQuery(query, ['m']), text: query.ns }
+		];
+
 		if (err)
 		{
-			browse_util.browseError(res, argv, browse_util.backQuery(query, 'm'), err);
+			browse_util.browseError(res, argv, trail, query.m, err);
 			return;
 		}
 
@@ -185,7 +192,8 @@ function browseModule(res, argv, query)
 			res.render('browse-module.hbs',
 			{
 				title:    argv.title,
-				back:     browse_util.backQuery(query, 'm'),
+				trail:    trail,
+				curr:     query.m,
 				ns:       query.ns,
 				name:     query.m,
 				desc:     desc.long,
@@ -221,10 +229,17 @@ function browseModuleVersion(res, argv, query)
 
 	tasks.done(function()
 	{
+		var trail =
+		[
+			{ query: browse_util.breadcrumbQuery(query, ['m','v']), text: query.ns },
+			{ query: browse_util.breadcrumbQuery(query, ['v']), text: query.m }
+		];
+
 		res.render('browse-module-version.hbs',
 		{
 			title:     argv.title,
-			back:      browse_util.backQuery(query, 'v'),
+			trail:     trail,
+			curr:      query.v,
 			ns:        query.ns,
 			name:      query.m,
 			vers:      query.v,
@@ -242,9 +257,10 @@ function browseBundle(res, argv, query)
 	var path = argv.path + '/' + query.b;
 	browse_util.scandir(path, function(err, stats_map)
 	{
+		var trail = [];
 		if (err)
 		{
-			browse_util.browseError(res, argv, ' ', err);
+			browse_util.browseError(res, argv, trail, query.b, err);
 			return;
 		}
 
@@ -284,7 +300,8 @@ function browseBundle(res, argv, query)
 			res.render('browse-bundle.hbs',
 			{
 				title:    argv.title,
-				back:     ' ',
+				trail:    trail,
+				curr:     query.b,
 				bundle:   query.b,
 				desc:     desc.long,
 				group:    desc.group,
@@ -301,9 +318,14 @@ function browseBundleVersion(res, argv, query)
 	var path = argv.path + '/' + query.b + '/' + query.v;
 	browse_util.scandir(path, function(err, stats_map)
 	{
+		var trail =
+		[
+			{ query: browse_util.breadcrumbQuery(query, ['v']), text: query.b }
+		];
+
 		if (err)
 		{
-			browse_util.browseError(res, argv, browse_util.backQuery(query, 'v'), err);
+			browse_util.browseError(res, argv, trail, query.v, err);
 			return;
 		}
 
@@ -339,7 +361,8 @@ function browseBundleVersion(res, argv, query)
 			res.render('browse-bundle-version.hbs',
 			{
 				title:   argv.title,
-				back:    browse_util.backQuery(query, 'v'),
+				trail:   trail,
+				curr:    query.v,
 				bundle:  query.b,
 				desc:    desc.long,
 				vers:    query.v,
@@ -377,10 +400,17 @@ function browseBundleModule(res, argv, query)
 
 	tasks.done(function()
 	{
+		var trail =
+		[
+			{ query: browse_util.breadcrumbQuery(query, ['v','m']), text: query.b },
+			{ query: browse_util.breadcrumbQuery(query, ['m']), text: query.v }
+		];
+
 		res.render('browse-bundle-module.hbs',
 		{
 			title:     argv.title,
-			back:      browse_util.backQuery(query, 'm'),
+			trail:     trail,
+			curr:      query.m,
 			name:      query.m,
 			vers:      query.v,
 			desc:      desc.long,
@@ -409,7 +439,7 @@ function showFile(res, argv, query)
 		{
 			if (err)
 			{
-				browse_util.browseError(res, argv, mod_qs.unescape(query.back), err);
+				browse_util.browseError(res, argv, trail, query.file, err);
 			}
 			else if (query.raw == 'true')
 			{

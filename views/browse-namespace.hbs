@@ -4,8 +4,8 @@
 <pre id="sample-code">
 var moduleVersion =
 {
-<span class="list">{{#modules}}    <span class="list-item">'sp-{{../ns}}-{{name}}': '{{vers}}'</span>
-{{/modules}}</span>};
+<span class="list">{{#each modules}}    <span class="list-item">'sp-{{../ns}}-{{name}}': '{{vers}}'</span>
+{{/each}}</span>};
 
 function insertVersion(m)
 {
@@ -49,11 +49,11 @@ window.YUI_config =
 <tr>
     <th>Module</th><th>Latest Version</th><th>Release Date</th>
 </tr>
-{{#modules}}
+{{#each modules}}
     <tr>
         <td><a href="/browse?ns={{../ns}}&amp;m={{name}}">{{name}}</a></td>
         <td>{{vers}}</td>
         <td>{{date}}</td>
     </tr>
-{{/modules}}
+{{/each}}
 </table>

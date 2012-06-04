@@ -33,7 +33,7 @@
     .header .section {float:left;height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
     .header .nav {clear:both;}
     .header .nav a {line-height:150%;padding:0;}
-    .header .nav .jump-back:after {content:" / ";}
+    .header .nav .jump-back:after {content:" : ";}
     .header .nav a:hover {text-decoration:none;}
 
     .content {margin:18px 18px 0;}
@@ -84,9 +84,15 @@
         <nav>
             <div class="nav">
                 <h2>
-                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
-                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
-                    <span class="current">level name here</span>
+                    {{#if curr}}
+                        <span class="jump-back"><a href="/browse" title="Root">Root</a></span>
+                        {{#each trail}}
+                            <span class="jump-back"><a href="/browse?{{{query}}}" title="{{text}}">{{text}}</a></span>
+                        {{/each}}
+                        <span class="current">{{curr}}</span>
+                    {{else}}
+                        <span class="current">Root</span>
+                    {{/if}}
                 </h2>
             </div>
         </nav>

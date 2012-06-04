@@ -2,9 +2,9 @@
 
 {{#if users}}
 	<ul>
-	{{#users}}
+	{{#each users}}
 		<li><a href="mailto:{{.}}">{{.}}</a></li>
-	{{/users}}
+	{{/each}}
 	</ul>
 
 	<p>Only existing members of this group are allowed to add new members.</p>

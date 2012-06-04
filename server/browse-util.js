@@ -122,20 +122,21 @@ exports.renderDirectoryTree = function(nodes, back)
 	return markup;
 };
 
-exports.backQuery = function(query, exclude)
+exports.breadcrumbQuery = function(query, exclude)
 {
 	return mod_qs.stringify(Y.clone(query, true, function(value, key)
 	{
-		return (key != exclude && key != 'layout');
+		return (Y.Array.indexOf(exclude, key) == -1 && key != 'layout');
 	}));
 };
 
-exports.browseError = function(res, argv, back, err)
+exports.browseError = function(res, argv, trail, curr, err)
 {
 	res.render('browse-error.hbs',
 	{
 		title:    argv.title,
-		back:     back,
+		trail:    trail,
+		curr:     curr,
 		err:      err.message.replace(argv.path, '').replace(/'\/+/, '\''),
 		layout:   true
 	});

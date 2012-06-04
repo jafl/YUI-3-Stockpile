@@ -16,10 +16,10 @@
 <tr>
 	<th>Version</th><th>Release Date</th>
 </tr>
-{{#versions}}
+{{#each versions}}
 	<tr>
 		<td><a href="/browse?b={{../bundle}}&amp;v={{name}}">{{name}}</a></td>
 		<td>{{date}}</td>
 	</tr>
-{{/versions}}
+{{/each}}
 </table>

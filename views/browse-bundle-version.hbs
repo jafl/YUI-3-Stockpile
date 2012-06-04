@@ -17,9 +17,9 @@ Notes:  {{notes}}
 
 {{#if modules}}
 	<ul>
-	{{#modules}}
+	{{#each modules}}
 		<li><a href="/browse?b={{../bundle}}&amp;v={{../vers}}&amp;m={{.}}">{{.}}</a></li>
-	{{/modules}}
+	{{/each}}
 	</ul>
 {{else}}
 	<p>None</p>

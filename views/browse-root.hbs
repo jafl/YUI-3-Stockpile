@@ -1,39 +1,39 @@
 {{#if ns}}
 <section>
-    <div class="section ns-list">
+	<div class="section ns-list">
 	<h2>Namespaces of related modules</h2>
 
 	<table>
 	<tr>
 		<th>Name</th><th>Description</th>
 	</tr>
-	{{#ns}}
+	{{#each ns}}
 		<tr>
 			<td><a href="/browse?ns={{name}}">{{name}}</a></td>
 			<td>{{desc}}</td>
 		</tr>
-	{{/ns}}
+	{{/each}}
 	</table>
-    </div>
+	</div>
 </section>
 {{/if}}
 
 {{#if bundle}}
 <section>
-    <div class="section bundle-list">
+	<div class="section bundle-list">
 	<h2>Bundles of modules released together</h2>
 
 	<table>
 	<tr>
 		<th>Name</th><th>Description</th>
 	</tr>
-	{{#bundle}}
+	{{#each bundle}}
 		<tr>
 			<td><a href="/browse?b={{name}}">{{name}}</a></td>
 			<td>{{desc}}</td>
 		</tr>
-	{{/bundle}}
+	{{/each}}
 	</table>
-    </div>
+	</div>
 </section>
 {{/if}}
