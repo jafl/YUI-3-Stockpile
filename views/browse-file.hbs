@@ -26,24 +26,23 @@
     a, a:link, a:visited {text-decoration:none;font-weight:bold;color:#3a6;}
     a:hover {text-decoration:underline;}
 
-    .drill-back {margin-right:6px;}
-
     .header {min-height:40px;padding:0;border-bottom:1px solid #cacaca;background-color:#eaeaea;
         background-image:linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-o-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-moz-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-webkit-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
-        background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);}
+        background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        position:fixed;top:0;left:0;right:0;z-index:1;} /* z-index for syntax highlighter css compatibility */
     .header h1 {float:left;margin:0;height:40px;line-height:40px;padding:0 18px;border-right:1px solid #d9d9d9;}
     .header h2 {margin:0;min-height:30px;line-height:30px;padding:0 18px;background-color:#fff;
         border-top:1px solid #cacaca;}
     .header .section {float:left;height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
     .header .nav {clear:both;}
     .header .nav a {line-height:150%;padding:0;}
-    .header .nav .jump-back:after {content:" / ";}
+    .header .nav .jump-back:after {content:" : ";}
     .header .nav a:hover {text-decoration:none;}
 
-    .content {margin:18px 18px 0;}
+    .content {margin:90px 18px 0;}
     .content .toggle-syntax-highlight a:hover {text-decoration:none;}
     </style>
 </head>
