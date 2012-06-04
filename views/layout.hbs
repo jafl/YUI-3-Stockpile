@@ -26,7 +26,8 @@
         background-image:-o-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-moz-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
         background-image:-webkit-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
-        background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);}
+        background-image:-ms-linear-gradient(top, #f7f7f7 0%, #e7e7e7 100%);
+        position:fixed;top:0;left:0;right:0;z-index:1;} /* z-index for syntax highlighter css compatibility */
     .header h1 {float:left;margin:0;height:40px;line-height:40px;padding:0 18px;border-right:1px solid #d9d9d9;}
     .header h2 {margin:0;min-height:30px;line-height:30px;padding:0 18px;background-color:#fff;
         border-top:1px solid #cacaca;}
@@ -36,12 +37,12 @@
     .header .nav .jump-back:after {content:" : ";}
     .header .nav a:hover {text-decoration:none;}
 
-    .content {margin:18px 18px 0;}
+    .content {margin:90px 18px 0;}
     .content .toggle-syntax-highlight {margin-top:1em;}
     .content .toggle-syntax-highlight a:hover {text-decoration:none;}
 
-    .ns-list {float:left;width:45%;}
-    .bundle-list {float:right;width:50%;padding:0 0 18px 18px;border-left:1px solid #e7e7e7;}
+    .ns-list {float:left;width:45%;margin-top:-18px;}
+    .bundle-list {float:right;width:50%;margin-top:-18px;padding:0 0 18px 18px;border-left:1px solid #e7e7e7;}
 
     .code {clear:both;float:right;width:50%;margin:-18px -18px 0 18px;padding:18px 24px 18px 18px;background-color:#eaeaea;
         background-image:linear-gradient(right, #f7f7f7 0%, #e7e7e7 20%);
