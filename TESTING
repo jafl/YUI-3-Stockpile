@@ -33,12 +33,29 @@ auth -- cross with all above tests
 +			invalid password - fail
 		unknown user - fail
 
-	wildcard group
+	wildcard user
 
 +	create group
 	remove group
 +	add user to group
 +	remove user from group
+
+browse
+
++	root
++		namespace
++			module
++				version
++		bundle
++			version
++				module
+
+groups
+
+	root
+	group
+		with users
+		with wildcard
 
 combo
 

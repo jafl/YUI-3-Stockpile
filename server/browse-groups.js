@@ -16,9 +16,23 @@ var Y,
 
 	trail_root =
 	{
-		url:  '/groups',
+		url:  '/group',
 		text: 'Groups'
 	};
+
+function showGroups(res, argv)
+{
+	var groups = mod_auth.getGroups();
+
+	res.render('browse-groups.hbs',
+	{
+		title:  argv.title,
+		trail:  [],
+		curr:   trail_root.text,
+		groups: groups.sort(Y.Sort.compareAsStringNoCase),
+		layout: true
+	});
+}
 
 function showGroupMembers(res, argv, query)
 {
@@ -37,7 +51,8 @@ function showGroupMembers(res, argv, query)
 		trail:  trail,
 		curr:   query.name,
 		group:  query.name,
-		users:  users.sort(),
+		any:    Y.Array.indexOf(users, mod_auth.getWildcardUser()) >= 0,
+		users:  users.sort(Y.Sort.compareAsStringNoCase),
 		layout: query.layout
 	});
 }
@@ -63,7 +78,7 @@ exports.configure = function(
 
 		else
 		{
-			res.redirect('/browse');
+			showGroups(res, argv);
 		}
 	});
 };

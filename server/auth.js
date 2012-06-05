@@ -72,6 +72,11 @@ exports.isWildcardUser = function(user)
 	return (user == wildcard_user);
 };
 
+exports.getWildcardUser = function(user)
+{
+	return wildcard_user;
+};
+
 exports.userExists = function(user)
 {
 	return Y.some(groups, function(users)
@@ -155,4 +160,9 @@ exports.getUsersInGroup = function(group)
 {
 	var g = groups[group];
 	return g ? g.slice(0) : null;
+};
+
+exports.getGroups = function(group)
+{
+	return Y.Object.keys(groups);
 };

@@ -1,6 +1,5 @@
-browse
-	breadcrumb on show file page
-	/group shows list of all groups
+breadcrumb on show file page
+Browse & Groups links in header
 
 combo: send 404 if not found
 combo-dev: propagate 404 from combo, send 404 if dev version not found
