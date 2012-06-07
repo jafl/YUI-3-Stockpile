@@ -1,3 +1,5 @@
+This package is downstream from https://github.com/jafl/YUI-3-Stockpile
+
 YUI 3 combo handler built on NodeJS that supports versioning, either for
 individual modules or for bundles of modules.  The major advance over other
 combo handlers is that you can upload new versions of individual modules or
