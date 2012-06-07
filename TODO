@@ -1,0 +1,73 @@
+breadcrumb on show file page
+Browse & Groups links in header
+
+combo: send 404 if not found
+combo-dev: propagate 404 from combo, send 404 if dev version not found
+test deleting module: check for 404
+
+
+npm modules
+	load from app directory or npm module
+	yui log filter
+
+optimize dependency loading via nodejs:
+	configure versions on the server
+	call function that does Y.Loader.resolve() to return complete list of deps
+		memoized, so the result is cached
+	also provide function to generate loader config
+
+
+animation + history manager when browsing
+	attach event to Back link
+
+
+upload
+	if --company is configured, put copyright at top:  /* Copyright {year} {company} All rights reserved. */
+
+	compute transitive dependencies within bundle when upload, to reduce number of requests
+		store in info.json
+
+auth
+	cli for removing group
+		normal user can only modify group to which he belongs
+
+	cli for deleting namespace, bundle, ns module, version
+		mark as deleted in info
+		(not actually deleted, to avoid re-using name/version)
+
+search
+	support "tags" in description file
+	index description files when start up -- search by module name, tag, short, long
+	update index when new modules/bundles are uploaded
+
+edit namespace/module/bundle descriptions & tags
+
+ui for stats:
+	% of hits that caused re-add
+	graph all keys: % of total hits vs log(size of response)
+		for individual hour or range of hours
+		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
+		scroll buttons:  5% (<), 25% (<<), all the way (|<)
+
+option to use multiple cores
+	automatically fork appropriate number of workers
+	http://nodejs.org/docs/latest/api/cluster.html
+
+-----
+
+https://github.com/rgrove/combohandler
+https://github.com/yui/phploader/blob/master/phploader/combo.php
+
+http://localhost:8666/combo?test/foo/3.5/sp-test-foo-min.js&uifwk/14.2.0.0.253/uifwk-bar/uifwk-bar-min.js
+http://localhost:8666/combo?test/foo/3.5/assets/skins/ace/sp-test-foo.css
+http://localhost:8666/combo?test/foo/3.5/assets/skins/ace/warn.png
+http://yui.yahooapis.com/gallery-2012.03.23-18-00/build/gallery-paginator/assets/skins/sam/warn.png
+
+https
+	http://blogs.perl.org/users/brian_d_foy/2011/07/now-you-need-lwpprotocolhttps.html
+
+	openssl genrsa -des3 -out manager.key 1024
+	openssl req -new -key manager.key -out manager.csr
+	cp manager.key manager.key.org
+	openssl rsa -in manager.key.org -out manager.key
+	openssl x509 -req -days 365 -in manager.csr -signkey manager.key -out manager.crt

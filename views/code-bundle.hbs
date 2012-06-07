@@ -1,0 +1,21 @@
+<pre id="sample-code">
+window.YUI_config =
+{
+    groups:
+    {
+        {{bundle}}:
+        {
+            ext:       true,
+            combine:   true,
+            comboBase: 'http://my-stockpile-host/combo?',
+            root:      '{{bundle}}/{{version}}/',
+            patterns:
+            {
+                '{{bundle}}-':      { },
+                'lang/{{bundle}}-': { },
+                '{{bundle}}css-':   { type: 'css' }
+            }
+        }
+    }
+};
+</pre>

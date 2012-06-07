@@ -1,0 +1,25 @@
+{{#if code}}
+	<div class="code">
+	<button id="copy-code">Copy</button>
+	<p>To use the latest version of {{bundle}}, configure a Loader group as follows:</p>
+	{{{code}}}
+	</div>
+{{/if}}
+
+<h2>{{bundle}}</h2>
+
+<p>{{desc}}</p>
+
+<p>Managed by group: <a href="/group?name={{group}}">{{group}}</a></p>
+
+<table>
+<tr>
+	<th>Version</th><th>Release Date</th>
+</tr>
+{{#each versions}}
+	<tr>
+		<td><a href="/browse?b={{../bundle}}&amp;v={{name}}">{{name}}</a></td>
+		<td>{{date}}</td>
+	</tr>
+{{/each}}
+</table>

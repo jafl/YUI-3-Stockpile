@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="MSSmartTagsPreventParsing" content="TRUE" />
+    <meta http-equiv="X-UI-Compatible" content="IE=edge,chrome=1" />
+
+    <title>{{title}}</title>
+
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssreset/reset-min.css" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssfonts/fonts-min.css" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.0/build/cssbase/base-min.css" />
+
+    <script type="text/javascript" src="/syntax/shCore.js"></script>
+    <script type="text/javascript" src="/syntax/shBrushJScript.js"></script>
+    <script type="text/javascript" src="/syntax/shBrushCSS.js"></script>
+     
+    <link rel="stylesheet" type="text/css" href="/syntax/shCore.css" />
+    <link rel="stylesheet" type="text/css" href="/syntax/shThemeDefault.css" />
+
+    <link rel="stylesheet" type="text/css" href="/browse.css" />
+</head>
+
+<body class="yui3-skin-sam">
+
+<header>
+    <div class="header">
+        <h1>{{title}}</h1>
+        <section>
+            <div class="section">
+                <!-- reserved for future use -->
+            </div>
+        </section>
+        <nav>
+            <div class="nav">
+                <h2>
+                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
+                    <span class="jump-back"><a href="/browse?" title="level name here">level name here</a></span>
+                    <span class="current">level name here</span>
+                </h2>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section>
+    <div class="section content">
+        <p class="toggle-syntax-highlight"><a href="{{raw}}" title="View raw code">&#8855; View raw code</a></p>
+        <pre class="brush:{{type}}">
+            {{content}}
+        </pre>
+    </div>
+</section>
+
+<script type="text/javascript">
+SyntaxHighlighter.all();
+</script>
+
+</body>
+</html>

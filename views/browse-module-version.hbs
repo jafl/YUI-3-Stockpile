@@ -1,0 +1,35 @@
+<div class="code">
+<button id="copy-code">Copy</button>
+<p>To use this version of {{name}}:</p>
+<pre id="sample-code">
+var moduleVersion =
+{
+	'sp-{{ns}}-{{name}}': '{{vers}}',
+	...
+};
+
+function insertVersion(m) { ... }
+window.YUI_config = { ... };
+
+YUI().use('sp-{{ns}}-{{name}}', function(Y) { ... });
+</pre>
+</div>
+
+<h2>{{name}} {{vers}}</h2>
+
+<p class="notes">
+Uploaded by <a href="mailto:{{author}}">{{author}}</a> <br>
+Notes: {{notes}}
+</p>
+
+<p>{{desc}}</p>
+
+<h3 class="file-title">Files</h3>
+
+{{#if file_tree}}
+	<div class="file-tree">
+	{{{file_tree}}}
+	</div>
+{{else}}
+	<p class="file-tree">None</p>
+{{/if}}

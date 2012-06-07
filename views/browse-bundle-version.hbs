@@ -1,0 +1,26 @@
+<div class="code">
+<button id="copy-code">Copy</button>
+<p>To use this version of {{bundle}}, configure a Loader group as follows:</p>
+{{{code}}}
+</div>
+
+<h2>{{bundle}} {{vers}}</h2>
+
+<p class="notes">
+Uploaded by <a href="mailto:{{author}}">{{author}}</a> <br>
+Notes:  {{notes}}
+</p>
+
+<p>{{desc}}</p>
+
+<h3>Modules</h3>
+
+{{#if modules}}
+	<ul>
+	{{#each modules}}
+		<li><a href="/browse?b={{../bundle}}&amp;v={{../vers}}&amp;m={{.}}">{{.}}</a></li>
+	{{/each}}
+	</ul>
+{{else}}
+	<p>None</p>
+{{/if}}

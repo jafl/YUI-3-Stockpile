@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Copyright (c) 2012 Yahoo! Inc.  All rights reserved.
+#
+# The copyrights embodied in the content of this file are licensed by
+# Yahoo! Inc. under the BSD (revised) open source license.
+
+echo ===;
+whoami;
+echo ===;
+
+if [[ ! -d node_modules ]]; then
+	npm install yui@3.5.1 express request hbs handlebars gzip optimist formidable mkdirp;
+fi
+
+function test()
+{
+	echo ===;
+	echo $1;
+	echo ===;
+
+	killall node;
+
+	rm -rf test/init;
+	mkdir test/init;
+
+	rm -rf test/files;
+	mkdir test/files;
+	cp test/config/$3 test/files/groups.json;
+
+	node manager.js --config test/config/$2 --test test/init/manager.ready &
+	node combo.js --config test/config/combo.json --test test/init/combo.ready &
+	node combo-dev.js --config test/config/combo-dev.json --test test/init/combo-dev.ready &
+
+	pushd test &&
+	perl init-wait.pl &&
+	perl $1 &&
+	perl test-browse.pl $4 $5 &&
+	perl test-combo.pl &&
+	perl test-combo-dev.pl &&
+	node test-combo1.js &&
+	node test-combo2.js &&
+	node test-combo-dev.js &&
+	rm -rf init files &&
+	popd;
+}
+
+test test-localhost-existing.pl manager-localhost-admin.json groups-localhost-admin.json test test &&
+test test-localhost-existing.pl manager-localhost-user.json groups-localhost-user.json test test &&
+test test-testauth-existing.pl manager-testauth-user.json groups-testauth-user.json foo baz &&
+killall node;

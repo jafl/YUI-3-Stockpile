@@ -1,0 +1,34 @@
+{{#if vers}}
+	<div class="code">
+	<button id="copy-code">Copy</button>
+	<p>To use the latest version of {{name}}:</p>
+	<pre id="sample-code">
+	var moduleVersion =
+	{
+		'sp-{{ns}}-{{name}}': '{{vers}}',
+		...
+	};
+
+	function insertVersion(m) { ... }
+	window.YUI_config = { ... };
+
+	YUI().use('sp-{{ns}}-{{name}}', function(Y) { ... });
+	</pre>
+	</div>
+{{/if}}
+
+<h2>{{name}}</h2>
+
+<p>{{desc}}</p>
+
+<table>
+<tr>
+	<th>Version</th><th>Release Date</th>
+</tr>
+{{#each versions}}
+	<tr>
+		<td><a href="/browse?ns={{../ns}}&amp;m={{../name}}&amp;v={{name}}">{{name}}</a></td>
+		<td>{{date}}</td>
+	</tr>
+{{/each}}
+</table>

@@ -6,13 +6,19 @@
  * Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-var YUI = require('yui3').YUI;
-YUI().use('json', function(Y)
-{
+var YUI = require('yui').YUI;
+YUI({
+	gallery: 'gallery-2012.04.26-15-49'
+}).use(
+	'json', 'escape', 'parallel', 'datatype-date',
+	'gallery-funcprog', 'gallery-sort-extras',
+function(Y) {
+"use strict";
 
-var fs      = require('fs'),
-	express = require('express');
-
+var mod_os      = require('os'),
+	mod_fs      = require('fs'),
+	mod_path    = require('path'),
+	mod_express = require('express');
 
 // options
 
@@ -28,7 +34,7 @@ var argv = optimist
 
 try
 {
-	var defaults = Y.JSON.parse(fs.readFileSync(argv.config));
+	var defaults = Y.JSON.parse(mod_fs.readFileSync(argv.config, 'utf8'));
 }
 catch (e)
 {
@@ -37,10 +43,67 @@ catch (e)
 
 var argv = optimist
 	.usage('usage: $0')
+	.option('path',
+	{
+		default:  defaults.path || '/var/yui3-stockpile',
+		describe: 'Path to repository'
+	})
+	.option('logpath',
+	{
+		default:  defaults.logpath || '/var/log/yui3-stockpile',
+		describe: 'Path to combo.js log files'
+	})
+	.option('combo',
+	{
+		demand:   true,
+		default:  defaults.combo,
+		describe: 'URL of combo handler'
+	})
+	.option('auth',
+	{
+		default:  defaults.auth || 'localhost',
+		describe: 'Authentication method for uploading'
+	})
+	.option('key',
+	{
+		default:  defaults.key || '/usr/share/yui3-stockpile/stockpile.key',
+		describe: 'Private key for https'
+	})
+	.option('cert',
+	{
+		default:  defaults.cert || '/usr/share/yui3-stockpile/stockpile.crt',
+		describe: 'Certificate for https'
+	})
+	.option('address',
+	{
+		default:  defaults.address,
+		describe: 'Network address to listen on (default: all)'
+	})
 	.option('port',
 	{
 		default:  defaults.port || 80,
-		describe: 'Port to listen on'
+		describe: 'Port to listen on for public UI'
+	})
+	.option('adminport',
+	{
+		default:  defaults.adminport || 443,
+		describe: 'Port to listen on for admin functions'
+	})
+	.option('admins',
+	{
+		demand:   true,
+		default:  defaults.admins,
+		describe: 'Comma-separated list of admin usernames (config file can use array)'
+	})
+	.option('mailserver',
+	{
+		default:  defaults.mailserver,
+		describe: 'mail server for all users'
+	})
+	.option('title',
+	{
+		default:  defaults.title || 'YUI 3 Stockpile Manager',
+		describe: 'Server name'
 	})
 	.option('debug',
 	{
@@ -48,18 +111,47 @@ var argv = optimist
 		default:  defaults.debug,
 		describe: 'Turn on debugging'
 	})
+	.option('test',
+	{
+		describe: 'Name of file to create when initialization is finished'
+	})
 	.argv;
 
-var debug = argv.debug;
-if (debug)
+var log_levels = ['info', 'warn', 'error'];
+if (argv.debug)
 {
 	require('long-stack-traces');
+	log_levels.push('debug');
+}
+require('./server/yui-log-filter.js').installFilter(Y, log_levels);
+
+if (Y.Lang.isString(argv.admins))
+{
+	argv.admins = Y.Lang.trim(argv.admins).split(/\s*,\s*/);
 }
 
-var app = express.createServer();
-app.use(express.static(__dirname + '/client'));
+require('./server/manager-util.js').init(Y, argv);
 
-Y.log('listening on port ' + argv.port, 'debug', 'combo');
-app.listen(argv.port);
+var log_addr = argv.address || mod_os.hostname();
+
+var app = mod_express.createServer();
+app.use(mod_express.static(__dirname + '/client'));
+
+require('./server/browse-util.js').init(Y);
+require('./server/browse.js').configure(Y, app, argv);
+require('./server/browse-groups.js').configure(Y, app, argv);
+
+Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'info', 'manager');
+app.listen(argv.port, argv.address);
+
+var admin = require('./server/admin.js').init(Y, mod_express, argv);
+
+Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'info', 'manager');
+admin.app.listen(admin.port, argv.address);
+
+if (argv.test)
+{
+	mod_fs.writeFileSync(argv.test, 'ready', 'utf8');
+}
 
 });
