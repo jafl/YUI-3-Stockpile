@@ -11,7 +11,7 @@ upload
 +		new version
 +		existing version - fail
 
-delete
+delete -- get 404 afterwards
 	namespace
 	module
 	module version

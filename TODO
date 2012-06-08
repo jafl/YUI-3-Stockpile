@@ -1,8 +1,3 @@
-combo: send 404 if not found
-combo-dev: propagate 404 from combo, send 404 if dev version not found
-test deleting module: check for 404
-
-
 npm modules
 	load from app directory or npm module
 	yui log filter

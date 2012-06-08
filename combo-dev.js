@@ -86,12 +86,15 @@ function combo(req, res, query)
 			file = mod_path.resolve(config.root || '', config.image[ file ])
 			if (mod_path.existsSync(file))
 			{
+				Y.log('file: ' + file, 'debug', 'combo-dev');
 				mod_fs.createReadStream(file).pipe(res);
 				return;
 			}
 		}
 
-		mod_http.get(mod_url.parse(config.combo + query), function (r)
+		var url = config.combo + query;
+		Y.log('relay: ' + url, 'debug', 'combo-dev');
+		mod_http.get(mod_url.parse(url), function (r)
 		{
 			r.pipe(res);
 		});
@@ -122,7 +125,8 @@ function combo(req, res, query)
 	});
 
 	var tasks   = new Y.Parallel(),
-		results = {};
+		results = {},
+		code    = 200;
 
 	Y.each(module.rejects, function(m)
 	{
@@ -133,7 +137,8 @@ function combo(req, res, query)
 		{
 			if (error || response.statusCode != 200)
 			{
-				Y.log(error.message + ' from ' + relay_url, 'warn', 'combo-dev');
+				Y.log(((error && error.message) || response.statusCode) + ' from ' + relay_url, 'warn', 'combo-dev');
+				code = 404;
 			}
 			else
 			{
@@ -152,6 +157,7 @@ function combo(req, res, query)
 			if (err)
 			{
 				Y.log(err.message, 'warn', 'combo-dev');
+				code                    = 404;
 				results[info.m][info.i] = '';
 			}
 			else
@@ -163,6 +169,12 @@ function combo(req, res, query)
 
 	tasks.done(function()
 	{
+		if (code != 200)
+		{
+			res.send(code);
+			return;
+		}
+
 		res.setHeader('Content-Type', query_info.type);
 		res.setHeader('Cache-Control', 'no-cache');
 		res.setHeader('Expires', 'Wed, 31 Dec 1969 16:00:00 GMT');

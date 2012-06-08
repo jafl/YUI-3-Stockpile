@@ -168,7 +168,8 @@ function combo(req, res, query)
 	}
 
 	var tasks   = new Y.Parallel(),
-		results = {};
+		results = {},
+		code    = 200;
 
 	Y.each(module_list, function(f)
 	{
@@ -200,6 +201,7 @@ function combo(req, res, query)
 			else if (err)
 			{
 				Y.log(err.message, 'warn', 'combo');
+				code = 404;
 				callback('');
 			}
 			else
@@ -209,8 +211,27 @@ function combo(req, res, query)
 		});
 	}
 
+	function unblockCache()
+	{
+		if (use_cache)
+		{
+			delete cache_key_pending[key];
+			Y.fire('mru-cache-key-ready',
+			{
+				cacheKey: key
+			});
+		}
+	}
+
 	tasks.done(function()
 	{
+		if (code != 200)
+		{
+			unblockCache();
+			res.send(code);
+			return;
+		}
+
 		var response_data = Y.reduce(module_list, '', function(s, f)
 		{
 			return s + results[f];
@@ -227,12 +248,7 @@ function combo(req, res, query)
 			if (use_cache)
 			{
 				response_cache.put(key, cache_data);
-
-				delete cache_key_pending[key];
-				Y.fire('mru-cache-key-ready',
-				{
-					cacheKey: key
-				});
+				unblockCache();
 			}
 
 			send(req, res, cache_data);
