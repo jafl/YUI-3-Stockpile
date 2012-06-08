@@ -92,18 +92,18 @@ exports.buildDirectoryTree = function(root, path, callback)
 	});
 };
 
-exports.renderDirectoryTree = function(nodes, back)
+exports.renderDirectoryTree = function(nodes, trail)
 {
 	function renderNode(markup, node)
 	{
 		var name =
 			node.error    ? node.error :
 			node.children ? node.name :
-			Y.Lang.sub('<a href="/browse?file={path}/{name}&amp;back={back}">{name}</a>',
+			Y.Lang.sub('<a href="/browse?file={path}/{name}&amp;trail={trail}">{name}</a>',
 			{
-				path: node.path,
-				name: node.name,
-				back: mod_qs.escape(back)
+				path:  node.path,
+				name:  node.name,
+				trail: mod_qs.escape(mod_qs.stringify(trail))
 			});
 
 		return markup + Y.Lang.sub('<li class="{c}">{name}{children}</li>',

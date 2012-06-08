@@ -234,7 +234,7 @@ function browseModuleVersion(res, argv, query)
 
 	browse_util.buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
-		file_tree = browse_util.renderDirectoryTree(children, mod_qs.stringify(query));
+		file_tree = browse_util.renderDirectoryTree(children, query);
 	}));
 
 	tasks.done(function()
@@ -407,7 +407,7 @@ function browseBundleModule(res, argv, query)
 
 	browse_util.buildDirectoryTree(argv.path, partial, tasks.add(function(children)
 	{
-		file_tree = browse_util.renderDirectoryTree(children, mod_qs.stringify(query));
+		file_tree = browse_util.renderDirectoryTree(children, query);
 	}));
 
 	tasks.done(function()
@@ -450,9 +450,27 @@ function showFile(res, argv, query)
 	{
 		mod_fs.readFile(file, 'utf8', function(err, data)
 		{
+			var trail = [ trail_root ];
+
+			var t = mod_qs.parse(query.trail);
+			if (t.ns)
+			{
+				trail.push({ query: browse_util.breadcrumbQuery(t, ['m','v']), text: t.ns });
+				trail.push({ query: browse_util.breadcrumbQuery(t, ['v']), text: t.m });
+				trail.push({ query: browse_util.breadcrumbQuery(t, []), text: t.v });
+			}
+			else if (t.b)
+			{
+				trail.push({ query: browse_util.breadcrumbQuery(t, ['v','m']), text: t.b });
+				trail.push({ query: browse_util.breadcrumbQuery(t, ['m']), text: t.v });
+				trail.push({ query: browse_util.breadcrumbQuery(t, []), text: t.m });
+			}
+
+			var curr = mod_path.basename(query.file);
+
 			if (err)
 			{
-				browse_util.browseError(res, argv, trail, query.file, err);
+				browse_util.browseError(res, argv, trail, curr, err);
 			}
 			else if (query.raw == 'true')
 			{
@@ -463,11 +481,13 @@ function showFile(res, argv, query)
 				res.render('browse-file.hbs',
 				{
 					title:   argv.title,
-					back:    mod_qs.unescape(query.back),
+					trail:   trail,
+					curr:    curr,
+					hilight: true,
+					toolbar: [ { url: argv.combo + query.file, text: 'View raw code' } ],
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,
-					raw:     argv.combo + query.file,
-					layout:  false
+					layout:  query.layout
 				});
 			}
 		});

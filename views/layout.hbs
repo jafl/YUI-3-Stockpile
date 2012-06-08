@@ -15,6 +15,15 @@
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssfonts/fonts-min.css" />
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssbase/base-min.css" />
 
+    {{#if hilight}}
+        <script type="text/javascript" src="/syntax/shCore.js"></script>
+        <script type="text/javascript" src="/syntax/shBrushJScript.js"></script>
+        <script type="text/javascript" src="/syntax/shBrushCSS.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/syntax/shCore.css" />
+        <link rel="stylesheet" type="text/css" href="/syntax/shThemeDefault.css" />
+    {{/if}}
+
     <link rel="stylesheet" type="text/css" href="/browse.css" />
 </head>
 
@@ -24,10 +33,22 @@
     <div class="header">
         <h1>{{title}}</h1>
         <section>
-            <div class="section">
-                <!-- reserved for future use -->
+            <div class="section links">
+                <a href="/browse">Browse</a> |
+                <a href="/group">Groups</a>
             </div>
         </section>
+        {{#if toolbar}}
+            <section>
+                <div class="section toolbar-outer">
+                <div class="section toolbar">
+                    {{#each toolbar}}
+                    <a href="{{{url}}}" title="{{text}}">{{text}}</a>
+                    {{/each}}
+                </div>
+                </div>
+            </section>
+        {{/if}}
         <nav>
             <div class="nav">
                 <h2>
@@ -75,6 +96,12 @@ if (button)
 
 });
 </script>
+
+{{#if hilight}}
+    <script type="text/javascript">
+    SyntaxHighlighter.all();
+    </script>
+{{/if}}
 
 </body>
 </html>

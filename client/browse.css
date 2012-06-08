@@ -11,7 +11,9 @@ a:hover {text-decoration:underline;}
 .header h1 {float:left;margin:0;height:40px;line-height:40px;padding:0 18px;border-right:1px solid #d9d9d9;}
 .header h2 {margin:0;min-height:30px;line-height:30px;padding:0 18px;background-color:#fff;
     border-top:1px solid #cacaca;}
-.header .section {float:left;height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
+.header .links {float:left;height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
+.header .toolbar-outer {float:right;height:40px;line-height:40px;border-left:1px solid #d9d9d9;}
+.header .toolbar {height:40px;line-height:40px;padding:0 18px;border-left:1px solid #fff;font-weight:bold;}
 .header .nav {clear:both;}
 .header .nav a {line-height:150%;padding:0;}
 .header .nav .jump-back:after {content:" : ";}
