@@ -19,7 +19,7 @@ Code Organization
     client          Client modules
     server          Server modules
     views           Client web pages
-    test            Automated test suite
+    test            Automated test suite -- run ./test/main
 
     This application includes portions of syntaxhighlighter-3.0.83, under
     the MIT license.
