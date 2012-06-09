@@ -11,6 +11,8 @@ upload
 +		new version
 +		existing version - fail
 
+	insert copyright into JS/CSS if "company" is configured
+
 delete -- get 404 afterwards
 	namespace
 	module

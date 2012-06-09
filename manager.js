@@ -105,6 +105,16 @@ var argv = optimist
 		default:  defaults.title || 'YUI 3 Stockpile Manager',
 		describe: 'Server name'
 	})
+	.option('copyright',
+	{
+		default:  defaults.copyright || '/* Copyright {year} {company}.  All rights reserved. */',
+		describe: 'Copyright template to insert at top of JS/CSS files, if "company" is configured'
+	})
+	.option('company',
+	{
+		default:  defaults.company,
+		describe: 'Name of company to insert into copyright comment'
+	})
 	.option('debug',
 	{
 		boolean:  true,

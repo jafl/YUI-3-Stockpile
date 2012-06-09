@@ -354,8 +354,18 @@ exports.configure = function(y, app, argv)
 					{
 						// use only relative path, to support both http and https
 
-						var d1 = d.replace(argv.path, '').replace(/^\/+/, '');
+						var d1   = d.replace(argv.path, '').replace(/^\/+/, '');
 						contents = contents.toString().replace(/url\s*\(\s*(['"]?)([^\)\/])/g, 'url($1' + d1 + '/$2');
+					}
+
+					if (argv.company && info && /text\/(javascript|css)/.test(info.type))
+					{
+						var copyright = Y.Lang.sub(argv.copyright,
+						{
+							company: argv.company,
+							year:    new Date().getFullYear()
+						});
+						contents = copyright + '\n' + contents.toString();
 					}
 
 					mod_fs.writeFile(p, contents, tasks.add(function(err)
