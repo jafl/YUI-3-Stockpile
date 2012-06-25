@@ -156,7 +156,8 @@ or a bundle:
 
 This script assumes that you are using YUI Builder.  If you upload a
 module, build_directory must contain a single module.  If you upload a
-bundle, build_directory must contain all the modules in the bundle.
+bundle, build_directory must contain all the modules in the bundle.  (You
+can serve your own copy of YUI 3 by uploading it as a bundle.)
 
 The script will ask you for the required information, e.g., password,
 descriptions, or release notes.
@@ -196,6 +197,10 @@ allows all users to access that group.  Any user can create a new group.
 
 Each namespace or bundle is managed by a single group.  The group name is
 displayed when browsing.
+
+The cli script manage-group.pl lets you create groups and add or remove
+users from a group.  Run the script without arguments to get usage
+information.
 
 Development Mode
 ----------------
