@@ -1,36 +1,37 @@
-npm modules
-	load from app directory or npm module
-	yui log filter
+combo-dev: turn off agent pool, to avoid keep-alive to combo
 
-optimize dependency loading via nodejs:
+option to use multiple cores
+	automatically fork appropriate number of workers
+	http://nodejs.org/api/cluster.html
+
+auth
+	cli for deleting namespace, bundle, ns module, version
+		mark as deleted in info
+		(not actually deleted, to avoid re-using name/version)
+
+	cli for removing group
+		normal user can only modify group to which he belongs
+		only remove if nothing is in the group
+
+	cli to change namespace/module/bundle descriptions & tags
+
+
+optimize dependency loading when using nodejs:
 	configure versions on the server
 	call function that does Y.Loader.resolve() to return complete list of deps
 		memoized, so the result is cached
 	also provide function to generate loader config
 
 
-animation + history manager when browsing
-	attach event to Back link
-
-
 upload
+	test that Loader notices extra modules included in response
 	compute transitive dependencies within bundle when upload, to reduce number of requests
 		store in info.json
-
-auth
-	cli for removing group
-		normal user can only modify group to which he belongs
-
-	cli for deleting namespace, bundle, ns module, version
-		mark as deleted in info
-		(not actually deleted, to avoid re-using name/version)
 
 search
 	support "tags" in description file
 	index description files when start up -- search by module name, tag, short, long
 	update index when new modules/bundles are uploaded
-
-edit namespace/module/bundle descriptions & tags
 
 ui for stats:
 	% of hits that caused re-add
@@ -39,9 +40,13 @@ ui for stats:
 		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
 		scroll buttons:  5% (<), 25% (<<), all the way (|<)
 
-option to use multiple cores
-	automatically fork appropriate number of workers
-	http://nodejs.org/docs/latest/api/cluster.html
+
+npm modules
+	load from app directory or npm module
+	yui log filter
+
+animation + history manager when browsing
+	attach event to Back link
 
 -----
 

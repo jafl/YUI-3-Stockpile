@@ -9,14 +9,13 @@
 var Y,
 	app,
 
-	mod_fs      = require('fs'),
-	mod_path    = require('path');
+	mod_fs = require('fs');
 
 exports.init = function(y, mod_express, argv)
 {
 	Y = y;
 
-	if (mod_path.existsSync(argv.key) && mod_path.existsSync(argv.cert))
+	if (mod_fs.existsSync(argv.key) && mod_fs.existsSync(argv.cert))
 	{
 		app = mod_express.createServer(
 		{

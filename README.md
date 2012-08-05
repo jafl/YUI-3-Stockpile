@@ -19,7 +19,7 @@ Code Organization
     client          Client modules
     server          Server modules
     views           Client web pages
-    test            Automated test suite -- run ./test/main
+    test            Automated test suite
 
     This application includes portions of syntaxhighlighter-3.0.83, under
     the MIT license.
@@ -27,10 +27,10 @@ Code Organization
 Installation
 ------------
 
-Install nodejs and then install these packages:
+Install nodejs >= 0.8.0 and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui@3.5.1 express request hbs handlebars gzip \
+    npm install yui@3.6.0 express@2.5.11 request hbs handlebars gzip \
         optimist formidable mkdirp long-stack-traces
 
 On computers that will be used to upload modules to the stockpile, use cpan
@@ -270,6 +270,17 @@ much the cache should be expanded.
 Images are not cached because these should be uploaded separately to a CDN.
 Images are supported only to simplify the development process.
 
+Leveraging a CDN
+----------------
+
+In addition to the standard format (`/combo?a&b&c`), Stockpile also accepts a
+custom format to allow caching by a CDN like CloudFlare:  `/combo~a~b~c`
+
+To use this format, configure the group as follows:
+
+    comboBase: 'http://host:port/combo~',
+    comboSep:  '~'
+
 Dependency Optimization
 -----------------------
 
@@ -277,6 +288,12 @@ When a bundle is uploaded, the "requires" configuration for each module is
 updated to include transitive dependencies within the bundle.  This ensures
 that YUI Loader will only have to make two requests to get all the required
 modules within the bundle.
+
+Unit Tests
+----------
+
+To run the test suite, first search test/config/* for "vagrant" and add
+your username to the lists.  Then execute `./test/main`.
 
 Why Perl?
 ---------

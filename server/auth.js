@@ -31,7 +31,7 @@ exports.init = function(y, argv)
 	Y = y;
 
 	var auth_path = mod_path.resolve(__dirname, 'auth/' + argv.auth + '.js');
-	if (mod_path.existsSync(auth_path))
+	if (mod_fs.existsSync(auth_path))
 	{
 		mod_auth = require(auth_path);
 	}
@@ -51,7 +51,7 @@ exports.init = function(y, argv)
 
 	admins     = argv.admins;
 	group_file = argv.path + '/groups.json';
-	if (mod_path.existsSync(group_file))
+	if (mod_fs.existsSync(group_file))
 	{
 		groups = Y.JSON.parse(mod_fs.readFileSync(group_file), 'utf8');
 	}

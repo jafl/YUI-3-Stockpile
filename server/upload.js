@@ -82,7 +82,7 @@ function preAuth(fields, argv, res)
 		return;
 	}
 
-	mod_path.exists(argv.path + '/' + path, function(exists)
+	mod_fs.exists(argv.path + '/' + path, function(exists)
 	{
 		if (exists)
 		{
@@ -163,7 +163,7 @@ function auth(fields, data, argv, res)
 
 			if (data.ns)
 			{
-				mod_path.exists(path + '/' + data.module, tasks.add(function(exists)
+				mod_fs.exists(path + '/' + data.module, tasks.add(function(exists)
 				{
 					new_module = !exists;
 				}));
@@ -188,7 +188,7 @@ function auth(fields, data, argv, res)
 
 function createNsOrBundle(fields, path, type, res)
 {
-	if (!mod_path.existsSync(path))
+	if (!mod_fs.existsSync(path))
 	{
 		if (!fields.group)
 		{
@@ -228,7 +228,7 @@ function create(fields, data, argv, res)
 	if (data.ns)
 	{
 		var path = argv.path + '/' + data.ns;
-		if (mod_path.existsSync(path + '/' + data.module + '/' + data.version))
+		if (mod_fs.existsSync(path + '/' + data.module + '/' + data.version))
 		{
 			error('Somebody beat you to it!  Please try again with a different version.', res);
 			return;
@@ -240,7 +240,7 @@ function create(fields, data, argv, res)
 		}
 
 		path += '/' + data.module;
-		if (!mod_path.existsSync(path))
+		if (!mod_fs.existsSync(path))
 		{
 			mod_fs.mkdirSync(path, dir_perm);
 			mod_fs.writeFileSync(path + '/info.json', Y.JSON.stringify(
@@ -254,7 +254,7 @@ function create(fields, data, argv, res)
 	else	// data.bundle
 	{
 		var path = argv.path + '/' + data.bundle;
-		if (mod_path.existsSync(path + '/' + data.version))
+		if (mod_fs.existsSync(path + '/' + data.version))
 		{
 			error('Somebody beat you to it!  Please try again with a different version.', res);
 			return;

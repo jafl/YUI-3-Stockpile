@@ -1,9 +1,5 @@
 language: node_js
 node_js:
- - 0.6
+ - 0.8
 
 script: ./test/main
-
-notifications:
-  email:
-    - travisci@jjlindal.net

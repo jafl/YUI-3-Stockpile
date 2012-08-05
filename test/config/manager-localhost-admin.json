@@ -7,6 +7,6 @@
 	"auth":      "localhost",
 	"adminport": 8669,
 
-	"admins":     ["vagrant","lindalj"],
+	"admins":     ["vagrant","lindalj","jafl"],
 	"mailserver": "yahoo.com"
 }

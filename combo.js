@@ -125,6 +125,12 @@ function combo(req, res, query)
 		return;
 	}
 
+	if (query.substr(0, 6) == 'combo~')
+	{
+		query   = query.substr(6);
+		var cdn = true;
+	}
+
 	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
@@ -139,7 +145,7 @@ function combo(req, res, query)
 		return;
 	}
 
-	var module_list = query.split('&');
+	var module_list = query.split(cdn ? '~' : '&');
 
 	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
 	var use_cache = response_cache && /-min\.js/.test(query);
@@ -306,7 +312,7 @@ configureApp(app);
 Y.log('listening on http port ' + argv.port, 'info', 'combo');
 app.listen(argv.port);
 
-if (mod_path.existsSync(argv.key) && mod_path.existsSync(argv.cert))
+if (mod_fs.existsSync(argv.key) && mod_fs.existsSync(argv.cert))
 {
 	var sapp = mod_express.createServer(
 	{

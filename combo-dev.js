@@ -71,6 +71,12 @@ function moduleName(s)
 
 function combo(req, res, query)
 {
+	if (query.substr(0, 6) == 'combo~')
+	{
+		query   = query.substr(6);
+		var cdn = true;
+	}
+
 	var query_info = content_type.analyze(Y, query);
 	if (!query_info)
 	{
@@ -84,7 +90,7 @@ function combo(req, res, query)
 		if (file && config.image[ file ])
 		{
 			file = mod_path.resolve(config.root || '', config.image[ file ])
-			if (mod_path.existsSync(file))
+			if (mod_fs.existsSync(file))
 			{
 				Y.log('file: ' + file, 'debug', 'combo-dev');
 				mod_fs.createReadStream(file).pipe(res);
@@ -101,7 +107,7 @@ function combo(req, res, query)
 		return;
 	}
 
-	query = query.split('&');
+	query = query.split(cdn ? '~' : '&');
 
 	var module = Y.partition(query, function(m)
 	{
