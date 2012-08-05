@@ -37,7 +37,6 @@ ui for stats:
 
 npm modules
 	load from app directory or npm module
-	yui log filter
 
 animation + history manager when browsing
 	attach event to Back link
