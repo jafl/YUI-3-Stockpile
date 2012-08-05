@@ -12,6 +12,7 @@ YUI({
 }).use(
 	'json', 'parallel', 'datatype-date',
 	'gallery-mru-cache','gallery-funcprog',
+	//'gallery-log-filter',
 function(Y) {
 "use strict";
 
@@ -114,6 +115,7 @@ if (argv.debug)
 	require('long-stack-traces');
 	log_levels.push('debug');
 }
+//Y.LogFilter.addLevelFilter(log_levels);
 require('./server/yui-log-filter.js').installFilter(Y, log_levels);
 
 if (argv.cluster && mod_cluster.isMaster)
