@@ -1,9 +1,3 @@
-combo-dev: turn off agent pool, to avoid keep-alive to combo
-
-option to use multiple cores
-	automatically fork appropriate number of workers
-	http://nodejs.org/api/cluster.html
-
 auth
 	cli for deleting namespace, bundle, ns module, version
 		mark as deleted in info

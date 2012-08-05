@@ -1,4 +1,5 @@
 {
 	"port":8666,
-	"path":"./test/files"
+	"path":"./test/files",
+	"cluster":false
 }

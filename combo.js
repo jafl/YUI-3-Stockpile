@@ -21,6 +21,8 @@ var mod_fs       = require('fs'),
 	mod_qs       = require('querystring'),
 	mod_compress = require('gzip'),
 	mod_express  = require('express'),
+	mod_cluster = require('cluster'),
+	mod_os      = require('os'),
 
 	content_type = require('./server/content-type.js'),
 	path_util    = require('./server/path-util.js');
@@ -88,6 +90,12 @@ var argv = optimist
 		default:  defaults['cache-log-interval'] || 1,
 		describe: 'Cache size in MB (default 500)'
 	})
+	.option('cluster',
+	{
+		boolean:  true,
+		default:  Y.Lang.isUndefined(defaults.cluster) ? true : defaults.cluster,
+		describe: 'Turn on clustering'
+	})
 	.option('debug',
 	{
 		boolean:  true,
@@ -107,6 +115,23 @@ if (argv.debug)
 	log_levels.push('debug');
 }
 require('./server/yui-log-filter.js').installFilter(Y, log_levels);
+
+if (argv.cluster && mod_cluster.isMaster)
+{
+	var cpu_count = mod_os.cpus().length;
+	for (var i=0; i<cpu_count; i++)
+	{
+		mod_cluster.fork();
+	}
+
+	mod_cluster.on('exit', function(worker, code, signal)
+	{
+		Y.log('Worker ' + worker.process.pid + ' died (' + worker.process.exitCode + '). Restarting...', 'warn', 'combo');
+		mod_cluster.fork();
+	});
+
+	return;
+}
 
 if (argv.cache)
 {

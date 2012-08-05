@@ -48,7 +48,7 @@ Start the combo handler:
                   [--path path_to_repository] [--port port]
                   [--cache [size_MB] [--cache-log path_to_dump_logs]
                    [--cache-log-interval log_dump_interval_hours]]
-                  [--debug]
+                  [--no-cluster] [--debug]
 
 Start the admin UI:
 
@@ -280,6 +280,13 @@ To use this format, configure the group as follows:
 
     comboBase: 'http://host:port/combo~',
     comboSep:  '~'
+
+Clustering
+----------
+
+Clustering is turned on by default in the combo handler.  To turn it off,
+pass `--no-cluster` as a command-line argument or add `"cluster":false` in
+your configuration file.
 
 Dependency Optimization
 -----------------------

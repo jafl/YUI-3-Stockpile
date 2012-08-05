@@ -139,7 +139,7 @@ function combo(req, res, query)
 		var relay_url = config.combo + m;
 		Y.log('relay: ' + relay_url, 'debug', 'combo-dev');
 
-		mod_request(relay_url, tasks.add(function(error, response, body)
+		mod_request(relay_url, {pool:false}, tasks.add(function(error, response, body)
 		{
 			if (error || response.statusCode != 200)
 			{
