@@ -7,6 +7,7 @@
 
 echo ===;
 whoami;
+ruby --version;
 echo ===;
 
 if [[ ! -d node_modules ]]; then
