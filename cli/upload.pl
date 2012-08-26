@@ -5,8 +5,6 @@
 # The copyrights embodied in the content of this file are licensed by
 # Yahoo! Inc. under the BSD (revised) open source license.
 
-use lib "./pm";		# during testing
-
 use strict;
 use Getopt::Std;
 use Term::ReadKey;

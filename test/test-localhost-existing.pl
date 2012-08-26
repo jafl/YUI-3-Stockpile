@@ -70,6 +70,8 @@ close(F1);
 
 chomp(my $user = `whoami`);
 
+print "****\n";
+print slurp('./files/groups.json'),"\n\n";
 my $groups = decode_json(slurp('./files/groups.json'));
 my @groups = keys(%{$groups});
 die "wrong number of groups, stopped" unless scalar(@groups) == 3;
