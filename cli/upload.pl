@@ -9,15 +9,9 @@ use lib "./pm";		# during testing
 
 use strict;
 use Getopt::Std;
+use Term::ReadKey;
 use LWP::UserAgent;
 use JSON;
-
-my $has_readkey = 0;
-if (eval {require Term::ReadKey;1;})
-{
-	use Term::ReadKey;
-	$has_readkey = 1;
-}
 
 # subroutines
 
@@ -205,9 +199,9 @@ until ($auth)
 		until ($password)
 		{
 			print "Enter your password: ";
-			ReadMode('noecho') if $has_readkey;
+			ReadMode('noecho');
 			chomp($password = <STDIN>);
-			ReadMode('restore') if $has_readkey;
+			ReadMode('restore');
 			print "\n";
 		}
 	}
