@@ -8,6 +8,8 @@
 echo ===;
 whoami;
 ruby --version;
+perl --version;
+cpan -v;
 echo ===;
 
 if [[ ! -d node_modules ]]; then
