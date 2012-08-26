@@ -7,13 +7,11 @@
 
 echo ===;
 whoami;
-ruby --version;
-perl --version;
-cpan -v;
 echo ===;
 
 if [[ ! -d node_modules ]]; then
 	npm install yui@3.6.0 express@2.5.11 request hbs handlebars gzip optimist formidable mkdirp;
+	sudo cpan install Term::ReadKey LWP::UserAgent JSON;
 fi
 
 function test()
