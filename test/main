@@ -12,15 +12,15 @@ echo ===;
 if [[ ! -d node_modules ]]; then
 	npm install yui@3.6.0 express@2.5.11 request hbs handlebars gzip optimist formidable mkdirp;
 
-	pushd test/perl;
-	tar -xzf TermReadKey-*.tar.gz;
-	pushd TermReadKey-*;
-	perl Makefile.PL PREFIX=../../pm;
-	make;
-	make install;
-	popd;
-	popd;
-	ls test/pm;
+#	pushd test/perl;
+#	tar -xzf TermReadKey-*.tar.gz;
+#	pushd TermReadKey-*;
+#	perl Makefile.PL PREFIX=../../pm;
+#	make;
+#	make install;
+#	popd;
+#	popd;
+#	ls -R test/pm;
 fi
 
 function test()
