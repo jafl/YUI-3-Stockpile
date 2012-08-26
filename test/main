@@ -11,7 +11,8 @@ echo ===;
 
 if [[ ! -d node_modules ]]; then
 	npm install yui@3.6.0 express@2.5.11 request hbs handlebars gzip optimist formidable mkdirp;
-	yes | sudo cpan install Term::ReadKey LWP::UserAgent JSON;
+#	yes | sudo cpan install Term::ReadKey LWP::UserAgent JSON;
+	sudo apt-get install libterm-readkey-perl liblwp-useragent-determined-perl libjson-perl;
 fi
 
 function test()
