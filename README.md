@@ -276,7 +276,7 @@ Leveraging a CDN
 In addition to the standard format (`/combo?a&b&c`), Stockpile also accepts a
 custom format to allow caching by a CDN like CloudFlare:  `/combo~a~b~c`
 
-To use this format, configure the group as follows:
+To use this format, configure the group for YUI Loader as follows:
 
     comboBase: 'http://host:port/combo~',
     comboSep:  '~'

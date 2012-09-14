@@ -35,9 +35,6 @@ ui for stats:
 		scroll buttons:  5% (<), 25% (<<), all the way (|<)
 
 
-npm modules
-	load from app directory or npm module
-
 animation + history manager when browsing
 	attach event to Back link
 

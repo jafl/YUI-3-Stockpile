@@ -22,8 +22,8 @@ var mod_fs       = require('fs'),
 	mod_qs       = require('querystring'),
 	mod_compress = require('gzip'),
 	mod_express  = require('express'),
-	mod_cluster = require('cluster'),
-	mod_os      = require('os'),
+	mod_cluster  = require('cluster'),
+	mod_os       = require('os'),
 
 	content_type = require('./server/content-type.js'),
 	path_util    = require('./server/path-util.js');
@@ -183,7 +183,15 @@ function combo(req, res, query)
 			if (e.cacheKey == key)
 			{
 				h.detach();
-				send(req, res, response_cache.get(key));
+				var data = response_cache.get(key);
+				if (Y.Lang.isNumber(data))	// response code
+				{
+					res.send(data);
+				}
+				else
+				{
+					send(req, res, data);
+				}
 			}
 		});
 		return;
@@ -200,9 +208,9 @@ function combo(req, res, query)
 		cache_key_pending[key] = true;
 	}
 
-	var tasks   = new Y.Parallel(),
-		results = {},
-		code    = 200;
+	var tasks     = new Y.Parallel(),
+		results   = {},
+		http_code = 200;
 
 	Y.each(module_list, function(f)
 	{
@@ -234,7 +242,7 @@ function combo(req, res, query)
 			else if (err)
 			{
 				Y.log(err.message, 'warn', 'combo');
-				code = 404;
+				http_code = 404;
 				callback('');
 			}
 			else
@@ -258,10 +266,11 @@ function combo(req, res, query)
 
 	tasks.done(function()
 	{
-		if (code != 200)
+		if (http_code != 200)
 		{
+			response_cache.put(key, http_code);
 			unblockCache();
-			res.send(code);
+			res.send(http_code);
 			return;
 		}
 
