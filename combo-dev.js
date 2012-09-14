@@ -8,11 +8,11 @@
 
 var YUI = require('yui').YUI;
 YUI({
-	gallery: 'gallery-2012.04.26-15-49'
+	gallery: 'gallery-2012.08.15-20-00'
 }).use(
 	'json', 'parallel',
 	'gallery-funcprog',
-	//'gallery-log-filter',
+	'gallery-log-filter',
 function(Y) {
 "use strict";
 
@@ -60,8 +60,7 @@ if (debug)
 	require('long-stack-traces');
 	log_levels.push('debug');
 }
-//Y.LogFilter.addLevelFilter(log_levels);
-require('./server/yui-log-filter.js').installFilter(Y, log_levels);
+Y.LogFilter.addLevelFilter(log_levels);
 
 var app = mod_express.createServer();
 
