@@ -36,7 +36,7 @@ Install nodejs >= 0.8.0 and then install these packages:
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
 
-    sudo cpan JSON
+    sudo cpan LWP::UserAgent Term::ReadKey JSON
 
 Usage
 -----
