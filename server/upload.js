@@ -283,6 +283,101 @@ function create(fields, data, argv, res)
 	});
 }
 
+function upload(argv, fields, files, res)
+{
+	if (!fields.token)
+	{
+		preAuth(fields, argv, res);
+		return;
+	}
+
+	var data = token_cache[ fields.token ];
+	if (!data)
+	{
+		error('invalid or timed-out token', res);
+		return;
+	}
+	data.ts = Date.now();
+
+	if (!data.auth)
+	{
+		auth(fields, data, argv, res);
+		return;
+	}
+
+	if (!data.path)
+	{
+		create(fields, data, argv, res);
+		return;
+	}
+
+	if (argv.debug)
+	{
+		console.log(require('util').inspect({fields: fields, files: files}));
+	}
+
+	var tasks = new Y.Parallel(),
+		count = 0;
+	Y.each(files, function(file, path)
+	{
+		path = path.replace(/^\/+/, '');
+		if (mod_path_util.invalidPath(path) || path == 'info.json')
+		{
+			Y.log('Blocked attempt to break sandbox: ' + path, 'debug', 'admin:upload');
+			mod_fs.unlink(file.path);
+			return;
+		}
+
+		// copy, because (1) rename doesn't work across filesystems
+		// and (2) we need to modify css image paths
+
+		mod_fs.readFile(file.path, tasks.add(function(err, contents)
+		{
+			var p = data.path + '/' + path,
+				d = mod_path.dirname(p);
+			mod_mkdirp.sync(d, dir_perm);
+
+			var info = mod_content_type.analyze(Y, path);
+			if (info && info.type == 'text/css')
+			{
+				// use only relative path, to support both http and https
+
+				var d1   = d.replace(argv.path, '').replace(/^\/+/, '');
+				contents = contents.toString().replace(/url\s*\(\s*(['"]?)([^\)\/])/g, 'url($1' + d1 + '/$2');
+			}
+
+			if (argv.company && info && /text\/(javascript|css)/.test(info.type))
+			{
+				var copyright = Y.Lang.sub(argv.copyright,
+				{
+					company: argv.company,
+					year:    new Date().getFullYear()
+				});
+				contents = copyright + '\n' + contents.toString();
+			}
+
+			mod_fs.writeFile(p, contents, tasks.add(function(err)
+			{
+				count++;
+			}));
+		}));
+	});
+
+	tasks.done(function()
+	{
+		if (count === 0)
+		{
+			Y.log('finished conversation: ' + fields.token, 'debug', 'admin:upload');
+			delete token_cache[ fields.token ];
+			res.json({ done: 1 });
+		}
+		else
+		{
+			res.json({ success: 1 });
+		}
+	});
+}
+
 exports.configure = function(y, app, argv)
 {
 	Y = y;
@@ -295,99 +390,15 @@ exports.configure = function(y, app, argv)
 			if (err)
 			{
 				error(err.message, res);
-				return;
 			}
-
-			if (!fields.token)
+			else
 			{
-				preAuth(fields, argv, res);
-				return;
+				upload(argv, fields, files, res);
 			}
 
-			var data = token_cache[ fields.token ];
-			if (!data)
-			{
-				error('invalid or timed-out token', res);
-				return;
-			}
-			data.ts = Date.now();
-
-			if (!data.auth)
-			{
-				auth(fields, data, argv, res);
-				return;
-			}
-
-			if (!data.path)
-			{
-				create(fields, data, argv, res);
-				return;
-			}
-
-			if (argv.debug)
-			{
-				console.log(require('util').inspect({fields: fields, files: files}));
-			}
-
-			var tasks = new Y.Parallel(),
-				count = 0;
 			Y.each(files, function(file, path)
 			{
-				path = path.replace(/^\/+/, '');
-				if (mod_path_util.invalidPath(path) || path == 'info.json')
-				{
-					Y.log('Blocked attempt to break sandbox: ' + path, 'debug', 'admin:upload');
-					return;
-				}
-
-				// copy, because (1) rename doesn't work across filesystems
-				// and (2) we need to modify css image paths
-
-				mod_fs.readFile(file.path, tasks.add(function(err, contents)
-				{
-					var p = data.path + '/' + path,
-						d = mod_path.dirname(p);
-					mod_mkdirp.sync(d, dir_perm);
-
-					var info = mod_content_type.analyze(Y, path);
-					if (info && info.type == 'text/css')
-					{
-						// use only relative path, to support both http and https
-
-						var d1   = d.replace(argv.path, '').replace(/^\/+/, '');
-						contents = contents.toString().replace(/url\s*\(\s*(['"]?)([^\)\/])/g, 'url($1' + d1 + '/$2');
-					}
-
-					if (argv.company && info && /text\/(javascript|css)/.test(info.type))
-					{
-						var copyright = Y.Lang.sub(argv.copyright,
-						{
-							company: argv.company,
-							year:    new Date().getFullYear()
-						});
-						contents = copyright + '\n' + contents.toString();
-					}
-
-					mod_fs.writeFile(p, contents, tasks.add(function(err)
-					{
-						mod_fs.unlink(file.path);
-						count++;
-					}));
-				}));
-			});
-
-			tasks.done(function()
-			{
-				if (count === 0)
-				{
-					Y.log('finished conversation: ' + fields.token, 'debug', 'admin:upload');
-					delete token_cache[ fields.token ];
-					res.json({ done: 1 });
-				}
-				else
-				{
-					res.json({ success: 1 });
-				}
+				mod_fs.unlink(file.path);
 			});
 		});
 	});
