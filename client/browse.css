@@ -34,8 +34,6 @@ a:hover {text-decoration:underline;}
     border:1px solid #cacaca;border-width:0 0 1px 1px;}
 .code pre {padding:5px;background-color:#fff;overflow:auto;
     border:1px solid #e0e0e0;border-top-color:#cacaca;border-left-color:#cacaca;}
-.code pre .list-item:after {content:",";}
-.code pre .list-item:last-child:after {content:"";}
 button#copy-code {float:right;}
 
 .file-title {margin-bottom:0;}

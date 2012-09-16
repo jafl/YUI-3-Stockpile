@@ -4,8 +4,8 @@
 <pre id="sample-code">
 var moduleVersion =
 {
-<span class="list">{{#each modules}}    <span class="list-item">'sp-{{../ns}}-{{name}}': '{{vers}}'</span>
-{{/each}}</span>};
+<span class="list">{{#each-with-last modules}}    'sp-{{../ns}}-{{name}}': '{{vers}}'{{#unless last}},{{/unless}}
+{{/each-with-last}}</span>};
 
 function insertVersion(m)
 {
