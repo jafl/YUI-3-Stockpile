@@ -267,8 +267,11 @@ function combo(req, res, query)
 	{
 		if (http_code != 200)
 		{
-			response_cache.put(key, http_code);
-			unblockCache();
+			if (use_cache)
+			{
+				response_cache.put(key, http_code);
+				unblockCache();
+			}
 			res.send(http_code);
 			return;
 		}
