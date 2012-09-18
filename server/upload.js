@@ -90,25 +90,43 @@ function preAuth(fields, argv, res)
 			return;
 		}
 
-		var token = generateToken();
-
-		token_cache[token] =
+		mod_fs.readFile(argv.path + '/' + (fields.ns || fields.bundle) + '/info.json', 'utf8', function(err, contents)
 		{
-			ns:      fields.ns,
-			module:  fields.module,
-			bundle:  fields.bundle,
-			version: fields.version,
-			ts:      Date.now()
-		};
+			if (!err)
+			{
+				var info = Y.JSON.parse(contents);
+				if (info.type == 'namespace' && !fields.ns)
+				{
+					error('You cannot upload a bundle to a namespace.', res);
+					return;
+				}
+				else if (info.type == 'bundle' && !fields.bundle)
+				{
+					error('You cannot upload a namespace to a bundle.', res);
+					return;
+				}
+			}
 
-		// requesting whoami is not secure, but it makes the cli interface nicer to use
+			var token = generateToken();
 
-		res.json(
-		{
-			token:         token,
-			usersrc:       mod_auth.use_whoami ? 'whoami' : 'arg',
-			usertype:      argv.mailserver ? 'name' : 'email',
-			needsPassword: mod_auth.needs_password
+			token_cache[token] =
+			{
+				ns:      fields.ns,
+				module:  fields.module,
+				bundle:  fields.bundle,
+				version: fields.version,
+				ts:      Date.now()
+			};
+
+			// requesting whoami is not secure, but it makes the cli interface nicer to use
+
+			res.json(
+			{
+				token:         token,
+				usersrc:       mod_auth.use_whoami ? 'whoami' : 'arg',
+				usertype:      argv.mailserver ? 'name' : 'email',
+				needsPassword: mod_auth.needs_password
+			});
 		});
 	});
 }
