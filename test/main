@@ -46,7 +46,7 @@ function test()
 	popd;
 }
 
-test test-localhost-existing.pl manager-localhost-admin.json groups-localhost-admin.json test test &&
-test test-localhost-existing.pl manager-localhost-user.json groups-localhost-user.json test test &&
-test test-testauth-existing.pl manager-testauth-user.json groups-testauth-user.json foo baz &&
+test test-upload-localhost-existing.pl manager-localhost-admin.json groups-localhost-admin.json test test &&
+test test-upload-localhost-existing.pl manager-localhost-user.json groups-localhost-user.json test test &&
+test test-upload-testauth-existing.pl manager-testauth-user.json groups-testauth-user.json foo baz &&
 killall node;
