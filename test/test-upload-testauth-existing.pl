@@ -60,17 +60,20 @@ close(F2);
 
 # fail - already exists
 
-open(F1, '| perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2');
+open(F1, 'perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2 |');
+die "should not be allowed to upload to existing, stopped" unless <F1> eq "bundle/2.0.z already exists\n";
 close(F1);
 
 # fail - can't upload bundle to namespace
 
-open(F1, '| perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 ns 2.0.z ./upload/bundle2');
+open(F1, 'perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 ns 2.0.z ./upload/bundle2 |');
+die "should not be allowed to upload bundle to namespace, stopped" unless <F1> eq "You cannot upload a bundle to a namespace.\n";
 close(F1);
 
 # fail - can't upload namespace to bundle
 
-open(F1, '| perl ../cli/upload.pl -u foo@yahoo.com http://127.0.0.1:8669 bundle test-error 1.0.b ./upload/bundle1');
+open(F1, 'perl ../cli/upload.pl -u foo@yahoo.com http://127.0.0.1:8669 bundle test-error 1.0.b ./upload/bundle1 |');
+die "should not be allowed to upload namespace to bundle, stopped" unless <F1> eq "You cannot upload a namespace to a bundle.\n";
 close(F1);
 
 ### auth
