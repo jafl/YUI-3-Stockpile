@@ -1,13 +1,13 @@
-auth
-	cli for deleting namespace, bundle, ns module, version
+* cli
+	delete namespace, bundle, ns module, version
 		mark as deleted in info
 		(not actually deleted, to avoid re-using name/version)
 
-	cli for removing group
+	remove group
 		normal user can only modify group to which he belongs
 		only remove if nothing is in the group
 
-	cli to change namespace/module/bundle descriptions & tags
+	change namespace/module/bundle descriptions & tags
 
 
 optimize dependency loading when using nodejs:
@@ -17,10 +17,14 @@ optimize dependency loading when using nodejs:
 	also provide function to generate loader config
 
 
-upload
-	test that Loader notices extra modules included in response
+* upload
 	compute transitive dependencies within bundle when upload, to reduce number of requests
-		store in info.json
+		store in module/vers/info.json
+	test transitive dependencies with duplicates
+
+	http://yuilibrary.com/projects/yui3/ticket/2532757
+		YUI doesn't load CSS for transitive dependencies from correct location
+		doesn't even try to load CSS for transitive dependencies if explicitly required module isn't skinnable
 
 search
 	support "tags" in description file
@@ -56,3 +60,8 @@ https
 	cp manager.key manager.key.org
 	openssl rsa -in manager.key.org -out manager.key
 	openssl x509 -req -days 365 -in manager.csr -signkey manager.key -out manager.crt
+
+-----
+
+node combo.js --port 8090 --path ~/open-source/yui3-stockpile-repo/ --no-cluster
+node manager.js --path ~/open-source/yui3-stockpile-repo --combo x --admins jolindal --port 8080 --address 127.0.0.1 --mailserver y --adminport 8081

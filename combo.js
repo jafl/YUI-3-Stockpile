@@ -140,7 +140,110 @@ if (argv.cache)
 	var cache_key_pending = {};
 }
 
-var debug_re = /-debug\.js$/;
+var js_re    = /\.js$/,
+	debug_re = /-debug\.js$/,
+	pkg_type = {};
+
+function getBundleDependencies(path, callback)
+{
+	if (!js_re.test(path))
+	{
+		callback([]);
+		return;
+	}
+
+	var s           = path.split('/'),
+		bundle_name = s[0],
+		bundle_vers = s[1],
+		module_name = s[2];
+
+	if (!pkg_type[ bundle_name ])
+	{
+		// read sync so other requests don't have to wait for the result
+
+		s = argv.path + '/' + bundle_name + '/info.json';
+		if (!mod_fs.existsSync(s))
+		{
+			callback([]);
+			return;
+		}
+
+		try
+		{
+			var info = Y.JSON.parse(mod_fs.readFileSync(s));
+		}
+		catch (e)
+		{
+			callback([]);
+			return;
+		}
+
+		pkg_type[ bundle_name ] = info.type;
+	}
+
+	if (pkg_type[ bundle_name ] != 'bundle')
+	{
+		callback([]);
+		return;
+	}
+
+	// not caching deps because only within request, and
+	// getBundleDependencies() calls are in parallel -- rely on disk cache
+
+	mod_fs.readFile(argv.path + '/' + bundle_name + '/' + bundle_vers + '/info.json', 'utf8', function(err, data)
+	{
+		try
+		{
+			var info = Y.JSON.parse(data);
+		}
+		catch (e)
+		{
+			callback([]);
+			return;
+		}
+
+		if (!info.deps || !info.deps[ module_name ])
+		{
+			callback([]);
+			return;
+		}
+
+		// recursively build list of dependencies (inverted to simplify indexing)
+
+		var deps = info.deps[ module_name ].slice(0).reverse();
+		for (var i=0; i<deps.length; i++)
+		{
+			var d = info.deps[ deps[i] ];
+			if (d)
+			{
+				// dedupe avoids infinite loops.
+				// It operates on the final ordering to ensure that each module
+				// appears as early as possible in the list.
+
+				d    = d.slice(0).reverse();
+				deps = Y.Array.dedupe(deps.concat(d).reverse()).reverse();
+			}
+		}
+
+		// convert module names into paths
+
+		var s  = path.split('/'),
+			s1 = s[0] + '/' + s[1] + '/';
+
+		deps = Y.map(deps, function(d)
+		{
+			return s1 + d + '/' + s[3].replace(module_name, d);
+		});
+
+		// remove original path from deps
+
+		deps.unshift(path);
+		deps = Y.Array.dedupe(deps);
+		deps.shift();
+
+		callback(deps.reverse());
+	});
+}
 
 function combo(req, res, query)
 {
@@ -171,7 +274,7 @@ function combo(req, res, query)
 		return;
 	}
 
-	var module_list = query.split(cdn ? '~' : '&');
+	var module_list = Y.Array.dedupe(query.split(cdn ? '~' : '&'));
 
 	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
 	var use_cache = response_cache && /-min\.js/.test(query);
@@ -207,95 +310,121 @@ function combo(req, res, query)
 		cache_key_pending[key] = true;
 	}
 
-	var tasks     = new Y.Parallel(),
-		results   = {},
-		http_code = 200;
+	var http_code   = 200,
+		tasks       = new Y.Parallel(),
+		module_deps = {};
 
 	Y.each(module_list, function(f)
 	{
 		if (mod_path.basename(f) != 'info.json')
 		{
-			loadFile(f, tasks.add(function(data)
+			getBundleDependencies(f, tasks.add(function(deps)
 			{
-				results[f] = data;
+				module_deps[f] = deps;
 			}));
 		}
 	});
 
-	function loadFile(f, callback)
-	{
-		// security: don't use mod_path.resolve
-
-		mod_fs.readFile(argv.path + '/' + f, 'utf8', function(err, data)
-		{
-			if (err && debug_re.test(f))
-			{
-				Y.log(err.message + '; trying raw', 'debug', 'combo');
-				loadFile(f.replace(debug_re, '.js'), callback);
-			}
-			else if (err && /\.js$/.test(f) && !/-min\.js$/.test(f))
-			{
-				Y.log(err.message + '; trying min', 'debug', 'combo');
-				loadFile(f.replace('.js', '-min.js'), callback);
-			}
-			else if (err)
-			{
-				Y.log(err.message, 'warn', 'combo');
-				http_code = 404;
-				callback('');
-			}
-			else
-			{
-				callback(data);
-			}
-		});
-	}
-
-	function unblockCache()
-	{
-		if (use_cache)
-		{
-			delete cache_key_pending[key];
-			Y.fire('mru-cache-key-ready',
-			{
-				cacheKey: key
-			});
-		}
-	}
-
 	tasks.done(function()
 	{
-		if (http_code != 200)
-		{
-			if (use_cache)
-			{
-				response_cache.put(key, http_code);
-				unblockCache();
-			}
-			res.send(http_code);
-			return;
-		}
+		var tasks           = new Y.Parallel(),
+			module_contents = {},
+			dedupe          = false;
 
-		var response_data = Y.reduce(module_list, '', function(s, f)
+		var file_list = Y.reduce(module_list, [], function(list, f)
 		{
-			return s + results[f];
+			dedupe = dedupe || (module_deps[f].length > 0);
+			return list.concat(module_deps[f], f);
 		});
 
-		mod_compress(response_data, function(err, result)
+		if (dedupe)
 		{
-			var cache_data =
-			{
-				raw:  response_data,
-				gzip: result
-			};
+			file_list = Y.Array.dedupe(file_list);
+		}
 
+		Y.each(file_list, function(p)
+		{
+			loadFile(p, tasks.add(function(data)
+			{
+				module_contents[p] = data;
+			}));
+		});
+
+		function loadFile(f, callback)
+		{
+			// security: don't use mod_path.resolve
+
+			mod_fs.readFile(argv.path + '/' + f, 'utf8', function(err, data)
+			{
+				if (err && debug_re.test(f))
+				{
+					Y.log(err.message + '; trying raw', 'debug', 'combo');
+					loadFile(f.replace(debug_re, '.js'), callback);
+				}
+				else if (err && /\.js$/.test(f) && !/-min\.js$/.test(f))
+				{
+					Y.log(err.message + '; trying min', 'debug', 'combo');
+					loadFile(f.replace('.js', '-min.js'), callback);
+				}
+				else if (err)
+				{
+					Y.log(err.message, 'warn', 'combo');
+					http_code = 404;
+					callback('');
+				}
+				else
+				{
+					callback(data);
+				}
+			});
+		}
+
+		function unblockCache()
+		{
 			if (use_cache)
 			{
-				response_cache.put(key, cache_data);
-				unblockCache();
+				delete cache_key_pending[key];
+				Y.fire('mru-cache-key-ready',
+				{
+					cacheKey: key
+				});
+			}
+		}
+
+		tasks.done(function()
+		{
+			if (http_code != 200)
+			{
+				if (use_cache)
+				{
+					response_cache.put(key, http_code);
+					unblockCache();
+				}
+				res.send(http_code);
+				return;
 			}
 
-			send(req, res, cache_data);
+			var response_data = Y.reduce(file_list, '', function(s, f)
+			{
+				return s + module_contents[f];
+			});
+
+			mod_compress(response_data, function(err, result)
+			{
+				var cache_data =
+				{
+					raw:  response_data,
+					gzip: result
+				};
+
+				if (use_cache)
+				{
+					response_cache.put(key, cache_data);
+					unblockCache();
+				}
+
+				send(req, res, cache_data);
+			});
 		});
 	});
 
