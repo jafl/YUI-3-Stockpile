@@ -342,7 +342,10 @@ function combo(req, res, query)
 			file_list = Y.Array.dedupe(file_list);
 		}
 
-		Y.each(file_list, function(p)
+		// Send them in reverse order to force loader to load CSS for
+		// transitive dependencies.
+
+		Y.each(file_list.reverse(), function(p)
 		{
 			loadFile(p, tasks.add(function(data)
 			{
