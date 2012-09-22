@@ -10,21 +10,18 @@
 	change namespace/module/bundle descriptions & tags
 
 
+* upload
+	compute transitive dependencies within bundle when upload, to reduce number of requests
+		store in module/vers/info.json
+	test transitive dependencies with duplicates
+
+
 optimize dependency loading when using nodejs:
 	configure versions on the server
 	call function that does Y.Loader.resolve() to return complete list of deps
 		memoized, so the result is cached
 	also provide function to generate loader config
 
-
-* upload
-	compute transitive dependencies within bundle when upload, to reduce number of requests
-		store in module/vers/info.json
-	test transitive dependencies with duplicates
-
-	http://yuilibrary.com/projects/yui3/ticket/2532757
-		YUI doesn't load CSS for transitive dependencies from correct location
-		doesn't even try to load CSS for transitive dependencies if explicitly required module isn't skinnable
 
 search
 	support "tags" in description file
