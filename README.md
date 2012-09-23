@@ -30,8 +30,8 @@ Installation
 Install nodejs >= 0.8.0 and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui@3.6.0 express@2.5.11 request hbs handlebars gzip \
-        optimist formidable mkdirp long-stack-traces
+    npm install yui@3.6.0 express@2.5.11 request hbs handlebars@1.0.5beta \
+        gzip optimist formidable mkdirp long-stack-traces
 
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
