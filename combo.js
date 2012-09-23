@@ -331,21 +331,22 @@ function combo(req, res, query)
 			module_contents = {},
 			dedupe          = false;
 
-		var file_list = Y.reduce(module_list, [], function(list, f)
+		var dep_list = Y.reduce(module_list, [], function(list, f)
 		{
-			dedupe = dedupe || (module_deps[f].length > 0);
-			return list.concat(module_deps[f], f);
+			return list.concat(module_deps[f]);
 		});
 
-		if (dedupe)
+		// Send dependencies in reverse order to force loader to load CSS
+		// for transitive dependencies.
+
+		var file_list = module_list.concat(dep_list.reverse());
+
+		if (dep_list.length > 0)
 		{
 			file_list = Y.Array.dedupe(file_list);
 		}
 
-		// Send them in reverse order to force loader to load CSS for
-		// transitive dependencies.
-
-		Y.each(file_list.reverse(), function(p)
+		Y.each(file_list, function(p)
 		{
 			loadFile(p, tasks.add(function(data)
 			{
