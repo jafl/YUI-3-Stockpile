@@ -315,8 +315,10 @@ if ($bundle)
 	opendir(my $h, $path);
 	for my $d (readdir($h))
 	{
-		next if $d =~ /^\./;
-		send_module($token, $path.'/'.$d, $d);
+		if (-d $d && $d !~ /^\./)
+		{
+			send_module($token, $path.'/'.$d, $d);
+		}
 	}
 	closedir($h);
 }
