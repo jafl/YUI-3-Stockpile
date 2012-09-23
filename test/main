@@ -36,6 +36,7 @@ function test()
 	pushd test &&
 	perl init-wait.pl &&
 	perl $1 &&
+	ls -lR files &&
 	perl test-browse.pl $4 $5 &&
 	perl test-combo.pl &&
 	perl test-combo-dev.pl &&
