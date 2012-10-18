@@ -41,6 +41,7 @@ function test()
 	perl test-combo-dev.pl &&
 	node test-combo1.js &&
 	node test-combo2.js &&
+	node test-combo3.js &&
 	node test-combo-dev.js &&
 	rm -rf init files &&
 	popd;

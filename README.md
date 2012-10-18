@@ -292,9 +292,10 @@ Dependency Optimization
 -----------------------
 
 When a bundle is uploaded, the "requires" configuration for each module is
-updated to include transitive dependencies within the bundle.  This ensures
-that YUI Loader will only have to make two requests to get all the required
-modules within the bundle.
+parsed to extract dependencies within the bundle.  When the bundle is
+requested, all the intra-bundle transitive dependencies are included in the
+response.  This ensures that YUI Loader will only have to make one request
+to get all the required modules within the bundle.
 
 Unit Tests
 ----------

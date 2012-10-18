@@ -58,6 +58,12 @@ close(F1);
 
 close(F2);
 
+
+open(F1, '| perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 bundle 3.0.z ./upload/bundle3 > /dev/null');
+print F1 "spaz\n";
+print F1 "bundle 3.0.z: notes\n";
+close(F1);
+
 # fail - already exists
 
 open(F1, 'perl ../cli/upload.pl -u baz@yahoo.com http://127.0.0.1:8669 bundle 2.0.z ./upload/bundle2 |');

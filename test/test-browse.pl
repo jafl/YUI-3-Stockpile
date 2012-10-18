@@ -133,3 +133,37 @@ die $html,"\nmissing link to notes, stopped" unless $html =~ m|bundle 2\.0\.z: n
 die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
 die $html,"\nmissing link to js file, stopped" unless $html =~ m|bundle-baz-min\.js|;
 die $html,"\nunexpected link to css file, stopped" if $html =~ m|bundle-baz\.css|;
+
+my $res  = $ua->get('http://127.0.0.1:8668/browse?b=bundle');
+my $html = decode_response($res);
+die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
+die $html,"\nmissing group, stopped" unless $html =~ m|Managed by group: <a[^>]+>$bundle_group|;
+die $html,"\nmissing link to 1.0.z, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=1\.0\.z">1\.0\.z</a>|;
+die $html,"\nmissing link to 2.0.z, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=2\.0\.z">2\.0\.z</a>|;
+
+# bundle/3.0.z
+
+my $res  = $ua->get('http://127.0.0.1:8668/browse?b=bundle&v=3.0.z');
+my $html = decode_response($res);
+die $html,"\nmissing link to notes, stopped" unless $html =~ m|bundle 3\.0\.z: notes|;
+die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
+die $html,"\nmissing link to bundle-bar, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=3\.0\.z&amp;m=bundle-bar">bundle-bar</a>|;
+die $html,"\nmissing link to bundle-baz, stopped" unless $html =~ m|<a href="/browse\?b=bundle&amp;v=3\.0\.z&amp;m=bundle-baz">bundle-baz</a>|;
+
+# bundle/3.0.z/bundle-bar
+
+my $res  = $ua->get('http://127.0.0.1:8668/browse?b=bundle&v=3.0.z&m=bundle-bar');
+my $html = decode_response($res);
+die $html,"\nmissing link to notes, stopped" unless $html =~ m|bundle 3\.0\.z: notes|;
+die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
+die $html,"\nmissing link to js file, stopped" unless $html =~ m|bundle-bar-min\.js|;
+die $html,"\nunexpected link to css file, stopped" if $html =~ m|bundle-bar\.css|;
+
+# bundle/3.0.z/bundle-baz
+
+my $res  = $ua->get('http://127.0.0.1:8668/browse?b=bundle&v=3.0.z&m=bundle-baz');
+my $html = decode_response($res);
+die $html,"\nmissing link to notes, stopped" unless $html =~ m|bundle 3\.0\.z: notes|;
+die $html,"\nmissing link to desc, stopped" unless $html =~ m|bundle: long desc|;
+die $html,"\nmissing link to js file, stopped" unless $html =~ m|bundle-baz-min\.js|;
+die $html,"\nunexpected link to css file, stopped" if $html =~ m|bundle-baz\.css|;
