@@ -306,14 +306,25 @@ Unit Tests
 To run the test suite, first search test/config/* for "vagrant" and add
 your username to the lists.  Then execute `./test/main`.
 
-Why Perl?
----------
+FAQ
+---
+
+### Why Perl?
 
 Perl was chosen for the command line tools because it is available
 everywhere.  We did not want to require installation of NodeJS on machines
 which only need to deploy to Stockpile.
 
-Why gzip instead of NodeJS zlib?
---------------------------------
+### Why gzip instead of NodeJS zlib?
 
 The gzip module spawns a separate process, so it can run on a separate core.
+
+### Why is there no support for wildcards in version numbers?
+
+In production, you need to use fixed versions to ensure stability.  This
+requires that you also use fixed versions in QA, so you are testing what
+will be launched.  In order to have confidence in the code that you will
+push to QA, you should therefore use fixed versions during development.
+
+Modules that you are building during the development cycle can be loaded
+explicitly via script tags until they are ready to be pushed to Stockpile.
