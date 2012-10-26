@@ -276,6 +276,13 @@ function combo(req, res, query)
 
 	var module_list = Y.Array.dedupe(query.split(cdn ? '~' : '&'));
 
+	// filter before computing cache key
+
+	module_list = Y.filter(module_list, function(f)
+	{
+		return mod_path.basename(f) != 'info.json';
+	});
+
 	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
 	var use_cache = response_cache && /-min\.js/.test(query);
 	if (use_cache && cache_key_pending[key])
@@ -316,13 +323,10 @@ function combo(req, res, query)
 
 	Y.each(module_list, function(f)
 	{
-		if (mod_path.basename(f) != 'info.json')
+		getBundleDependencies(f, tasks.add(function(deps)
 		{
-			getBundleDependencies(f, tasks.add(function(deps)
-			{
-				module_deps[f] = deps;
-			}));
-		}
+			module_deps[f] = deps;
+		}));
 	});
 
 	tasks.done(function()
