@@ -84,12 +84,12 @@ var argv = optimist
 	.option('cache-log',
 	{
 		default:  defaults['cache-log'] || '/var/log/yui3-stockpile',
-		describe: 'Cache size in MB (default 500)'
+		describe: 'Directory in which to write cache log dumps'
 	})
 	.option('cache-log-interval',
 	{
 		default:  defaults['cache-log-interval'] || 1,
-		describe: 'Cache size in MB (default 500)'
+		describe: 'Interval between writing cache log dumps (hours)'
 	})
 	.option('cluster',
 	{
@@ -276,15 +276,19 @@ function combo(req, res, query)
 
 	var module_list = Y.Array.dedupe(query.split(cdn ? '~' : '&'));
 
-	// filter before computing cache key
+	// filter before computing cache key, to avoid memory DOS
 
 	module_list = Y.filter(module_list, function(f)
 	{
 		return mod_path.basename(f) != 'info.json';
 	});
 
-	var key       = module_list.slice(0).sort().join('&');	// sort to generate cache key
 	var use_cache = response_cache && /-min\.js/.test(query);
+	if (use_cache)
+	{
+		var key = module_list.slice(0).sort().join('&');	// sort to generate cache key
+	}
+
 	if (use_cache && cache_key_pending[key])
 	{
 		var h = Y.on('mru-cache-key-ready', function(e)
