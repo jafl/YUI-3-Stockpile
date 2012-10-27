@@ -250,6 +250,8 @@ other requests will be routed to the combo handler.
 Caching
 -------
 
+Important:  If you turn on caching, then turn off clustering.
+
 Stockpile only caches the results for minified requests.  Raw and debug
 versions are typically requested only in debug mode, which is rare.
 Unfortunately, not all requests will accept compressed responses, so the
@@ -291,6 +293,9 @@ Clustering is turned on by default in the combo handler.  To turn it off,
 pass `--no-cluster` as a command-line argument or add `"cluster":false` in
 your configuration file.
 
+Important:  If you use clustering, do not turn on caching.  Use an external
+cache instead, e.g., CloudFlare.
+
 Dependency Optimization
 -----------------------
 
@@ -328,3 +333,17 @@ push to QA, you should therefore use fixed versions during development.
 
 Modules that you are building during the development cycle can be loaded
 explicitly via script tags until they are ready to be pushed to Stockpile.
+
+### How do I delete a namespace, bundle, module, or version?
+
+The command-line interface does not support deleting anything because the
+main point of versioning is that you always have old versions available.
+While support could be added for "soft delete," this would add extra
+overhead to combo.js.  Slowing down every request to support what should be
+a very rare situation is not a good trade-off.
+
+The simplest solution is to update the description to say something like
+"do not use."  If you really don't want something to be available any
+longer, then you can go in and delete it from the file system.  Just
+remember that this violates the basic assumption of ensuring that old
+version are always available.
