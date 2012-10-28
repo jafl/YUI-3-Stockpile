@@ -485,23 +485,25 @@ function configureApp(app)
 	});
 }
 
-var app = mod_express.createServer();
+var app = mod_express();
 configureApp(app);
 
-Y.log('listening on http port ' + argv.port, 'info', 'combo');
-app.listen(argv.port);
+var log_prefix = argv.cluster ?
+	'worker ' + mod_cluster.worker.id + ' ' : '';
+
+Y.log(log_prefix + 'listening on http port ' + argv.port, 'info', 'combo');
+require('http').createServer(app).listen(argv.port);
 
 if (mod_fs.existsSync(argv.key) && mod_fs.existsSync(argv.cert))
 {
-	var sapp = mod_express.createServer(
+	var options =
 	{
 		key:  mod_fs.readFileSync(argv.key, 'utf8'),
 		cert: mod_fs.readFileSync(argv.cert, 'utf8')
-	});
-	configureApp(sapp);
+	};
 
-	Y.log('listening on https port ' + argv.secureport, 'info', 'combo');
-	sapp.listen(argv.secureport);
+	Y.log(log_prefix + 'listening on https port ' + argv.secureport, 'info', 'combo');
+	require('https').createServer(options, app).listen(argv.secureport);
 }
 
 if (argv.test)

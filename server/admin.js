@@ -11,24 +11,30 @@ var Y,
 
 	mod_fs = require('fs');
 
-exports.init = function(y, mod_express, argv)
+exports.init = function(y, mod_express, argv, log_addr)
 {
 	Y = y;
 
+	app = mod_express();
+
 	if (mod_fs.existsSync(argv.key) && mod_fs.existsSync(argv.cert))
 	{
-		app = mod_express.createServer(
+		var options =
 		{
 			key:  mod_fs.readFileSync(argv.key, 'utf8'),
 			cert: mod_fs.readFileSync(argv.cert, 'utf8')
-		});
+		};
+
 		var type = 'https';
+		require('https').createServer(options, app).listen(argv.adminport, argv.address);
 	}
 	else
 	{
-		app      = mod_express.createServer();
 		var type = 'http';
+		require('http').createServer(app).listen(argv.adminport, argv.address);
 	}
+
+	Y.log('admin on ' + type + '://' + log_addr + ':' + argv.adminport, 'info', 'manager');
 
 	// Authentication
 

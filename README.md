@@ -33,8 +33,8 @@ Installation
 Install nodejs >= 0.8.0 and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui@3.6.0 express@2.5.11 request hbs handlebars@1.0.5beta \
-        gzip optimist formidable mkdirp long-stack-traces
+    npm install yui@3.6.0 express express-hbs request gzip mkdirp \
+        optimist formidable long-stack-traces
 
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
@@ -293,8 +293,9 @@ Clustering is turned on by default in the combo handler.  To turn it off,
 pass `--no-cluster` as a command-line argument or add `"cluster":false` in
 your configuration file.
 
-Important:  If you use clustering, do not turn on caching.  Use an external
-cache instead, e.g., CloudFlare.
+Important:  If you use clustering, do not turn on caching, because
+otherwise, each process will cache separately, dramatically increasing the
+memory footprint.  Use an external cache instead, e.g., CloudFlare.
 
 Dependency Optimization
 -----------------------

@@ -1,17 +1,17 @@
-var mod_hbs = require('handlebars');
+var mod_hbs = require('express-hbs');
 
-mod_hbs.registerHelper('each-with-last', function(array, fn)
+mod_hbs.registerHelper('each-with-last', function(list, options)
 {
-	var total  = array.length,
+	var total  = list.length,
 		last   = total-1,
 		buffer = '';
 
 	for (var i=0; i<total; i++)
 	{
-		var item  = array[i];
+		var item  = list[i];
 		item.last = (i == total-1);
 
-		buffer += fn(item);
+		buffer += options.fn(item);
 	}
 
 	return buffer;

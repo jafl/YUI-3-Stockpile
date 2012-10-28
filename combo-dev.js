@@ -62,7 +62,7 @@ if (debug)
 }
 Y.LogFilter.addLevelFilter(log_levels);
 
-var app = mod_express.createServer();
+var app = mod_express();
 
 function moduleName(s)
 {
@@ -215,7 +215,7 @@ app.get('/*', function(req, res)
 	combo(req, res, req.params[0]);
 });
 
-Y.log('listening on port ' + config.port, 'info', 'combo-dev');
+Y.log('listening on http port ' + config.port, 'info', 'combo-dev');
 app.listen(config.port);
 
 if (argv.test)

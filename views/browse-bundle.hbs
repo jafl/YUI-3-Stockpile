@@ -1,8 +1,10 @@
-{{#if code}}
+{{!< layouts/browse }}
+
+{{#if code_vers}}
 	<div class="code">
 	<button id="copy-code">Copy</button>
 	<p>To use the latest version of {{bundle}}, configure a Loader group as follows:</p>
-	{{{code}}}
+	{{> code-bundle}}
 	</div>
 {{/if}}
 
