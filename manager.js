@@ -20,9 +20,11 @@ var mod_os      = require('os'),
 	mod_fs      = require('fs'),
 	mod_path    = require('path'),
 	mod_express = require('express'),
-	mod_hbs     = require('express-hbs'),
+	mod_hbs     = require('express-hbs');
 
-	init_hbs_helpers = require('./server/hbs-helpers.js');
+// init hbs helpers
+
+require('./server/hbs-helpers.js');
 
 // options
 

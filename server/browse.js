@@ -468,7 +468,6 @@ function showFile(res, argv, query)
 					title:   argv.title,
 					trail:   trail,
 					curr:    curr,
-					hilight: true,
 					toolbar: [ { url: argv.combo + query.file, text: 'View raw code' } ],
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,

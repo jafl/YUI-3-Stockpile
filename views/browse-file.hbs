@@ -1,3 +1,18 @@
 {{!< layouts/browse }}
 
+{{#contentFor "head"}}
+<script type="text/javascript" src="/syntax/shCore.js"></script>
+<script type="text/javascript" src="/syntax/shBrushJScript.js"></script>
+<script type="text/javascript" src="/syntax/shBrushCSS.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/syntax/shCore.css" />
+<link rel="stylesheet" type="text/css" href="/syntax/shThemeDefault.css" />
+{{/contentFor}}
+
 <pre class="brush:{{type}}">{{content}}</pre>
+
+{{#contentFor "footer"}}
+<script type="text/javascript">
+SyntaxHighlighter.all();
+</script>
+{{/contentFor}}
