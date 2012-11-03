@@ -2,6 +2,8 @@ if express-hbs doesn't want to support it, remove layout from browse & browse-ut
 
 
 * cli
+	allow all parameters to be provided as arguments
+
 	change namespace/module/bundle descriptions & tags
 
 	remove group

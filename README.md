@@ -309,7 +309,7 @@ to get all the required modules within the bundle.
 Unit Tests
 ----------
 
-To run the test suite, first search test/config/* for "vagrant" and add
+To run the test suite, first search `test/config/*` for "vagrant" and add
 your username to the lists.  Then execute `./test/main`.
 
 FAQ
