@@ -104,7 +104,7 @@ The top-level namespace directory helps avoid the file system's limit on
 the number of subdirectories:  each namespace can have the maximum number
 of modules, instead of the limit being global.
 
-Important:  The name of a namespace cannot contain any hyphens.
+**Important**:  The name of a namespace cannot contain any hyphens.
 
 Version numbers for individual modules must be specified by configuring
 each of the patterns in the YUI Loader group with this configFn:
@@ -250,7 +250,7 @@ other requests will be routed to the combo handler.
 Caching
 -------
 
-Important:  If you turn on caching, then turn off clustering.
+**Important**:  If you turn on caching, then turn off clustering.
 
 Stockpile only caches the results for minified requests.  Raw and debug
 versions are typically requested only in debug mode, which is rare.
@@ -293,7 +293,7 @@ Clustering is turned on by default in the combo handler.  To turn it off,
 pass `--no-cluster` as a command-line argument or add `"cluster":false` in
 your configuration file.
 
-Important:  If you use clustering, do not turn on caching, because
+**Important**:  If you use clustering, do not turn on caching, because
 otherwise, each process will cache separately, dramatically increasing the
 memory footprint.  Use an external cache instead, e.g., CloudFlare.
 
