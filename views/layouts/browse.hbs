@@ -15,14 +15,7 @@
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssfonts/fonts-min.css" />
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.5.0/build/cssbase/base-min.css" />
 
-    {{#if hilight}}
-        <script type="text/javascript" src="/syntax/shCore.js"></script>
-        <script type="text/javascript" src="/syntax/shBrushJScript.js"></script>
-        <script type="text/javascript" src="/syntax/shBrushCSS.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="/syntax/shCore.css" />
-        <link rel="stylesheet" type="text/css" href="/syntax/shThemeDefault.css" />
-    {{/if}}
+    {{{block "head"}}}
 
     <link rel="stylesheet" type="text/css" href="/browse.css" />
 </head>
@@ -97,11 +90,7 @@ if (button)
 });
 </script>
 
-{{#if hilight}}
-    <script type="text/javascript">
-    SyntaxHighlighter.all();
-    </script>
-{{/if}}
+{{{block "footer"}}}
 
 </body>
 </html>

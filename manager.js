@@ -20,8 +20,11 @@ var mod_os      = require('os'),
 	mod_fs      = require('fs'),
 	mod_path    = require('path'),
 	mod_express = require('express'),
+	mod_hbs     = require('express-hbs');
 
-	init_hbs_helpers = require('./server/hbs-helpers.js');
+// init hbs helpers
+
+require('./server/hbs-helpers.js');
 
 // options
 
@@ -147,7 +150,7 @@ require('./server/manager-util.js').init(Y, argv);
 
 var log_addr = argv.address || mod_os.hostname();
 
-var app = mod_express.createServer();
+var app = mod_express();
 app.use(mod_express.static(__dirname + '/client'));
 
 require('./server/browse-util.js').init(Y);
@@ -157,10 +160,11 @@ require('./server/browse-groups.js').configure(Y, app, argv);
 Y.log('browse on http://' + log_addr + ':' + argv.port + '/browse', 'info', 'manager');
 app.listen(argv.port, argv.address);
 
-var admin = require('./server/admin.js').init(Y, mod_express, argv);
+var admin = require('./server/admin.js').init(Y, mod_express, argv, log_addr);
 
-Y.log('admin on ' + admin.type + '://' + log_addr + ':' + admin.port, 'info', 'manager');
-admin.app.listen(admin.port, argv.address);
+var hbs = mod_hbs.express3({ partialsDir: __dirname + '/views/partials' });
+app.engine('hbs', hbs);
+admin.app.engine('hbs', hbs);
 
 if (argv.test)
 {

@@ -55,6 +55,14 @@ sub test()
 		$code eq slurp('./upload/foo/sp-ns-foo-min.js')
 				.slurp('./upload/bundle2/bundle-baz/bundle-baz-min.js');
 
+	# intra-bundle dependencies
+
+	my $res  = $ua->get('http://127.0.0.1:8666/combo?bundle/3.0.z/bundle-bar/bundle-bar-min.js');
+	my $code = decode_response($res);
+	die $code,"\nwrong data" unless
+		$code eq slurp('./upload/bundle3/bundle-bar/bundle-bar-min.js')
+				.slurp('./upload/bundle3/bundle-baz/bundle-baz-min.js');
+
 	# css
 
 	my $res  = $ua->get('http://127.0.0.1:8666/combo?bundle/1.0.z/bundle-bar/assets/skins/sam/bundle-bar.css');

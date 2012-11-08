@@ -12,7 +12,6 @@ var Y,
 	mod_path = require('path'),
 	mod_url  = require('url'),
 	mod_qs   = require('querystring'),
-	mod_hbs  = require('handlebars'),
 
 	browse_util  = require('./browse-util.js'),
 	content_type = require('./content-type.js'),
@@ -22,8 +21,6 @@ var Y,
 		url:  '/browse',
 		text: 'Browse'
 	};
-
-var bundle_code_tmpl = mod_hbs.compile(mod_fs.readFileSync('./views/code-bundle.hbs', 'utf8'));
 
 function compareVersions(a,b)		// descending
 {
@@ -300,25 +297,19 @@ function browseBundle(res, argv, query)
 			if (versions.length > 0)
 			{
 				versions.sort(compareVersions);
-
-				code = bundle_code_tmpl(
-				{
-					bundle:  query.b,
-					version: versions[0].name
-				});
 			}
 
 			res.render('browse-bundle.hbs',
 			{
-				title:    argv.title,
-				trail:    trail,
-				curr:     query.b,
-				bundle:   query.b,
-				desc:     desc.long,
-				group:    desc.group,
-				versions: versions,
-				code:     code,
-				layout:   query.layout
+				title:     argv.title,
+				trail:     trail,
+				curr:      query.b,
+				bundle:    query.b,
+				desc:      desc.long,
+				group:     desc.group,
+				versions:  versions,
+				code_vers: versions.length > 0 ? versions[0].name : '',
+				layout:    query.layout
 			});
 		});
 	});
@@ -364,25 +355,19 @@ function browseBundleVersion(res, argv, query)
 		{
 			modules.sort(Y.Sort.compareAsStringNoCase);
 
-			var code = bundle_code_tmpl(
-			{
-				bundle:  query.b,
-				version: query.v
-			});
-
 			res.render('browse-bundle-version.hbs',
 			{
-				title:   argv.title,
-				trail:   trail,
-				curr:    query.v,
-				bundle:  query.b,
-				desc:    desc.long,
-				vers:    query.v,
-				author:  notes.author,
-				notes:   notes.notes,
-				modules: modules,
-				code:    code,
-				layout:  query.layout
+				title:     argv.title,
+				trail:     trail,
+				curr:      query.v,
+				bundle:    query.b,
+				desc:      desc.long,
+				vers:      query.v,
+				author:    notes.author,
+				notes:     notes.notes,
+				modules:   modules,
+				code_vers: query.v,
+				layout:    query.layout
 			});
 		});
 	});
@@ -483,7 +468,6 @@ function showFile(res, argv, query)
 					title:   argv.title,
 					trail:   trail,
 					curr:    curr,
-					hilight: true,
 					toolbar: [ { url: argv.combo + query.file, text: 'View raw code' } ],
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,

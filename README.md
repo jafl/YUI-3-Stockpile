@@ -1,8 +1,11 @@
-YUI 3 combo handler built on NodeJS that supports versioning, either for
-individual modules or for bundles of modules.  The major advance over other
-combo handlers is that you can upload new versions of individual modules or
-bundles at any time, but this will not break existing appliations, because
-the old versions will still be available.
+YUI 3 combo handler built on NodeJS that supports versioning, both for
+individual modules and for bundles of modules.  The significant advance
+over other combo handlers is that you can upload new versions of individual
+modules or bundles at any time, but this will not break existing
+applications, because the old versions will still be available.
+
+This support for versioning allows you to host all the versions of all your
+modules on one server.
 
 The name "stockpile" was chosen because it's a synonym of gallery, but
 without the glamorous connotation.
@@ -30,8 +33,8 @@ Installation
 Install nodejs >= 0.8.0 and then install these packages:
 
     cd YUI-3-Stockpile
-    npm install yui@3.6.0 express@2.5.11 request hbs handlebars@1.0.5beta \
-        gzip optimist formidable mkdirp long-stack-traces
+    npm install yui@3.6.0 express express-hbs request gzip mkdirp \
+        optimist formidable long-stack-traces
 
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
@@ -104,7 +107,7 @@ The top-level namespace directory helps avoid the file system's limit on
 the number of subdirectories:  each namespace can have the maximum number
 of modules, instead of the limit being global.
 
-Important:  The name of a namespace cannot contain any hyphens.
+**Important**:  The name of a namespace cannot contain any hyphens.
 
 Version numbers for individual modules must be specified by configuring
 each of the patterns in the YUI Loader group with this configFn:
@@ -250,6 +253,8 @@ other requests will be routed to the combo handler.
 Caching
 -------
 
+**Important**:  If you turn on caching, then turn off clustering.
+
 Stockpile only caches the results for minified requests.  Raw and debug
 versions are typically requested only in debug mode, which is rare.
 Unfortunately, not all requests will accept compressed responses, so the
@@ -291,28 +296,58 @@ Clustering is turned on by default in the combo handler.  To turn it off,
 pass `--no-cluster` as a command-line argument or add `"cluster":false` in
 your configuration file.
 
+**Important**:  If you use clustering, do not turn on caching, because
+otherwise, each process will cache separately, dramatically increasing the
+memory footprint.  Use an external cache instead, e.g., CloudFlare.
+
 Dependency Optimization
 -----------------------
 
 When a bundle is uploaded, the "requires" configuration for each module is
-updated to include transitive dependencies within the bundle.  This ensures
-that YUI Loader will only have to make two requests to get all the required
-modules within the bundle.
+parsed to extract dependencies within the bundle.  When the bundle is
+requested, all the intra-bundle transitive dependencies are included in the
+response.  This ensures that YUI Loader will only have to make one request
+to get all the required modules within the bundle.
 
 Unit Tests
 ----------
 
-To run the test suite, first search test/config/* for "vagrant" and add
+To run the test suite, first search `test/config/*` for "vagrant" and add
 your username to the lists.  Then execute `./test/main`.
 
-Why Perl?
----------
+FAQ
+---
+
+### Why Perl?
 
 Perl was chosen for the command line tools because it is available
 everywhere.  We did not want to require installation of NodeJS on machines
 which only need to deploy to Stockpile.
 
-Why gzip instead of NodeJS zlib?
---------------------------------
+### Why gzip instead of NodeJS zlib?
 
 The gzip module spawns a separate process, so it can run on a separate core.
+
+### Why is there no support for wildcards in version numbers?
+
+In production, you need to use fixed versions to ensure stability.  This
+requires that you also use fixed versions in QA, so you are testing what
+will be launched.  In order to have confidence in the code that you will
+push to QA, you should therefore use fixed versions during development.
+
+Modules that you are building during the development cycle can be loaded
+explicitly via script tags until they are ready to be pushed to Stockpile.
+
+### How do I delete a namespace, bundle, module, or version?
+
+The command-line interface does not support deleting anything because the
+main point of versioning is that you always have old versions available.
+While support could be added for "soft delete," this would add extra
+overhead to combo.js.  Slowing down every request to support what should be
+a very rare situation is not a good trade-off.
+
+The simplest solution is to update the description to say something like
+"do not use."  If you really don't want something to be available any
+longer, then you can go in and delete it from the file system.  Just
+remember that this violates the basic assumption of ensuring that old
+version are always available.

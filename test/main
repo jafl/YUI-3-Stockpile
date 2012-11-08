@@ -10,7 +10,7 @@ whoami;
 echo ===;
 
 if [[ ! -d node_modules ]]; then
-	npm install yui@3.6.0 express@2.5.11 request hbs handlebars@1.0.5beta gzip optimist formidable mkdirp;
+	npm install yui@3.6.0 express express-hbs request gzip mkdirp optimist formidable;
 	sudo apt-get install libterm-readkey-perl liblwp-useragent-determined-perl libjson-perl;
 fi
 
@@ -41,6 +41,7 @@ function test()
 	perl test-combo-dev.pl &&
 	node test-combo1.js &&
 	node test-combo2.js &&
+	node test-combo3.js &&
 	node test-combo-dev.js &&
 	rm -rf init files &&
 	popd;

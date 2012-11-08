@@ -346,8 +346,10 @@ function upload(argv, fields, files, res)
 			return;
 		}
 
-		// copy, because (1) rename doesn't work across filesystems
-		// and (2) we need to modify css image paths
+		// copy, because
+		// (1) rename doesn't work across filesystems
+		// (2) we need to modify css image paths
+		// (3) we need to extract dependencies from the js
 
 		mod_fs.readFile(file.path, tasks.add(function(err, contents)
 		{
@@ -356,7 +358,51 @@ function upload(argv, fields, files, res)
 			mod_mkdirp.sync(d, dir_perm);
 
 			var info = mod_content_type.analyze(Y, path);
-			if (info && info.type == 'text/css')
+			if (info && info.type == 'text/javascript' && data.bundle)
+			{
+				var js = contents.toString(),
+					m  = /requires\s*:\s*(\[[^\]]+\])/.exec(js);
+				if (m && m.length)
+				{
+					var req = m[1],
+						m   = /YUI\s*\.\s*add\s*\(\s*(['"][^'"]+['"])/.exec(js);
+					if (m && m.length)
+					{
+						var mod       = m[1],
+							info_file = data.path + '/info.json';
+						mod_fs.readFile(info_file, 'utf8', tasks.add(function(err, contents)
+						{
+							var info = Y.JSON.parse(contents);
+							if (!info.deps)
+							{
+								info.deps = {};
+							}
+
+							try
+							{
+								mod = Y.JSON.parse(mod.replace(/'/g, '"'));
+								req = Y.JSON.parse(req.replace(/'/g, '"'));
+
+								req = Y.filter(req, function(item)
+								{
+									return item.substr(0, data.bundle.length+1) == data.bundle + '-';
+								});
+
+								if (req.length > 0)
+								{
+									info.deps[ mod ] = req;
+									mod_fs.writeFile(info_file, Y.JSON.stringify(info), 'utf8', tasks.add());
+								}
+							}
+							catch (e)
+							{
+								// ignore it
+							}
+						}));
+					}
+				}
+			}
+			else if (info && info.type == 'text/css')
 			{
 				// use only relative path, to support both http and https
 

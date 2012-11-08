@@ -1,19 +1,14 @@
+if express-hbs doesn't want to support it, remove layout from browse & browse-util
+
+
 * cli
-	delete namespace, bundle, ns module, version
-		mark as deleted in info
-		(not actually deleted, to avoid re-using name/version)
+	allow all parameters to be provided as arguments
+
+	change namespace/module/bundle descriptions & tags
 
 	remove group
 		normal user can only modify group to which he belongs
 		only remove if nothing is in the group
-
-	change namespace/module/bundle descriptions & tags
-
-
-* upload
-	compute transitive dependencies within bundle when upload, to reduce number of requests
-		store in module/vers/info.json
-	test transitive dependencies with duplicates
 
 
 optimize dependency loading when using nodejs:
