@@ -60,19 +60,22 @@ Start the admin UI:
                   [--title title_to_display]
                   [--debug]
 
-The default config files are:
+The default locations for config files are:
 
     combo server:  /usr/share/yui3-stockpile/combo.json
     admin UI:      /usr/share/yui3-stockpile/manager.json
 
-The config files are JSON.  The keys are the names of the command line
-parameters.  Command line arguments override the values in the config
+The config files must be valid JSON.  The keys are the names of the command
+line parameters.  Command line arguments override the values in the config
 files.
 
 The default paths are:
 
     combo server repository: /var/yui3-stockpile
     combo server cache log:  /var/log/yui3-stockpile
+
+Whichever paths you choose to use, they must be writable by the combo
+handler and manager processes.
 
 Repository
 ----------
@@ -183,8 +186,8 @@ automatically use https instead of http.
 
 To make it easy to contact the owner of a module, all user names are email
 addresses.  If all users are on the same mail server, then configure
-`--mailserver` so users only have to type their username when invoking the
-command line tools.
+`--mailserver` to be the name of the mailserver host so users only have to
+type their username when invoking the command line tools.
 
 Authorization
 -------------
