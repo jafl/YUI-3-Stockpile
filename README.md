@@ -80,37 +80,28 @@ The default paths are:
 Whichever paths you choose to use, they must be writable by the combo
 handler and manager processes.
 
-Repository
-----------
+Module Names
+------------
 
-Versioning individual modules requires this directory structure:
-
-    {namespace}/
-        sp-{namespace}-{module-name}/
-            {version}/
-                sp-{namespace}-{module-name}-min.js
-
-Versioning a module bundle requires this directory structure:
-
-    {bundle-name}/
-        {version}/
-            {module-name}/
-                {module-name}-min.js
-
-The raw and debug versions of the JavaScript are optional.  The assets
-directory is also optional.  Stockpile supports images inside the assets
-directory, but for optimal performance, all images should be served from a
-CDN, e.g., Akamai.
+Module names must follow certain conventions, so YUI Loader can be
+configured to support version numbers.
 
 Namespaces avoid naming collisions between modules from different teams.
-The top-level namespace directory helps avoid the file system's limit on
-the number of subdirectories:  each namespace can have the maximum number
-of modules, instead of the limit being global.
+For a namespace containing individually versioned modules, each module name
+must use this pattern:  `sp-{namespace}-{module-name}`
 
 **Important**:  The name of a namespace cannot contain any hyphens.
 
-Version numbers for individual modules must be specified by configuring
-each of the patterns in the YUI Loader group with this configFn:
+For a bundle of modules that are all released together under a single
+version number, all the modules must use this pattern:
+`{bundle-name}-{module-name}`
+
+Examples of using modules and bundles can be found in `test/upload`.
+
+### Configuring version numbers for modules in a namespace
+
+Version numbers must be specified by configuring each of the patterns in
+the YUI Loader group with this configFn:
 
 ```js
 function insertVersion(m)
@@ -124,32 +115,32 @@ function insertVersion(m)
 }
 ```
 
-where moduleVersion is a map of module names to version numbers.  Prefixing
-all modules with "sp-" makes it easy to define a single YUI Loader group
+where moduleVersion is a map of module names to version numbers.  The
+required prefix "sp-" makes it easy to define a single YUI Loader group
 with this configFn.
 
-The version number for a module bundle must be specified by configuring the
-root of the YUI Loader group:
+### Configuring the version number for a bundle of modules
 
-    myGroup:
+The version number must be specified by configuring the root of the YUI
+Loader group:
+
+    'my-bundle':
     {
         root: 'uifwk/14.2.0.0.253/'
     }
 
-The advantage of using a bundle is that when modules are requested,
-dependencies within the bundle are automatically resolved and loaded.  This
-reduces the number of modules you need to list in your `YUI().use()`
-statement and also reduces the number of requests made by YUI Loader.
+One advantage of using a bundle is that it reduces the amount of
+configuration, since all the modules have the same version.  Using a bundle
+also reduces the number of requests made by YUI Loader.  See "Dependency
+Optimization" below for more information.
 
 The disadvantage of using a bundle is that all the modules must be
-published simultaneously, inside the {bundle-name}/{version}/ directory.
-
-Examples of using modules and bundles can be found in test/*.js
+published simultaneously.
 
 Deployment
 ----------
 
-You should publishing only your minified code to your public deployment of
+You should publish only your minified code to your public deployment of
 YUI 3 Stockpile, so you can keep your commented code private.
 
 Uploading
@@ -169,6 +160,11 @@ The script will ask you for the required information, e.g., password,
 descriptions, or release notes.
 
 Run upload.pl without arguments to get additional usage information.
+
+**Note**:  The raw and debug versions of the JavaScript are optional.  The
+assets directory is also optional.  Stockpile supports images inside the
+assets directory, but for optimal performance, all images should be served
+from a CDN, e.g., Akamai.
 
 Authentication
 --------------
@@ -314,6 +310,27 @@ Unit Tests
 
 To run the test suite, first search `test/config/*` for "vagrant" and add
 your username to the lists.  Then execute `./test/main`.
+
+Repository
+----------
+
+Versioning individual modules requires this directory structure:
+
+    {namespace}/
+        sp-{namespace}-{module-name}/
+            {version}/
+                sp-{namespace}-{module-name}-min.js
+
+Versioning a module bundle requires this directory structure:
+
+    {bundle-name}/
+        {version}/
+            {bundle-name}-{module-name}/
+                {bundle-name}-{module-name}-min.js
+
+The top-level namespace directory helps avoid the file system's limit on
+the number of subdirectories:  each namespace can have the maximum number
+of modules, instead of the limit being global.
 
 FAQ
 ---
