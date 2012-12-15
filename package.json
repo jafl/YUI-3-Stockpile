@@ -1,0 +1,25 @@
+{
+  "name": "YUI-3-Stockpile",
+  "version": "0.9.0",
+  "description": "YUI 3 combo handler built on NodeJS that supports versioning, both for individual modules and for bundles of modules.",
+  "main": "combo.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./test/main"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jafl/YUI-3-Stockpile.git"
+  },
+  "keywords": [
+    "yui",
+    "loader",
+    "gallery",
+    "stockpile",
+    "module"
+  ],
+  "author": "John Lindal",
+  "license": "BSD"
+}
