@@ -30,11 +30,7 @@ Code Organization
 Installation
 ------------
 
-Install nodejs >= 0.8.0 and then install these packages:
-
-    cd YUI-3-Stockpile
-    npm install yui@3.6.0 express express-hbs request gzip mkdirp \
-        optimist formidable long-stack-traces
+Install nodejs >= 0.8.0 and npm and then run `npm install`.
 
 On computers that will be used to upload modules to the stockpile, use cpan
 to install the required Perl modules:
