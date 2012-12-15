@@ -9,8 +9,7 @@ echo ===;
 whoami;
 echo ===;
 
-if [[ ! -d node_modules ]]; then
-	npm install yui@3.6.0 express express-hbs request gzip mkdirp optimist formidable;
+if $(which apt-get); then
 	sudo apt-get install libterm-readkey-perl liblwp-useragent-determined-perl libjson-perl;
 fi
 

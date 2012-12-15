@@ -305,7 +305,7 @@ Unit Tests
 ----------
 
 To run the test suite, first search `test/config/*` for "vagrant" and add
-your username to the lists.  Then execute `./test/main`.
+your username to the lists.  Then execute `npm test`.
 
 Repository
 ----------
