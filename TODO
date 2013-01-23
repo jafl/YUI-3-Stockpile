@@ -1,6 +1,3 @@
-if express-hbs doesn't want to support it, remove layout from browse & browse-util
-
-
 * cli
 	allow all parameters to be provided as arguments
 
