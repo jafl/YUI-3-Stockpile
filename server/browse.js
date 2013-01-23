@@ -150,7 +150,7 @@ function browseNamespace(res, argv, query)
 				desc:    desc.long,
 				group:   desc.group,
 				modules: modules,
-				layout:  query.layout
+				layout:  query.layout ? 'layouts/browse' : ''
 			});
 		});
 	});
@@ -206,7 +206,7 @@ function browseModule(res, argv, query)
 				desc:     desc.long,
 				versions: versions,
 				vers:     versions.length ? versions[0].name : '',
-				layout:   query.layout
+				layout:   query.layout ? 'layouts/browse' : ''
 			});
 		});
 	});
@@ -255,7 +255,7 @@ function browseModuleVersion(res, argv, query)
 			author:    notes.author,
 			notes:     notes.notes,
 			file_tree: file_tree,
-			layout:    query.layout
+			layout:    query.layout ? 'layouts/browse' : ''
 		});
 	});
 }
@@ -309,7 +309,7 @@ function browseBundle(res, argv, query)
 				group:     desc.group,
 				versions:  versions,
 				code_vers: versions.length > 0 ? versions[0].name : '',
-				layout:    query.layout
+				layout:    query.layout ? 'layouts/browse' : ''
 			});
 		});
 	});
@@ -367,7 +367,7 @@ function browseBundleVersion(res, argv, query)
 				notes:     notes.notes,
 				modules:   modules,
 				code_vers: query.v,
-				layout:    query.layout
+				layout:    query.layout ? 'layouts/browse' : ''
 			});
 		});
 	});
@@ -415,7 +415,7 @@ function browseBundleModule(res, argv, query)
 			author:    notes.author,
 			notes:     notes.notes,
 			file_tree: file_tree,
-			layout:    query.layout
+			layout:    query.layout ? 'layouts/browse' : ''
 		});
 	});
 }
@@ -471,7 +471,7 @@ function showFile(res, argv, query)
 					toolbar: [ { url: argv.combo + query.file, text: 'View raw code' } ],
 					type:    mod_path.extname(query.file).substr(1),
 					content: data,
-					layout:  query.layout
+					layout:  query.layout ? 'layouts/browse' : ''
 				});
 			}
 		});

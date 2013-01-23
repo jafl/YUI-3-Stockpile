@@ -53,7 +53,7 @@ function showGroupMembers(res, argv, query)
 		group:  query.name,
 		any:    Y.Array.indexOf(users, mod_auth.getWildcardUser()) >= 0,
 		users:  users.sort(Y.Sort.compareAsStringNoCase),
-		layout: query.layout
+		layout: query.layout ? 'layouts/browse' : ''
 	});
 }
 
