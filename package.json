@@ -22,30 +22,17 @@
   ],
   "author": "John Lindal",
   "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/jafl/YUI-3-Stockpile/issues"
+  },
   "dependencies": {
-    "express": {
-      "version": "3.0.4"
-    },
-    "express-hbs": {
-      "version": "0.1.2-pre"
-    },
-    "formidable": {
-      "version": "1.0.11"
-    },
-    "long-stack-traces": {
-      "version": "0.1.2"
-    },
-    "mkdirp": {
-      "version": "0.3.4"
-    },
-    "optimist": {
-      "version": "0.3.5"
-    },
-    "request": {
-      "version": "2.12.0"
-    },
-    "yui": {
-      "version": "3.8.0"
-    }
+    "express": "3.0.4",
+    "express-hbs": "0.1.2-pre",
+    "formidable": "1.0.11",
+    "long-stack-traces": "0.1.2",
+    "mkdirp": "0.3.4",
+    "optimist": "0.3.5",
+    "request": "2.12.0",
+    "yui": "3.13.0"
   }
 }
