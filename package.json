@@ -22,35 +22,33 @@
   ],
   "author": "John Lindal",
   "license": "BSD",
-  {
-    "dependencies": {
-      "express": {
-        "version": "3.0.4"
-      },
-      "express-hbs": {
-        "version": "0.1.2-pre"
-      },
-      "formidable": {
-        "version": "1.0.11"
-      },
-      "gzip": {
-        "version": "0.1.0"
-      },
-      "long-stack-traces": {
-        "version": "0.1.2"
-      },
-      "mkdirp": {
-        "version": "0.3.4"
-      },
-      "optimist": {
-        "version": "0.3.5"
-      },
-      "request": {
-        "version": "2.12.0"
-      },
-      "yui": {
-        "version": "3.8.0"
-      }
+  "dependencies": {
+    "express": {
+      "version": "3.0.4"
+    },
+    "express-hbs": {
+      "version": "0.1.2-pre"
+    },
+    "formidable": {
+      "version": "1.0.11"
+    },
+    "gzip": {
+      "version": "0.1.0"
+    },
+    "long-stack-traces": {
+      "version": "0.1.2"
+    },
+    "mkdirp": {
+      "version": "0.3.4"
+    },
+    "optimist": {
+      "version": "0.3.5"
+    },
+    "request": {
+      "version": "2.12.0"
+    },
+    "yui": {
+      "version": "3.8.0"
     }
   }
 }
