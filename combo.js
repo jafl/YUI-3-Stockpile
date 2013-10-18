@@ -16,14 +16,14 @@ YUI({
 function(Y) {
 "use strict";
 
-var mod_fs       = require('fs'),
-	mod_path     = require('path'),
-	mod_url      = require('url'),
-	mod_qs       = require('querystring'),
-	mod_compress = require('gzip'),
-	mod_express  = require('express'),
-	mod_cluster  = require('cluster'),
-	mod_os       = require('os'),
+var mod_fs      = require('fs'),
+	mod_path    = require('path'),
+	mod_url     = require('url'),
+	mod_qs      = require('querystring'),
+	mod_zlib    = require('zlib'),
+	mod_express = require('express'),
+	mod_cluster = require('cluster'),
+	mod_os      = require('os'),
 
 	content_type = require('./server/content-type.js'),
 	path_util    = require('./server/path-util.js');
@@ -421,7 +421,7 @@ function combo(req, res, query)
 				return s + module_contents[f];
 			});
 
-			mod_compress(response_data, function(err, result)
+			mod_zlib.gzip(response_data, function(err, result)
 			{
 				var cache_data =
 				{

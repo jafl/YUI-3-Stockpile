@@ -337,10 +337,6 @@ Perl was chosen for the command line tools because it is available
 everywhere.  We did not want to require installation of NodeJS on machines
 which only need to deploy to Stockpile.
 
-### Why gzip instead of NodeJS zlib?
-
-The gzip module spawns a separate process, so it can run on a separate core.
-
 ### Why is there no support for wildcards in version numbers?
 
 In production, you need to use fixed versions to ensure stability.  This
