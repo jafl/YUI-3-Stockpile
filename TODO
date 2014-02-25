@@ -27,10 +27,6 @@ ui for stats:
 		zoom buttons:  10%, 25%, 50% (color inside square for in, color outside rect for out)
 		scroll buttons:  5% (<), 25% (<<), all the way (|<)
 
-
-animation + history manager when browsing
-	attach event to Back link
-
 -----
 
 https://github.com/rgrove/combohandler
