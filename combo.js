@@ -336,8 +336,7 @@ function combo(req, res, query)
 	tasks.done(function()
 	{
 		var tasks           = new Y.Parallel(),
-			module_contents = {},
-			dedupe          = false;
+			module_contents = {};
 
 		var dep_list = Y.reduce(module_list, [], function(list, f)
 		{
