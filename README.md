@@ -11,6 +11,9 @@ The name "stockpile" was chosen because it's a synonym of gallery, but
 without the glamorous connotation.
 
 [![Build Status](https://secure.travis-ci.org/jafl/YUI-3-Stockpile.png?branch=master)](http://travis-ci.org/jafl/YUI-3-Stockpile)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/jafl/YUI-3-Stockpile.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jafl/YUI-3-Stockpile/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/jafl/YUI-3-Stockpile.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jafl/YUI-3-Stockpile/context:javascript)
+
 
 Code Organization
 -----------------
