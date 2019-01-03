@@ -90,7 +90,7 @@ function combo(req, res, query)
 		var file = mod_path.basename(query);
 		if (file && config.image[ file ])
 		{
-			file = mod_path.resolve(config.root || '', config.image[ file ])
+			file = mod_path.resolve(config.root || '', config.image[ file ]);
 			if (mod_fs.existsSync(file))
 			{
 				Y.log('file: ' + file, 'debug', 'combo-dev');
