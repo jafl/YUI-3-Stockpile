@@ -18,7 +18,6 @@ function(Y) {
 
 var mod_os      = require('os'),
 	mod_fs      = require('fs'),
-	mod_path    = require('path'),
 	mod_express = require('express'),
 	mod_hbs     = require('express-hbs');
 
