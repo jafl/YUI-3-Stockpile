@@ -32,8 +32,6 @@ exports.configure = function(y, app, argv)
 		var form = new mod_form.IncomingForm();
 		form.parse(req, function(err, fields, files)
 		{
-			var success = 0;
-
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
@@ -70,8 +68,6 @@ exports.configure = function(y, app, argv)
 		var form = new mod_form.IncomingForm();
 		form.parse(req, function(err, fields, files)
 		{
-			var success = 0;
-
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
@@ -118,8 +114,6 @@ exports.configure = function(y, app, argv)
 		var form = new mod_form.IncomingForm();
 		form.parse(req, function(err, fields, files)
 		{
-			var success = 0;
-
 			if (!fields.name)
 			{
 				res.json({ error: 'missing group name' });
