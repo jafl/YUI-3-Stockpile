@@ -293,7 +293,6 @@ function browseBundle(res, argv, query)
 
 		tasks.done(function()
 		{
-			var code = '';
 			if (versions.length > 0)
 			{
 				versions.sort(compareVersions);
