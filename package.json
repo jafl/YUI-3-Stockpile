@@ -26,13 +26,13 @@
     "url": "https://github.com/jafl/YUI-3-Stockpile/issues"
   },
   "dependencies": {
-    "express": "3.0.4",
+    "express": "3.11.0",
     "express-hbs": "0.1.2-pre",
     "formidable": "1.0.11",
     "long-stack-traces": "0.1.2",
     "mkdirp": "0.3.4",
     "optimist": "0.3.5",
-    "request": "2.12.0",
+    "request": "2.68.0",
     "yui": "3.13.0"
   }
 }
