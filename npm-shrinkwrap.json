@@ -711,9 +711,9 @@
       }
     },
     "formidable": {
-      "version": "1.0.11",
-      "resolved": "https://registry.npmjs.org/formidable/-/formidable-1.0.11.tgz",
-      "integrity": "sha1-aPYzJaA15kS297s9ESQ7l2HeGzA="
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/formidable/-/formidable-1.2.1.tgz",
+      "integrity": "sha512-Fs9VRguL0gqGHkXS5GQiMCr1VhZBxz0JnJs4JmMp/2jL18Fmbzvv7vOFRU+U8TBkHEE/CX1qDXzJplVULgsLeg=="
     },
     "forwarded": {
       "version": "0.1.2",

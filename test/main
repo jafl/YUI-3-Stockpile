@@ -9,10 +9,6 @@ echo ===;
 whoami;
 echo ===;
 
-if $(which apt-get); then
-	apt-get install libterm-readkey-perl liblwp-useragent-determined-perl libjson-perl;
-fi
-
 function test()
 {
 	echo ===;

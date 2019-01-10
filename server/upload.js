@@ -342,7 +342,13 @@ function upload(argv, fields, files, res)
 		if (mod_path_util.invalidPath(path) || path == 'info.json')
 		{
 			Y.log('Blocked attempt to break sandbox: ' + path, 'debug', 'admin:upload');
-			mod_fs.unlink(file.path);
+			mod_fs.unlink(file.path, function(err)
+			{
+				if (err)
+				{
+					console.log(err);
+				}
+			});
 			return;
 		}
 
@@ -462,7 +468,13 @@ exports.configure = function(y, app, argv)
 
 			Y.each(files, function(file, path)
 			{
-				mod_fs.unlink(file.path);
+				mod_fs.unlink(file.path, function(err)
+				{
+					if (err)
+					{
+						console.log(err);
+					}
+				});
 			});
 		});
 	});

@@ -1,3 +1,6 @@
 language: node_js
 node_js:
  - lts/*
+
+before_install:
+  - sudo apt-get install libterm-readkey-perl liblwp-useragent-determined-perl libjson-perl;
