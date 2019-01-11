@@ -172,10 +172,20 @@ sub test()
 my @t;
 for (1..5)
 {
-	push(@t, threads->create('test'));
+	my $pid = fork();
+	if ($pid == 0)
+	{
+		test();
+		exit;
+	}
 }
 
-for my $t (@t)
+while (1)
 {
-	die unless $t->join() eq 'success';
+	my $pid = wait();
+	if ($pid == -1)
+		{
+		last;
+		}
+	die "failed with status $?" unless $? == 0;
 }
