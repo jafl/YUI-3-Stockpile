@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "./test/main"
+    "test": "./test/main",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -33,6 +35,8 @@
     "mkdirp": "0.3.4",
     "optimist": "0.3.5",
     "request": "2.88.0",
-    "yui": "3.18.1"
-  }
+    "yui": "3.18.1",
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }
