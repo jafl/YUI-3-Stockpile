@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "express": "4.16.4",
-    "express-hbs": "2.0.0",
+    "express-hbs": "2.3.2",
     "formidable": "1.2.1",
     "long-stack-traces": "0.1.2",
     "mkdirp": "0.3.4",
